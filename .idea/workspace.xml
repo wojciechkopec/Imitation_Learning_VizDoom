@@ -3,7 +3,27 @@
   <component name="ChangeListManager">
     <list default="true" id="d349f1f6-4601-4fb7-a5b6-7beb3e3a4158" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/vizdoom.so" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/0_weights.dump" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/1_weights.dump" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/2_weights.dump" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/3_weights.dump" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/4_weights.dump" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/ImitationLearning.iml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/code/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/_vizdoom.ini" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/_vizdoom.ini" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/config/basic.cfg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learning.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/code/multi_q_estimator.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/config/my_basic.cfg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/basic.cfg" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/expert_learning.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/my_basic.cfg" afterPath="" />

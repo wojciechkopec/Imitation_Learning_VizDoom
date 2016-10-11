@@ -1,6 +1,5 @@
 #compiled python files
 *.pyc
+.idea/*
 #linux tmp files
 *~
-#output files
-#/out/*
