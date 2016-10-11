@@ -28,6 +28,11 @@ resolution = (30, 45)
 # Configuration file path
 config_file_path = "./config/basic.cfg"
 
+def createEstimator():
+    K = 5
+    includeSampleProbability = 0.9
+    return MultiQEstimator(len(actions),resolution,K,includeSampleProbability)
+
 
 # Converts and downsamples the input image
 def preprocess(img):
@@ -93,7 +98,7 @@ n = game.get_available_buttons_size()
 actions = [list(a) for a in it.product([0, 1], repeat=n)]
 
 # Create replay memory which will store the transitions
-qEstimator = MultiQEstimator(len(actions),resolution,5,0.9)
+qEstimator = createEstimator()
 # qEstimator = QEstimator(len(actions),resolution)
 #net, learn, get_q_values, get_best_action = create_network(len(actions))
 
