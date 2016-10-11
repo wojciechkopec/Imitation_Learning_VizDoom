@@ -1,3 +1,5 @@
+import pickle
+
 from theano import tensor
 from lasagne.init import HeUniform, Constant
 from lasagne.layers import Conv2DLayer, InputLayer, DenseLayer, get_output, \
@@ -6,13 +8,14 @@ from lasagne.nonlinearities import rectify
 from lasagne.objectives import squared_error
 from lasagne.updates import rmsprop
 import theano
-from ReplayMemory import ReplayMemory
 import numpy as np
-import pickle
+
+from code.replay_memory import ReplayMemory
+
 
 class QEstimator:
 
-    def __init__(self,available_actions_count,resolution):
+    def __init__(self,available_actions_count,resolution,dumpFileName ='out/weights.dump'):
         # Q-learning settings
         self.learning_rate = 0.00025
         # learning_rate = 0.0001
@@ -22,6 +25,7 @@ class QEstimator:
         self.batch_size = 64
         self.net, self.learn, self.get_q_values, self.get_best_action = self._create_network(available_actions_count,resolution)
         self.memory = ReplayMemory(capacity=self.replay_memory_size,resolution=resolution)
+        self.dumpFileName = dumpFileName
 
 
 
@@ -71,7 +75,7 @@ class QEstimator:
         print "Network compiled."
 
         def simple_get_best_action(state):
-            return function_get_best_action(state.reshape([1, 1, resolution[0], resolution[1]]))
+            return function_get_best_action(state.reshape([1, 1, resolution[0], resolution[1]])), 1.0
 
         # Returns Theano objects for the net and functions.
         return dqn, function_learn, function_get_q_values, simple_get_best_action
@@ -91,12 +95,9 @@ class QEstimator:
             # the value of q2 is ignored in learn if s2 is terminal
             self.learn(s1, q2, a, r, isterminal)
 
-    def get_best_action(state):
-        return self.get_best_action(state)
+    def save(self):
+        pickle.dump(get_all_param_values(self.net), open(self.dumpFileName, "w"))
 
-    def save(self, filename = 'weights.dump'):
-        pickle.dump(get_all_param_values(self.net), open('weights.dump', "w"))
-
-    def load(self, filename = 'weights.dump'):
-        params = pickle.load(open(filename, "r"))
+    def load(self):
+        params = pickle.load(open(self.dumpFileName, "r"))
         set_all_param_values(self.net, params)

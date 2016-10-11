@@ -1,0 +1,7 @@
+#vizdoom file
+_vizdoom.ini
+#compiled python files
+*.pyc
+.idea/*
+#linux tmp files
+*~
