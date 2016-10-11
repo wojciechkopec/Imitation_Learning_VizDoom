@@ -1,0 +1,6 @@
+#compiled python files
+*.pyc
+#linux tmp files
+*~
+#output files
+#/out/*
