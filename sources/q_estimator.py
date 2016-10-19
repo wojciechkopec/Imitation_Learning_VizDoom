@@ -13,6 +13,25 @@ import numpy as np
 from sources.replay_memory import ReplayMemory
 
 
+def _create_convolution_layers(available_actions_count,resolution):
+    s1 = tensor.tensor4("States")
+    a = tensor.vector("Actions", dtype="int32")
+    q2 = tensor.vector("Next State's best Q-Value")
+    r = tensor.vector("Rewards")
+    isterminal = tensor.vector("IsTerminal", dtype="int8")
+
+    # Create the input layer of the network.
+    dqn = InputLayer(shape=[None, 1, resolution[0], resolution[1]], input_var=s1)
+
+    # Add 2 convolutional layers with ReLu activation
+    dqn = Conv2DLayer(dqn, num_filters=8, filter_size=[6, 6],
+                      nonlinearity=rectify, W=HeUniform("relu"),
+                      b=Constant(.1), stride=3)
+    dqn = Conv2DLayer(dqn, num_filters=8, filter_size=[3, 3],
+                      nonlinearity=rectify, W=HeUniform("relu"),
+                      b=Constant(.1), stride=2)
+    return s1,a,q2,r,isterminal,dqn
+
 class QEstimator:
 
     def __init__(self,available_actions_count,resolution,create_convolution_layers = None, dumpFileName ='out/weights.dump'):
@@ -24,30 +43,10 @@ class QEstimator:
         # NN learning settings
         self.batch_size = 64
         if create_convolution_layers == None:
-            create_convolution_layers = self._create_convolution_layers(available_actions_count, resolution)
+            create_convolution_layers = lambda : _create_convolution_layers(available_actions_count, resolution)
         self.net, self.learn, self.get_q_values, self.get_best_action = self._create_network(available_actions_count,resolution,create_convolution_layers)
         self.memory = ReplayMemory(capacity=self.replay_memory_size,resolution=resolution)
         self.dumpFileName = dumpFileName
-
-    def _create_convolution_layers(self,available_actions_count,resolution):
-        s1 = tensor.tensor4("States")
-        a = tensor.vector("Actions", dtype="int32")
-        q2 = tensor.vector("Next State's best Q-Value")
-        r = tensor.vector("Rewards")
-        isterminal = tensor.vector("IsTerminal", dtype="int8")
-
-        # Create the input layer of the network.
-        dqn = InputLayer(shape=[None, 1, resolution[0], resolution[1]], input_var=s1)
-
-        # Add 2 convolutional layers with ReLu activation
-        dqn = Conv2DLayer(dqn, num_filters=8, filter_size=[6, 6],
-                          nonlinearity=rectify, W=HeUniform("relu"),
-                          b=Constant(.1), stride=3)
-        dqn = Conv2DLayer(dqn, num_filters=8, filter_size=[3, 3],
-                          nonlinearity=rectify, W=HeUniform("relu"),
-                          b=Constant(.1), stride=2)
-        return s1,a,q2,r,isterminal,dqn
-
 
     def _create_network(self, available_actions_count,resolution,create_convolution_layers):
         s1,a,q2,r,isterminal,dqn = create_convolution_layers()
@@ -105,3 +104,10 @@ class QEstimator:
     def load(self):
         params = pickle.load(open(self.dumpFileName, "r"))
         set_all_param_values(self.net, params)
+
+
+    def learning_mode(self):
+        pass
+
+    def testing_mode(self):
+        pass

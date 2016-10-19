@@ -12,10 +12,11 @@ import skimage.transform
 from tqdm import trange
 
 from lib.vizdoom import *
-from code.multi_q_estimator import MultiQEstimator
+from sources.multi_q_estimator import MultiQEstimator
+from sources.q_estimator import QEstimator
 
 
-epochs = 1
+epochs = 20
 learning_steps_per_epoch = 2000
 
 # Training regime
@@ -31,7 +32,8 @@ config_file_path = "./config/basic.cfg"
 def createEstimator():
     K = 5
     includeSampleProbability = 0.9
-    return MultiQEstimator(len(actions),resolution,K,includeSampleProbability)
+    return MultiQEstimator(len(actions),resolution,K,includeSampleProbability,False)
+    # return QEstimator(len(actions),resolution)
 
 
 # Converts and downsamples the input image
@@ -115,6 +117,7 @@ for epoch in range(epochs):
     train_scores = []
 
     print "Training..."
+    qEstimator.learning_mode()
     game.new_episode()
     for learning_step in trange(learning_steps_per_epoch):
         perform_learning_step(epoch)
@@ -132,6 +135,7 @@ for epoch in range(epochs):
         "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
 
     print "\nTesting..."
+    qEstimator.testing_mode()
     test_episode = []
     test_scores = []
     certaintiesSum = 0
