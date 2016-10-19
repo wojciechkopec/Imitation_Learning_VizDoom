@@ -7,7 +7,7 @@ from sources.q_estimator import QEstimator
 
 
 class MultiQEstimator:
-    def __init__(self, available_actions_count, resolution, K, sampleProb, sharedNetwork=True,
+    def __init__(self, available_actions_count, resolution, K, sampleProb, sharedNetwork=True, replay_memory_size = 10000,
                  dumpFileName='out/weights.dump'):
         self.qEstimators = []
         self.K = K
@@ -23,7 +23,7 @@ class MultiQEstimator:
 
         for i in range(0, K):
             self.qEstimators.append(
-                QEstimator(available_actions_count, resolution, create_conv_layers,
+                QEstimator(available_actions_count, resolution, create_conv_layers, int(replay_memory_size/(K * sampleProb)),
                            os.path.join(path, '') + str(i) + '_' + name))
         self.currentEstimator = self.qEstimators[0]
 

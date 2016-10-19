@@ -34,12 +34,12 @@ def _create_convolution_layers(available_actions_count,resolution):
 
 class QEstimator:
 
-    def __init__(self,available_actions_count,resolution,create_convolution_layers = None, dumpFileName ='out/weights.dump'):
+    def __init__(self,available_actions_count,resolution,create_convolution_layers = None, replay_memory_size = 10000, dumpFileName ='out/weights.dump'):
         # Q-learning settings
         self.learning_rate = 0.00025
         # learning_rate = 0.0001
         self.discount_factor = 0.99
-        self.replay_memory_size = 10000
+        self.replay_memory_size = replay_memory_size
         # NN learning settings
         self.batch_size = 64
         if create_convolution_layers == None:
