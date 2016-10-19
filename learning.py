@@ -63,7 +63,7 @@ def perform_learning_step(epoch):
         else:
             return end_eps
 
-    s1 = preprocess(game.get_state().image_buffer)
+    s1 = preprocess(game.get_state().screen_buffer)
 
     # With probability eps make a random action.
     eps = exploration_rate(epoch)
@@ -75,7 +75,7 @@ def perform_learning_step(epoch):
     reward = game.make_action(actions[a], frame_repeat)
 
     isterminal = game.is_episode_finished()
-    s2 = preprocess(game.get_state().image_buffer) if not isterminal else None
+    s2 = preprocess(game.get_state().screen_buffer) if not isterminal else None
 
     qEstimator.learn_from_transition(s1, a, s2, isterminal, reward)
 
@@ -90,7 +90,6 @@ def initialize_vizdoom(config_file_path):
     game.init()
     print "Doom initialized."
     return game
-
 
 # Create Doom instance
 game = initialize_vizdoom(config_file_path)
@@ -144,7 +143,7 @@ for epoch in range(epochs):
         game.new_episode()
 
         while not game.is_episode_finished():
-            state = preprocess(game.get_state().image_buffer)
+            state = preprocess(game.get_state().screen_buffer)
             (best_action_index,certainty) = qEstimator.get_best_action(state)
             certaintiesSum += certainty
             certaintiesCount += 1
@@ -179,7 +178,7 @@ episodes_to_watch = 10
 for i in range(episodes_to_watch):
     game.new_episode()
     while not game.is_episode_finished():
-        state = preprocess(game.get_state().image_buffer)
+        state = preprocess(game.get_state().screen_buffer)
         best_action_index = qEstimator.get_best_action(state)[0]
 
         # Instead of make_action(a, frame_repeat) in order to make the animation smooth
