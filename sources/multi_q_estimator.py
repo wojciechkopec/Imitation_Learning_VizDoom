@@ -1,7 +1,7 @@
 from random import randint, random
 import os.path
 
-from code.q_estimator import QEstimator
+from sources.q_estimator import QEstimator
 
 class MultiQEstimator:
 
