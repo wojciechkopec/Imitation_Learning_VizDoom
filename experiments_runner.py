@@ -15,7 +15,8 @@ from lib.vizdoom import *
 
 class ExperimentsRunner:
 
-    def __init__(self, config, agent):
+    def __init__(self, agentName, config, agent):
+        self.agentName =agentName
         self.config = config
             # Create Doom instance
         self.game = self.initialize_vizdoom(config.config_file_path)

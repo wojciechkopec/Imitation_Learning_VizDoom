@@ -15,9 +15,10 @@ class ExperimentConfig:
         self.config_file_path = config_file_path
         self.playAgent = playAgent
 
+agents = {}
+agents['exampleAgent'] = lambda actions, config: QEstimator(len(actions), config.resolution)
+agents['bdqnAgentK5p09'] = lambda actions, config: MultiQEstimator(len(actions), config.resolution, 5, 0.9, False)
 
-exampleAgent = lambda actions, config: QEstimator(len(actions), config.resolution)
-bdqnAgentK5p09 = lambda actions, config: MultiQEstimator(len(actions), config.resolution, 5, 0.9, False)
-
-ExperimentsRunner(ExperimentConfig(), bdqnAgentK5p09).run()
+chosenAgent = 'exampleAgent'
+ExperimentsRunner(chosenAgent,ExperimentConfig(epochs=1,learning_steps_per_epoch=200), agents[chosenAgent]).run()
 
