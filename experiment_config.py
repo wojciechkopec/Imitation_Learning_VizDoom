@@ -20,5 +20,5 @@ agents['exampleAgent'] = lambda actions, config: QEstimator(len(actions), config
 agents['bdqnAgentK5p09'] = lambda actions, config: MultiQEstimator(len(actions), config.resolution, 5, 0.9, False)
 
 chosenAgent = 'exampleAgent'
-ExperimentsRunner(chosenAgent,ExperimentConfig(epochs=1,learning_steps_per_epoch=200), agents[chosenAgent]).run()
+ExperimentsRunner(chosenAgent,ExperimentConfig(playAgent=True,epochs=10), agents[chosenAgent]).run()
 

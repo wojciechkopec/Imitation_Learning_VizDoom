@@ -4,14 +4,18 @@ import os.path
 import numpy as np
 
 from sources.q_estimator import QEstimator
+from sources.replay_memory import TransitionStore
 
 
 class MultiQEstimator:
-    def __init__(self, available_actions_count, resolution, K, sampleProb, sharedNetwork=True, replay_memory_size = 10000,
-                 dumpFileName='out/weights.dump'):
+    def __init__(self, available_actions_count, resolution, K, sampleProb, sharedNetwork=True, replay_memory_size=10000,
+                 store_trajectory=True, dumpFileName='out/weights.dump'):
         self.qEstimators = []
         self.K = K
         self.sampleProb = sampleProb
+        self.discount_factor = 0.99
+        self.store_trajectory = store_trajectory
+        self.transition_store = TransitionStore(self.discount_factor)
         self.learning = True
         self.available_actions_count = available_actions_count
         path, name = os.path.split(dumpFileName)
@@ -23,15 +27,21 @@ class MultiQEstimator:
 
         for i in range(0, K):
             self.qEstimators.append(
-                QEstimator(available_actions_count, resolution, create_conv_layers, int(replay_memory_size/(K * sampleProb)),
+                QEstimator(available_actions_count, resolution, create_conv_layers,
+                           int(replay_memory_size / (K * sampleProb)), False,
                            os.path.join(path, '') + str(i) + '_' + name))
         self.currentEstimator = self.qEstimators[0]
 
+    def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float('-inf')):
+        if self.store_trajectory:
+            self.transition_store.store(s1, a, s2, s2_isterminal, r)
+            if s2_isterminal:
+                for t_s1, t_a, t_s2, t_s2_isterminal, t_r, t_q2 in self.transition_store.get_trajectory():
+                    self._store(t_s1, t_a, t_s2, t_s2_isterminal, t_r, t_q2)
 
-    def learn_from_transition(self, s1, a, s2, s2_isterminal, r):
-        for e in self.qEstimators:
-            if (e == self.currentEstimator) or (random() <= self.sampleProb):
-                e.learn_from_transition(s1, a, s2, s2_isterminal, r)
+        else:
+            self._store(s1, a, s2, s2_isterminal, r, -1)
+
         if s2_isterminal:
             self.currentEstimator = self.qEstimators[randint(0, self.K - 1)]
 
@@ -59,6 +69,11 @@ class MultiQEstimator:
             if e == self.currentEstimator:
                 currentEstAction = action
         return dist, currentEstAction
+
+    def _store(self, s1, a, s2, s2_isterminal, r, q2):
+        for e in self.qEstimators:
+            if (e == self.currentEstimator) or (random() <= self.sampleProb):
+                e.learn_from_transition(s1, a, s2, s2_isterminal, r, q2)
 
     def suggest_action(self, state):
         return 3

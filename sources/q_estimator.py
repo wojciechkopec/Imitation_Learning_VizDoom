@@ -11,9 +11,10 @@ import theano
 import numpy as np
 
 from sources.replay_memory import ReplayMemory
+from sources.replay_memory import TransitionStore
 
 
-def _create_convolution_layers(available_actions_count,resolution):
+def _create_convolution_layers(available_actions_count, resolution):
     s1 = tensor.tensor4("States")
     a = tensor.vector("Actions", dtype="int32")
     q2 = tensor.vector("Next State's best Q-Value")
@@ -30,26 +31,31 @@ def _create_convolution_layers(available_actions_count,resolution):
     dqn = Conv2DLayer(dqn, num_filters=8, filter_size=[3, 3],
                       nonlinearity=rectify, W=HeUniform("relu"),
                       b=Constant(.1), stride=2)
-    return s1,a,q2,r,isterminal,dqn
+    return s1, a, q2, r, isterminal, dqn
+
 
 class QEstimator:
-
-    def __init__(self,available_actions_count,resolution,create_convolution_layers = None, replay_memory_size = 10000, dumpFileName ='out/weights.dump'):
+    def __init__(self, available_actions_count, resolution, create_convolution_layers=None, replay_memory_size=10000,
+                 store_trajectory=True, dumpFileName='out/weights.dump'):
         # Q-learning settings
         self.learning_rate = 0.00025
         # learning_rate = 0.0001
         self.discount_factor = 0.99
+        self.store_trajectory = store_trajectory
+        self.transition_store = TransitionStore(self.discount_factor)
         self.replay_memory_size = replay_memory_size
         # NN learning settings
         self.batch_size = 64
         if create_convolution_layers == None:
-            create_convolution_layers = lambda : _create_convolution_layers(available_actions_count, resolution)
-        self.net, self.learn, self.get_q_values, self.get_best_action = self._create_network(available_actions_count,resolution,create_convolution_layers)
-        self.memory = ReplayMemory(capacity=self.replay_memory_size,resolution=resolution)
+            create_convolution_layers = lambda: _create_convolution_layers(available_actions_count, resolution)
+        self.net, self.learn, self.get_q_values, self.get_best_action = self._create_network(available_actions_count,
+                                                                                             resolution,
+                                                                                             create_convolution_layers)
+        self.memory = ReplayMemory(capacity=self.replay_memory_size, resolution=resolution)
         self.dumpFileName = dumpFileName
 
-    def _create_network(self, available_actions_count,resolution,create_convolution_layers):
-        s1,a,q2,r,isterminal,dqn = create_convolution_layers()
+    def _create_network(self, available_actions_count, resolution, create_convolution_layers):
+        s1, a, q2, r, isterminal, dqn = create_convolution_layers()
 
         # Add a single fully-connected layer.
         dqn = DenseLayer(dqn, num_units=128, nonlinearity=rectify, W=HeUniform("relu"),
@@ -63,7 +69,8 @@ class QEstimator:
         q = get_output(dqn)
         # target differs from q only for the selected action. The following means:
         # target_Q(s,a) = r + gamma * max Q(s2,_) if isterminal else r
-        target_q = tensor.set_subtensor(q[tensor.arange(q.shape[0]), a], r + self.discount_factor * (1 - isterminal) * q2)
+        target_q = tensor.set_subtensor(q[tensor.arange(q.shape[0]), a],
+                                        r + self.discount_factor * (1 - isterminal) * q2)
         loss = squared_error(q, target_q).mean()
 
         # Update the parameters according to the computed gradient using RMSProp.
@@ -83,18 +90,23 @@ class QEstimator:
         # Returns Theano objects for the net and functions.
         return dqn, function_learn, function_get_q_values, simple_get_best_action
 
-
-    def learn_from_transition(self,s1, a, s2, s2_isterminal, r):
+    def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float("-inf")):
         """ Learns from a single transition (making use of replay memory).
         s2 is ignored if s2_isterminal """
+        if self.store_trajectory:
+            self.transition_store.store(s1, a, s2, s2_isterminal, r)
+            if s2_isterminal:
+                for t_s1, t_a, t_s2, t_s2_isterminal, t_r, t_q2 in self.transition_store.get_trajectory():
+                    self.memory.add_transition(t_s1, t_a, t_s2, t_s2_isterminal, t_r, t_q2)
 
-        # Remember the transition that was just experienced.
-        self.memory.add_transition(s1, a, s2, s2_isterminal, r)
+        # Remember the transition
+        else:
+            self.memory.add_transition(s1, a, s2, s2_isterminal, r, q2)
 
         # Get a random minibatch from the replay memory and learns from it.
         if self.memory.size > self.batch_size:
-            s1, a, s2, isterminal, r = self.memory.get_sample(self.batch_size)
-            q2 = np.max(self.get_q_values(s2), axis=1)
+            s1, a, s2, isterminal, r, q2 = self.memory.get_sample(self.batch_size)
+            q2 = np.fmax(q2, np.max(self.get_q_values(s2), axis=1))
             # the value of q2 is ignored in learn if s2 is terminal
             self.learn(s1, q2, a, r, isterminal)
 
