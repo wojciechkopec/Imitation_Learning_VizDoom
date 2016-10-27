@@ -4,7 +4,6 @@ from __future__ import division
 
 import itertools as it
 from random import randint, random
-from scipy.sparse.dia import dia_matrix
 from time import time, sleep
 
 import numpy as np
@@ -19,8 +18,9 @@ from lib.vizdoom import *
 
 
 def run(agentName, config, iterations, agents):
-    time = datetime.now()
-    dir_name = "out/" + time.strftime("%Y%m%d_%H%M_") + agentName + "_" + config.get_scenario()
+    start = datetime.now()
+    startTime = time()
+    dir_name = "out/" + start.strftime("%Y%m%d_%H%M_") + agentName + "_" + config.get_scenario()
     os.makedirs(dir_name)
 
     with open(dir_name + "/config", "w") as configFile:
@@ -28,21 +28,23 @@ def run(agentName, config, iterations, agents):
         configFile.writelines(json.dumps(config.__dict__, indent=4))
 
     resultsFile = open(dir_name + "/results.csv", "w")
-    resultsFile.writelines([" " + " ".join(map(str, range(1, iterations + 1))) + "\n"])
+    resultsFile.writelines([" " + " ".join(map(str, range(1, config.epochs + 1))) + "\n"])
     resultsSumsFile = open(dir_name + "/sumResults.csv", "w")
-    resultsSumsFile.writelines([" " + "total\n"])
+    resultsSumsFile.writelines([" " + "total_score time\n"])
     sumFromAllRuns = 0.0
     for i in range(1, iterations + 1):
         print "Iteration %d of agent %s" % (i, agentName)
+        start = time()
         results = ExperimentsRunner(agentName, config, agents[agentName]).run()
+        end = time()
         totalSum = sum(results)
         resultsFile.writelines([str(i) + " " + " ".join(map(str, results)).replace(".", ",") + "\n"])
-        resultsSumsFile.writelines([str(i) + " " + str(totalSum).replace(".", ",") + "\n"])
+        resultsSumsFile.writelines([str(i) + " " + (str(totalSum) + " " + str(end - startTime)).replace(".", ",") + "\n"])
         resultsFile.flush()
         resultsSumsFile.flush()
         sumFromAllRuns += totalSum
-        print "Finished iteration %d with score %.3f" % (i, totalSum)
-        print "Average score for agent %s so far: %.3f" % (agentName, sumFromAllRuns / (i + 1))
+        print "Finished iteration %d in %.2fs with score %.3f" % (i, (end-start), totalSum)
+        print "%.2fs elapsed, average score for agent %s so far: %.3f" % (end - startTime, agentName, sumFromAllRuns / (i + 1))
     resultsFile.close()
     resultsSumsFile.close()
     print "Finished %d runs for agent %s with score %.3f" % (iterations, agentName, sumFromAllRuns / iterations)
