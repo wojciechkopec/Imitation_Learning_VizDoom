@@ -4,24 +4,58 @@ from __future__ import division
 
 import itertools as it
 from random import randint, random
+from scipy.sparse.dia import dia_matrix
 from time import time, sleep
 
 import numpy as np
 import skimage.color
 import skimage.transform
 from tqdm import trange
+from datetime import datetime
+import os
+import json
 
 from lib.vizdoom import *
 
-class ExperimentsRunner:
 
+def run(agentName, config, iterations, agents):
+    time = datetime.now()
+    dir_name = "out/" + time.strftime("%Y%m%d_%H%M_") + agentName + "_" + config.get_scenario()
+    os.makedirs(dir_name)
+
+    with open(dir_name + "/config", "w") as configFile:
+        configFile.writelines([agentName])
+        configFile.writelines(json.dumps(config.__dict__, indent=4))
+
+    resultsFile = open(dir_name + "/results.csv", "w")
+    resultsFile.writelines([" " + " ".join(map(str, range(1, iterations + 1))) + "\n"])
+    resultsSumsFile = open(dir_name + "/sumResults.csv", "w")
+    resultsSumsFile.writelines([" " + "total\n"])
+    sumFromAllRuns = 0.0
+    for i in range(1, iterations + 1):
+        print "Iteration %d of agent %s" % (i, agentName)
+        results = ExperimentsRunner(agentName, config, agents[agentName]).run()
+        totalSum = sum(results)
+        resultsFile.writelines([str(i) + " " + " ".join(map(str, results)).replace(".", ",") + "\n"])
+        resultsSumsFile.writelines([str(i) + " " + str(totalSum).replace(".", ",") + "\n"])
+        resultsFile.flush()
+        resultsSumsFile.flush()
+        sumFromAllRuns += totalSum
+        print "Finished iteration %d with score %.3f" % (i, totalSum)
+        print "Average score for agent %s so far: %.3f" % (agentName, sumFromAllRuns / (i + 1))
+    resultsFile.close()
+    resultsSumsFile.close()
+    print "Finished %d runs for agent %s with score %.3f" % (iterations, agentName, sumFromAllRuns / iterations)
+
+
+class ExperimentsRunner:
     def __init__(self, agentName, config, agent):
-        self.agentName =agentName
+        self.agentName = agentName
         self.config = config
-            # Create Doom instance
+        # Create Doom instance
         self.game = self.initialize_vizdoom(config.config_file_path)
 
-    # Action = which buttons are pressed
+        # Action = which buttons are pressed
         self.n = self.game.get_available_buttons_size()
         self.actions = [list(a) for a in it.product([0, 1], repeat=self.n)]
         self.qEstimator = agent(self.actions, config)
@@ -123,7 +157,7 @@ class ExperimentsRunner:
 
                 while not self.game.is_episode_finished():
                     state = self.preprocess(self.game.get_state().screen_buffer)
-                    (best_action_index,certainty) = self.qEstimator.get_best_action(state)
+                    (best_action_index, certainty) = self.qEstimator.get_best_action(state)
                     certaintiesSum += certainty
                     certaintiesCount += 1
                     self.game.make_action(self.actions[best_action_index], self.config.frame_repeat)
@@ -132,10 +166,10 @@ class ExperimentsRunner:
 
             test_scores = np.array(test_scores)
             test_results.append(test_scores.mean())
-            certainties.append(certaintiesSum/certaintiesCount)
+            certainties.append(certaintiesSum / certaintiesCount)
             print "Results: mean: %.1f±%.1f," % (
-            test_scores.mean(), test_scores.std()), "min: %.1f" % test_scores.min(), "max: %.1f" % test_scores.max()
-            print "Certainty: %.2f" % (certaintiesSum/certaintiesCount)
+                test_scores.mean(), test_scores.std()), "min: %.1f" % test_scores.min(), "max: %.1f" % test_scores.max()
+            print "Certainty: %.2f" % (certaintiesSum / certaintiesCount)
             print "Saving the network weigths..."
             self.qEstimator.save()
 
@@ -177,3 +211,4 @@ class ExperimentsRunner:
         print "Training scores: ", train_results
         print "Test scores: ", test_results
         print "Certainties: ", certainties
+        return test_results

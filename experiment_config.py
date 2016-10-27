@@ -2,6 +2,8 @@ __author__ = 'wojtek'
 from sources.multi_q_estimator import MultiQEstimator
 from sources.q_estimator import QEstimator
 from experiments_runner import ExperimentsRunner
+from experiments_runner import run as run
+import os
 
 
 class ExperimentConfig:
@@ -15,10 +17,20 @@ class ExperimentConfig:
         self.config_file_path = config_file_path
         self.playAgent = playAgent
 
+    def get_scenario(self):
+        return os.path.basename(self.config_file_path).replace(".cfg", "")
+
+
 agents = {}
 agents['exampleAgent'] = lambda actions, config: QEstimator(len(actions), config.resolution)
 agents['bdqnAgentK5p09'] = lambda actions, config: MultiQEstimator(len(actions), config.resolution, 5, 0.9, False)
 
 chosenAgent = 'exampleAgent'
-ExperimentsRunner(chosenAgent,ExperimentConfig(playAgent=True,epochs=10), agents[chosenAgent]).run()
+# ExperimentsRunner(chosenAgent,ExperimentConfig(config_file_path="./config/defend_the_center.cfg"), agents[chosenAgent]).run()
+run(chosenAgent,
+    ExperimentConfig(config_file_path="./config/defend_the_center.cfg", epochs=2, learning_steps_per_epoch=200), 2,
+    agents)
 
+run(chosenAgent,
+    ExperimentConfig(config_file_path="./config/basic.cfg", epochs=2, learning_steps_per_epoch=200), 2,
+    agents)
