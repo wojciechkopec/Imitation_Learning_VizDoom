@@ -21,6 +21,12 @@ def run(agentName, config, iterations, agents):
     start = datetime.now()
     startTime = time()
     dir_name = "out/" + start.strftime("%Y%m%d_%H%M_") + agentName + "_" + config.get_scenario()
+    base_dir_name = dir_name
+    i = 2
+    while os.path.exists(dir_name):
+        dir_name = base_dir_name + "_" + str(i)
+        i += 1
+
     os.makedirs(dir_name)
 
     with open(dir_name + "/config", "w") as configFile:
@@ -35,24 +41,26 @@ def run(agentName, config, iterations, agents):
     for i in range(1, iterations + 1):
         print "Iteration %d of agent %s" % (i, agentName)
         start = time()
-        results = ExperimentsRunner(agentName, config, agents[agentName]).run()
+        results = ExperimentsRunner(agentName, config, agents[agentName], dir_name).run()
         end = time()
         totalSum = sum(results)
         resultsFile.writelines([str(i) + " " + " ".join(map(str, results)).replace(".", ",") + "\n"])
-        resultsSumsFile.writelines([str(i) + " " + (str(totalSum) + " " + str(end - startTime)).replace(".", ",") + "\n"])
+        resultsSumsFile.writelines(
+            [str(i) + " " + (str(totalSum) + " " + str(end - startTime)).replace(".", ",") + "\n"])
         resultsFile.flush()
         resultsSumsFile.flush()
         sumFromAllRuns += totalSum
-        print "Finished iteration %d in %.2fs with score %.3f" % (i, (end-start), totalSum)
-        print "%.2fs elapsed, average score for agent %s so far: %.3f" % (end - startTime, agentName, sumFromAllRuns / (i + 1))
+        print "Finished iteration %d in %.2fs with score %.3f" % (i, (end - start), totalSum)
+        print "%.2fs elapsed, average score for agent %s so far: %.3f" % (
+        end - startTime, agentName, sumFromAllRuns / (i + 1))
     resultsFile.close()
     resultsSumsFile.close()
     print "Finished %d runs for agent %s with score %.3f" % (iterations, agentName, sumFromAllRuns / iterations)
 
 
 class ExperimentsRunner:
-    def __init__(self, agentName, config, agent):
-        self.agentName = agentName
+    def __init__(self, agent_name, config, agent, directory_path):
+        self.agent_name = agent_name
         self.config = config
         # Create Doom instance
         self.game = self.initialize_vizdoom(config.config_file_path)
@@ -60,7 +68,7 @@ class ExperimentsRunner:
         # Action = which buttons are pressed
         self.n = self.game.get_available_buttons_size()
         self.actions = [list(a) for a in it.product([0, 1], repeat=self.n)]
-        self.qEstimator = agent(self.actions, config)
+        self.q_estimator = agent(self.actions, config, directory_path + "/weights.dump")
 
     # Converts and downsamples the input image
     def preprocess(self, img):
@@ -97,13 +105,13 @@ class ExperimentsRunner:
             a = randint(0, len(self.actions) - 1)
         else:
             # Choose the best action according to the network.
-            a = self.qEstimator.get_best_action(s1)[0]
+            a = self.q_estimator.get_best_action(s1)[0]
         reward = self.game.make_action(self.actions[a], self.config.frame_repeat)
 
         isterminal = self.game.is_episode_finished()
         s2 = self.preprocess(self.game.get_state().screen_buffer) if not isterminal else None
 
-        self.qEstimator.learn_from_transition(s1, a, s2, isterminal, reward)
+        self.q_estimator.learn_from_transition(s1, a, s2, isterminal, reward)
 
 
     # Creates and initializes ViZDoom environment.
@@ -131,7 +139,7 @@ class ExperimentsRunner:
             train_scores = []
 
             print "Training..."
-            self.qEstimator.learning_mode()
+            self.q_estimator.learning_mode()
             self.game.new_episode()
             for learning_step in trange(self.config.learning_steps_per_epoch):
                 self.perform_learning_step(epoch)
@@ -149,7 +157,7 @@ class ExperimentsRunner:
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
 
             print "\nTesting..."
-            self.qEstimator.testing_mode()
+            self.q_estimator.testing_mode()
             test_episode = []
             test_scores = []
             certaintiesSum = 0
@@ -159,7 +167,7 @@ class ExperimentsRunner:
 
                 while not self.game.is_episode_finished():
                     state = self.preprocess(self.game.get_state().screen_buffer)
-                    (best_action_index, certainty) = self.qEstimator.get_best_action(state)
+                    (best_action_index, certainty) = self.q_estimator.get_best_action(state)
                     certaintiesSum += certainty
                     certaintiesCount += 1
                     self.game.make_action(self.actions[best_action_index], self.config.frame_repeat)
@@ -173,7 +181,7 @@ class ExperimentsRunner:
                 test_scores.mean(), test_scores.std()), "min: %.1f" % test_scores.min(), "max: %.1f" % test_scores.max()
             print "Certainty: %.2f" % (certaintiesSum / certaintiesCount)
             print "Saving the network weigths..."
-            self.qEstimator.save()
+            self.q_estimator.save()
 
             print "Total elapsed time: %.2f minutes" % ((time() - time_start) / 60.0)
 
@@ -183,7 +191,7 @@ class ExperimentsRunner:
             print "Training finished. It's time to watch!"
 
             # Load the network's parameters from a file
-            self.qEstimator.load()
+            self.q_estimator.load()
 
             # Reinitialize the game with window visible
             self.game.set_window_visible(True)
@@ -195,7 +203,7 @@ class ExperimentsRunner:
                 self.game.new_episode()
                 while not self.game.is_episode_finished():
                     state = self.preprocess(self.game.get_state().screen_buffer)
-                    best_action_index = self.qEstimator.get_best_action(state)[0]
+                    best_action_index = self.q_estimator.get_best_action(state)[0]
 
                     # Instead of make_action(a, frame_repeat) in order to make the animation smooth
                     self.game.set_action(self.actions[best_action_index])
