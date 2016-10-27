@@ -5,3 +5,8 @@ _vizdoom.ini
 .idea/*
 #linux tmp files
 *~
+
+#profiling mess
+*.dot
+*.profile
+*.results
