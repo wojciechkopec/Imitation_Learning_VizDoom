@@ -16,6 +16,12 @@ import json
 
 from lib.vizdoom import *
 
+def play(agentName, config, directory, agents):
+    runner = ExperimentsRunner(agentName, config, agents[agentName], directory)
+    runner.game.close()
+    runner.play(runner.q_estimator)
+
+
 
 def run(agentName, config, iterations, agents):
     start = datetime.now()
@@ -121,6 +127,8 @@ class ExperimentsRunner:
         game.load_config(config_file_path)
         game.set_window_visible(False)
         game.set_mode(Mode.PLAYER)
+    	# game.set_screen_format(ScreenFormat.GRAY8)
+    	# game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.init()
         print "Doom initialized."
         return game
@@ -189,31 +197,8 @@ class ExperimentsRunner:
         if self.config.playAgent:
             print "======================================"
             print "Training finished. It's time to watch!"
-
-            # Load the network's parameters from a file
             self.q_estimator.load()
-
-            # Reinitialize the game with window visible
-            self.game.set_window_visible(True)
-            self.game.set_mode(Mode.ASYNC_PLAYER)
-            self.game.init()
-
-            episodes_to_watch = 10
-            for i in range(episodes_to_watch):
-                self.game.new_episode()
-                while not self.game.is_episode_finished():
-                    state = self.preprocess(self.game.get_state().screen_buffer)
-                    best_action_index = self.q_estimator.get_best_action(state)[0]
-
-                    # Instead of make_action(a, frame_repeat) in order to make the animation smooth
-                    self.game.set_action(self.actions[best_action_index])
-                    for i in range(self.config.frame_repeat):
-                        self.game.advance_action()
-
-                # Sleep between episodes
-                sleep(1.0)
-                score = self.game.get_total_reward()
-                print "Total score: ", score
+            self.play(self.q_estimator)
         else:
             print "======================================"
             print "Skipping watching"
@@ -222,3 +207,26 @@ class ExperimentsRunner:
         print "Test scores: ", test_results
         print "Certainties: ", certainties
         return test_results
+
+    def play(self, q_estimator):
+        # Load the network's parameters from a file
+        # Reinitialize the game with window visible
+        self.game.set_window_visible(True)
+        self.game.set_mode(Mode.ASYNC_PLAYER)
+        self.game.init()
+        episodes_to_watch = 10
+        for i in range(episodes_to_watch):
+            self.game.new_episode()
+            while not self.game.is_episode_finished():
+                state = self.preprocess(self.game.get_state().screen_buffer)
+                best_action_index = q_estimator.get_best_action(state)[0]
+
+                # Instead of make_action(a, frame_repeat) in order to make the animation smooth
+                self.game.set_action(self.actions[best_action_index])
+                for i in range(self.config.frame_repeat):
+                    self.game.advance_action()
+
+            # Sleep between episodes
+            sleep(1.0)
+            score = self.game.get_total_reward()
+            print "Total score: ", score
