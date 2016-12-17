@@ -14,7 +14,7 @@ from datetime import datetime
 import os
 import json
 
-from lib.vizdoom import *
+from vizdoom import *
 
 def play(agentName, config, directory, agents):
     runner = ExperimentsRunner(agentName, config, agents[agentName], directory)
@@ -78,7 +78,6 @@ class ExperimentsRunner:
 
     # Converts and downsamples the input image
     def preprocess(self, img):
-        img = img[0]
         img = skimage.transform.resize(img, self.config.resolution)
         img = img.astype(np.float32)
         return img
@@ -127,8 +126,8 @@ class ExperimentsRunner:
         game.load_config(config_file_path)
         game.set_window_visible(False)
         game.set_mode(Mode.PLAYER)
-    	# game.set_screen_format(ScreenFormat.GRAY8)
-    	# game.set_screen_resolution(ScreenResolution.RES_640X480)
+    	game.set_screen_format(ScreenFormat.GRAY8)
+    	game.set_screen_resolution(ScreenResolution.RES_640X480)
         game.init()
         print "Doom initialized."
         return game
