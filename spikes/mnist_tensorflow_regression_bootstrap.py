@@ -14,6 +14,8 @@ import numpy as np
 import time
 from tensorflow.contrib.distributions.python.ops.sample_stats import percentile
 from tensorflow.python.client import timeline
+from random import random
+from sklearn.metrics import accuracy_score
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -28,8 +30,8 @@ display_step = 100
 
 # Network Parameters
 n_input = 784  # MNIST data input (img shape: 28*28)
-subnets = 5
-inclusion_prob = 0.75
+subnets = 10
+inclusion_prob = 1
 
 learning_rate = 0.005 / (subnets * inclusion_prob)
 
@@ -109,18 +111,19 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 
 # Initializing the variables
-init = tf.initialize_all_variables()
+init = tf.global_variables_initializer()
 
 
 def test(X, Y):
     calls = 50
-    labels = Y  # np.argmax(Y, axis=1)
+    labels = np.reshape(Y, (len(Y)))
     Y = np.reshape(Y, (len(Y), 1)) / 10 - 0.5
     result, variance, o = sess.run([pred, difference, outs], feed_dict={x: X,
                                         y: Y, mask: np.random.binomial(1, 1, subnets)})
 
-    preds = np.round(result * 10 + 5)
-    accuracy = np.sum(preds == labels) * 1.0 / len(preds)
+    preds = np.round(result * 10 + 5).astype(int)
+    preds = np.reshape(preds, (len(preds)))
+    accuracy = accuracy_score(labels, preds) #np.sum(preds == labels) * 1.0 / len(preds)
     return accuracy, variance
 
 
@@ -128,8 +131,8 @@ def test(X, Y):
 with tf.Session() as sess:
     sess.run(init)
 
-    run_options = tf.RunOptions(trace_level=tf.RunOptions.SOFTWARE_TRACE) # FULL_TRACE
-    run_metadata = tf.RunMetadata()
+    # run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE) # FULL_TRACE
+    # run_metadata = tf.RunMetadata()
 
     step = 1
     trainSet = {0, 2, 4, 6, 8}
@@ -137,7 +140,8 @@ with tf.Session() as sess:
     start = time.time()
     while step * batch_size < training_iters:
         batch_x, batch_y = mnist.train.next_batch(batch_size)
-        filter = np.array(map(lambda x: x in trainSet, batch_y))
+        # filter = np.array(map(lambda x: x in trainSet, batch_y))
+        filter = np.array(map(lambda x: x/10.0 > random(), batch_y))
         batch_x, batch_y = batch_x[filter], batch_y[filter]
         batch_y = np.reshape(batch_y, (len(batch_y), 1)) / 10.0 - 0.5
         m = np.random.binomial(1, inclusion_prob, subnets)
@@ -152,28 +156,32 @@ with tf.Session() as sess:
             # Calculate batch loss and accuracy
             m = np.random.binomial(1, 1, subnets)
             loss, acc, p, r, c = sess.run([cost, accuracy, pred, rounded, correct_pred], feed_dict={x: batch_x,
-                                                                                                    y: batch_y, mask: m, }, run_metadata=run_metadata, options=run_options)
+                                                                                                    y: batch_y, mask: m})#, run_metadata=run_metadata, options=run_options)
             print("Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
                   "{:.6f}".format(loss) + ", Training Accuracy= " + \
                   "{:.5f}".format(acc))
         step += 1
     elapsed = (time.time() - start)
     print("Optimization Finished in %f"%elapsed)
-    prof_timeline = timeline.Timeline(run_metadata.step_stats)
-    prof_ctf = prof_timeline.generate_chrome_trace_format()
-    with open('/tmp/prof_ctf.json', 'w') as fp:
-            print ('Dumped to prof_ctf.json')
-            fp.write(prof_ctf)
+    # prof_timeline = timeline.Timeline(run_metadata.step_stats)
+    # prof_ctf = prof_timeline.generate_chrome_trace_format()
+    # with open('/tmp/prof_ctf.json', 'w') as fp:
+    #         print ('Dumped to prof_ctf.json')
+    #         fp.write(prof_ctf)
 
     all_images = np.array(mnist.test.images)
     all_labels = np.array(mnist.test.labels)
     results = []
     var_known = 0
     var_unknown = 0
+    accs = []
+    certs = []
     for label in range(0, 10):
         filter = np.array(map(lambda x: x == label, all_labels))
         X, Y = all_images[filter], all_labels[filter]
         acc, certainty = test(X, Y)
+        accs.append(acc)
+        certs.append(certainty)
         results.append((label, certainty))
         if label in trainSet:
             var_known +=certainty
@@ -187,6 +195,8 @@ with tf.Session() as sess:
         print("label " + str(r[0]) + ": " + str(r[1]))
 
     print("ratio: " +str(1.0*var_unknown/var_known))
+    print("regression :" + str(np.corrcoef(accs, certs)[0, 1]))
+    print("regression without 0:" + str(np.corrcoef(accs[1:], certs[1:])[0, 1]))
 
     validX = mnist.test.images
     validY = np.reshape(mnist.test.labels, (len(mnist.test.labels), 1)) / 10.0 - 0.5
