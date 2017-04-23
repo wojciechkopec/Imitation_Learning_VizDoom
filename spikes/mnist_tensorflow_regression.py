@@ -11,6 +11,11 @@ from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
+import time
+
+from random import random
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -19,7 +24,7 @@ mnist = input_data.read_data_sets("/tmp/data/")
 
 # Parameters
 learning_rate = 0.0005
-training_iters = 2000000
+training_iters = 1000000
 batch_size = 128
 display_step = 100
 
@@ -27,6 +32,7 @@ display_step = 100
 n_input = 784  # MNIST data input (img shape: 28*28)
 dropout = 0.75  # Dropout, probability to keep units
 test_dropout = 0.5
+calls = 30
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, n_input])
@@ -91,7 +97,7 @@ init = tf.initialize_all_variables()
 
 
 def test(X, Y):
-    calls = 50
+
     result = np.zeros((calls, len(Y)), dtype=float)
     labels = Y  # np.argmax(Y, axis=1)
     Y = np.reshape(Y, (len(Y), 1)) / 10 - 0.5
@@ -103,8 +109,8 @@ def test(X, Y):
         result[i] = res[:, 0]
         # print(np.sum(np.argmax(res, axis=1) == labels) * 1.0 / len(res))
     #variance = np.std(result, axis=0)#
-    # variance = np.percentile(result, 75, axis=0) - np.percentile(result, 25, axis=0)
-    variance = np.max(result, axis=0) - np.min(result, axis=0)
+    variance = np.percentile(result, 75, axis=0) - np.percentile(result, 25, axis=0)
+    # variance = np.max(result, axis=0) - np.min(result, axis=0)
     result = np.mean(result, axis=0)
     variance = np.mean(variance)
     preds = np.round(result * 10 + 5)
@@ -115,52 +121,72 @@ def test(X, Y):
 # Launch the graph
 with tf.Session() as sess:
     sess.run(init)
+    iters = []
+    accuracies = []
+
     step = 1
     trainSet = {0, 2, 4, 6, 8}
+    start = time.time()
     # Keep training until reach max iterations
     while step * batch_size < training_iters:
         batch_x, batch_y = mnist.train.next_batch(batch_size)
-        filter = np.array(map(lambda x: x in trainSet, batch_y))
+        # filter = np.array(map(lambda x: x in trainSet, batch_y))
+        filter = np.array(map(lambda x: x / 10.0 > random(), batch_y))
         batch_x, batch_y = batch_x[filter], batch_y[filter]
         batch_y = np.reshape(batch_y, (len(batch_y), 1)) / 10.0 - 0.5
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y,
                                        keep_prob: dropout})
         if step % display_step == 0:
             # Calculate batch loss and accuracy
-            loss, acc, p, r, c = sess.run([cost, accuracy, pred, rounded, correct_pred], feed_dict={x: batch_x,
-                                                                                                    y: batch_y,
-                                                                                                    keep_prob: 1.0})
+            loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.0})
+            iters.append(step * batch_size)
+            accuracies.append(acc)
             print("Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
                   "{:.6f}".format(loss) + ", Training Accuracy= " + \
                   "{:.5f}".format(acc))
         step += 1
-    print("Optimization Finished!")
+    elapsed = (time.time() - start)
+    print("Optimization Finished in %f"%elapsed)
+    plt.plot(iters, accuracies)
+    plt.show()
 
     all_images = np.array(mnist.test.images)
     all_labels = np.array(mnist.test.labels)
     results = []
+    accs = []
+    certs = []
+    start_test = time.time()
     var_known = 0
     var_unknown = 0
     for label in range(0, 10):
         filter = np.array(map(lambda x: x == label, all_labels))
         X, Y = all_images[filter], all_labels[filter]
-        accuracy, certainty = test(X, Y)
+        acc, certainty = test(X, Y)
+        accs.append(acc)
+        certs.append(certainty)
         results.append((label, certainty))
         if label in trainSet:
             var_known +=certainty
         else:
             var_unknown+=certainty
 
-        print("label: " + str(label) + ", accuracy: " + "{:.6f}".format(accuracy) + ", certainty: ""{:.6f}".format(
+        print("label: " + str(label) + ", accuracy: " + "{:.6f}".format(acc) + ", certainty: ""{:.6f}".format(
             certainty))
+    elapsed_test = (time.time() - start_test)
+    print("Testing Finished in %f" % elapsed_test)
+
     res = sorted(results, key=lambda tup: tup[1])
     for r in res:
         print("label " + str(r[0]) + ": " + str(r[1]))
 
     print("ratio: " +str(1.0*var_unknown/var_known))
+    print("regression :" + str(np.corrcoef(accs, certs)[0, 1]))
+    print("regression without 0:" + str(np.corrcoef(accs[1:], certs[1:])[0, 1]))
 
+    plt.scatter(accs, certs)
+    plt.show()
 
-            # acc = sess.run(accuracy, feed_dict={x: mnist.test.images,
-    #                               y: np.reshape(mnist.test.labels, (len(mnist.test.labels), 1)) / 10.0 - 0.5,
-    #                               keep_prob: 1.0})
-    # print("Testing Accuracy:", "{:.6f}".format(acc))
+    acc = sess.run(accuracy, feed_dict={x: mnist.test.images,
+                          y: np.reshape(mnist.test.labels, (len(mnist.test.labels), 1)) / 10.0 - 0.5,
+                          keep_prob: 1.0})
+    print("Testing Accuracy:", "{:.6f}".format(acc))

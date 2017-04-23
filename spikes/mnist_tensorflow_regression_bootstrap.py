@@ -16,12 +16,16 @@ from tensorflow.contrib.distributions.python.ops.sample_stats import percentile
 from tensorflow.python.client import timeline
 from random import random
 from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+import sys
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets("/tmp/data/")
 
+def str2bool(v):
+  return v.lower() in ("True", "yes", "true", "t", "1")
 # Parameters
 
 training_iters = 1000000
@@ -30,8 +34,20 @@ display_step = 100
 
 # Network Parameters
 n_input = 784  # MNIST data input (img shape: 28*28)
-subnets = 10
+subnets = 5
 inclusion_prob = 1
+groups = False
+show_charts = True
+if __name__ == "__main__":
+    if len(sys.argv) >1:
+        subnets = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        inclusion_prob = float(sys.argv[2])
+    if len(sys.argv) > 3:
+        groups = str2bool(sys.argv[3])
+    if len(sys.argv) > 4:
+        show_charts = str2bool(sys.argv[4])
+
 
 learning_rate = 0.005 / (subnets * inclusion_prob)
 
@@ -130,22 +146,23 @@ def test(X, Y):
 # Launch the graph
 with tf.Session() as sess:
     sess.run(init)
-
-    # run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE) # FULL_TRACE
-    # run_metadata = tf.RunMetadata()
-
+    iters = []
+    accuracies = []
     step = 1
     trainSet = {0, 2, 4, 6, 8}
     # Keep training until reach max iterations
     start = time.time()
     while step * batch_size < training_iters:
         batch_x, batch_y = mnist.train.next_batch(batch_size)
-        # filter = np.array(map(lambda x: x in trainSet, batch_y))
-        filter = np.array(map(lambda x: x/10.0 > random(), batch_y))
+        if groups:
+            filter = np.array(map(lambda x: x in trainSet, batch_y))
+        else:
+            filter = np.array(map(lambda x: x/10.0 > random(), batch_y))
+
         batch_x, batch_y = batch_x[filter], batch_y[filter]
         batch_y = np.reshape(batch_y, (len(batch_y), 1)) / 10.0 - 0.5
-        m = np.random.binomial(1, inclusion_prob, subnets)
 
+        m = np.random.binomial(1, inclusion_prob, subnets)
         optimizers = []
         for i in range(subnets):
             if m[i]:
@@ -155,19 +172,18 @@ with tf.Session() as sess:
         if step % display_step == 0:
             # Calculate batch loss and accuracy
             m = np.random.binomial(1, 1, subnets)
-            loss, acc, p, r, c = sess.run([cost, accuracy, pred, rounded, correct_pred], feed_dict={x: batch_x,
-                                                                                                    y: batch_y, mask: m})#, run_metadata=run_metadata, options=run_options)
+            loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, mask: m})
+            iters.append(step * batch_size)
+            accuracies.append(acc)
             print("Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
                   "{:.6f}".format(loss) + ", Training Accuracy= " + \
                   "{:.5f}".format(acc))
         step += 1
     elapsed = (time.time() - start)
     print("Optimization Finished in %f"%elapsed)
-    # prof_timeline = timeline.Timeline(run_metadata.step_stats)
-    # prof_ctf = prof_timeline.generate_chrome_trace_format()
-    # with open('/tmp/prof_ctf.json', 'w') as fp:
-    #         print ('Dumped to prof_ctf.json')
-    #         fp.write(prof_ctf)
+    if show_charts:
+        plt.plot(iters, accuracies)
+        plt.show()
 
     all_images = np.array(mnist.test.images)
     all_labels = np.array(mnist.test.labels)
@@ -176,6 +192,7 @@ with tf.Session() as sess:
     var_unknown = 0
     accs = []
     certs = []
+    start_test = time.time()
     for label in range(0, 10):
         filter = np.array(map(lambda x: x == label, all_labels))
         X, Y = all_images[filter], all_labels[filter]
@@ -190,16 +207,27 @@ with tf.Session() as sess:
 
         print("label: " + str(label) + ", accuracy: " + "{:.6f}".format(acc) + ", certainty: ""{:.6f}".format(
             certainty))
+    elapsed_test = (time.time() - start_test)
+    print("Testing Finished in %f" % elapsed_test)
     res = sorted(results, key=lambda tup: tup[1])
     for r in res:
         print("label " + str(r[0]) + ": " + str(r[1]))
 
-    print("ratio: " +str(1.0*var_unknown/var_known))
-    print("regression :" + str(np.corrcoef(accs, certs)[0, 1]))
-    print("regression without 0:" + str(np.corrcoef(accs[1:], certs[1:])[0, 1]))
+    ratio = 1.0*var_unknown/var_known
+    print("ratio: " +str(ratio))
+    reg0 = np.corrcoef(accs, certs)[0, 1]
+    print("regression :" + str(reg0))
+    regNo0 = np.corrcoef(accs[1:], certs[1:])[0, 1]
+    print("regression without 0:" + str(regNo0))
+    if show_charts:
+        plt.scatter(accs, certs)
+        plt.show()
 
     validX = mnist.test.images
     validY = np.reshape(mnist.test.labels, (len(mnist.test.labels), 1)) / 10.0 - 0.5
     acc = sess.run(accuracy, feed_dict={x: validX,
                                           y: validY, mask: np.random.binomial(1, 1, subnets)})
     print("Testing Accuracy:", "{:.6f}".format(acc))
+
+    print("[RESULTS] Training: " + str(elapsed) + " test: " +str(elapsed_test) + " acc: " + str(acc) + " reg0: " + str(reg0) + " regNo0: " + str(regNo0) + " ratio: " + str(ratio))
+
