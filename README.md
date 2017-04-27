@@ -3,10 +3,10 @@ Learing from visual input with VizDoom environment.
 <br>
 See VizDoom page: https://github.com/Marqt/ViZDoom
 
-Dependencies:
-scikit-image
-theano
-lasagne
-tqdm
+Dependencies: <br>
+scikit-image <br>
+theano <br>
+lasagne <br>
+tqdm <br>
 
 

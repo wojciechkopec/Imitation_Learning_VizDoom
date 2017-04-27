@@ -36,7 +36,7 @@ def _create_convolution_layers(available_actions_count, resolution):
 
 class QEstimator:
     def __init__(self, available_actions_count, resolution, create_convolution_layers=None, replay_memory_size=10000,
-                 store_trajectory=True, dumpFileName='out/weights.dump'):
+                 store_trajectory=True, dump_file_name='out/weights.dump'):
         # Q-learning settings
         self.learning_rate = 0.00025
         # learning_rate = 0.0001
@@ -52,7 +52,7 @@ class QEstimator:
                                                                                              resolution,
                                                                                              create_convolution_layers)
         self.memory = ReplayMemory(capacity=self.replay_memory_size, resolution=resolution)
-        self.dumpFileName = dumpFileName
+        self.dump_file_name = dump_file_name
 
     def _create_network(self, available_actions_count, resolution, create_convolution_layers):
         s1, a, q2, r, isterminal, dqn = create_convolution_layers()
@@ -111,10 +111,10 @@ class QEstimator:
             self.learn(s1, q2, a, r, isterminal)
 
     def save(self):
-        pickle.dump(get_all_param_values(self.net), open(self.dumpFileName, "w"))
+        pickle.dump(get_all_param_values(self.net), open(self.dump_file_name, "w"))
 
     def load(self):
-        params = pickle.load(open(self.dumpFileName, "r"))
+        params = pickle.load(open(self.dump_file_name, "r"))
         set_all_param_values(self.net, params)
 
 

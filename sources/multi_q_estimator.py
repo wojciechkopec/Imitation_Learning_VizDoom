@@ -9,7 +9,7 @@ from sources.replay_memory import TransitionStore
 
 class MultiQEstimator:
     def __init__(self, available_actions_count, resolution, K, sampleProb, sharedNetwork=True, replay_memory_size=10000,
-                 store_trajectory=True, dumpFileName='out/weights.dump'):
+                 store_trajectory=True, dump_file_name='out/weights.dump'):
         self.qEstimators = []
         self.K = K
         self.sampleProb = sampleProb
@@ -18,7 +18,7 @@ class MultiQEstimator:
         self.transition_store = TransitionStore(self.discount_factor)
         self.learning = True
         self.available_actions_count = available_actions_count
-        path, name = os.path.split(dumpFileName)
+        path, name = os.path.split(dump_file_name)
         if sharedNetwork:
             convLayers = _create_convolution_layers(available_actions_count, resolution)
             create_conv_layers = lambda: convLayers
