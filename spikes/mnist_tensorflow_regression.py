@@ -229,24 +229,24 @@ if __name__ == "__main__":
         print("[RESULTS] Training: " + str(elapsed) + " test: " + str(elapsed_test) + " acc: " + str(acc) + " reg0: " + str(
             reg0) + " regNo0: " + str(regNo0) + " ratio: " + str(ratio))
 
-    dropouts = [0.25, 0.5, 0.75, 1]
-    test_dropouts = [0.25, 0.5, 0.75]
-    calls = [1, 10, 30, 50, 100]
+    dropouts = [0.75]
+    test_dropouts = [0.75]
+    calls = [30]
 
-    runs = 1
+    runs = 10
     group_tests = []
-    with open('/home/wojtek/data/code/Imitation_Learning_VizDoom/spikes/results/mnist_basic_groups.csv', 'wb') as csvfile:
-        for i in range(10):
+    with open('/home/wojtek/data/code/Imitation_Learning_VizDoom/spikes/results/mnist_basic_uncert.csv', 'wb') as csvfile:
+        for i in range(runs):
             for call in calls:
                 for dropout in dropouts:
                     for test_dropout in test_dropouts:
                         print("Running: " + str(call) + " calls with drops " + str(dropout) + "/" + str(test_dropouts) +"[" + str(runs) + "/" + str(
                             len(calls) * len(dropouts) * len(test_dropouts) * 10) + "]")
-                        elapsed, elapsed_test, acc, reg0, regNo0, ratio = run(dropout, test_dropout, call, True, False)
-                        group_tests.append((dropout, test_dropout, call, elapsed, elapsed_test, acc, ratio))
+                        elapsed, elapsed_test, acc, reg0, regNo0, ratio = run(dropout, test_dropout, call, False, False)
+                        group_tests.append((dropout, test_dropout, call, elapsed, elapsed_test, reg0, regNo0))
                         line = ",".join(map(lambda x: str(x), (
-                            call, dropout, test_dropout, "{:.6f}".format(elapsed), "{:.6f}".format(elapsed_test), "{:.6f}".format(acc),
-                            "{:.6f}".format(ratio)))) + '\n'
+                            call, dropout, test_dropout, "{:.6f}".format(elapsed), "{:.6f}".format(elapsed_test), "{:.6f}".format(reg0),
+                            "{:.6f}".format(regNo0)))) + '\n'
 
                         csvfile.writelines([line])
                         csvfile.flush()

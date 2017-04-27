@@ -31,7 +31,7 @@ mnist = input_data.read_data_sets("/tmp/data/")
 def run(subnets=5, inclusion_prob=1, groups=False, show_charts=True):
     tf.reset_default_graph()
     training_iters = 1000000
-    batch_size = 64
+    batch_size = 128
     display_step = 100
 
     # Network Parameters
@@ -232,22 +232,22 @@ if __name__ == "__main__":
             reg0) + " regNo0: " + str(regNo0) + " ratio: " + str(ratio))
         exit(0)
 
-    n_subnets = [1, 5, 7, 10]
-    probs = [1, 0.75, 0.5, 0.25]
+    n_subnets = [5]
+    probs = [0.75]
 
 
-    runs = 1
+    runs = 10
     group_tests = []
-    with open('/home/wojtek/data/code/Imitation_Learning_VizDoom/spikes/results/mnist_boot_groups2.csv', 'wb') as csvfile:
-        for i in range(10):
+    with open('/home/wojtek/data/code/Imitation_Learning_VizDoom/spikes/results/mnist_boot_uncert.csv', 'wb') as csvfile:
+        for i in range(runs):
             for subnets in n_subnets:
                 for prob in probs:
                     print("Running: " + str(subnets) + " nets with prob " + str(prob) + "[" + str(runs) +"/"+str(len(n_subnets) * len(probs) *10) +"]")
-                    elapsed, elapsed_test, acc, reg0, regNo0, ratio = run(subnets, prob, True, False)
-                    group_tests.append((subnets, probs, elapsed, elapsed_test, acc, ratio))
+                    elapsed, elapsed_test, acc, reg0, regNo0, ratio = run(subnets, prob, False, False)
+                    group_tests.append((subnets, probs, elapsed, elapsed_test, reg0, regNo0))
                     line = ",".join(map(lambda x: str(x), (
-                    subnets, prob, "{:.6f}".format(elapsed), "{:.6f}".format(elapsed_test), "{:.6f}".format(acc),
-                    "{:.6f}".format(ratio)))) + '\n'
+                    subnets, prob, "{:.6f}".format(elapsed), "{:.6f}".format(elapsed_test), "{:.6f}".format(reg0),
+                    "{:.6f}".format(regNo0)))) + '\n'
                     csvfile.writelines([line])
                     csvfile.flush()
                     runs+=1

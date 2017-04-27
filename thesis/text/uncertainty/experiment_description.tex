@@ -2,9 +2,9 @@
 W celu porównania skuteczności Bootstrapa i Dropout w ocenianiu niepewności wyników sieci przeprowadzono prostszy eksperyment na lepiej znanych i kontrolowanych danych. Do eksperymentu wykorzystano zbiór MNIST [REF] zawierający odręcznie pisane cyfry. MNIST jest często używany jako przykładowy zbiór danych, służący do przystępnej prezentacji i porównań metod uczenia maszynowego. Najczęściej wykorzystywany jest w kontekscie klasyfikacji, jednak traktowanie wartości liczbowych cyfr jako etykiet (w przeciwieństwie do stosowanego w klasyfikacji one-hot encoding [REF]) w oczywisty sposób prezentuje problem regresji.    
 
 \subsection{Eksperyment}
-W ramach eksperymentów uczono sieć neuronową na niezbalansowanych zbiorach danych bazującym na MNIST. Dobrane dystrybucje przykładów o konkretnych etykietach w danych uczących mają pokazać, jak poszczególne techniki zachowują się wobec zupełnie nieznanych danych i mało znanych danych. Zbiór danych mnist składa się z 60 tysięcy przykładów uczących i 10 tysięcy przykładów treningowych. KAżdy obrazek przedstawia jedną czarno-białą cyfrę i ma rozmiar 28x28 pikseli. W eksperymencie etykiety zostały przeprasformowane liniowo z przedziału $[0,9]$ do $[-0.5,0.5]$ 
+W ramach eksperymentów uczono sieć neuronową na niezbalansowanych zbiorach danych bazującym na MNIST. Dobrane dystrybucje przykładów o konkretnych etykietach w danych uczących mają pokazać, jak poszczególne techniki zachowują się wobec zupełnie nieznanych danych i mało znanych danych. Zbiór danych mnist składa się z 60 tysięcy przykładów uczących i 10 tysięcy przykładów treningowych. KAżdy obrazek przedstawia jedną czarno-białą cyfrę i ma rozmiar 28x28 pikseli. W eksperymencie etykiety zostały przeprasformowane liniowo z przedziału $[0,9]$ do $[-0.5,0.5]$.
 
-Pierwszy, prostszy, eksperyment posłużył również do znalezienia optymalnych parametrów obu metod. Drugi eksperyment został przeprowadzony z wykorzystaniem znalezionych wcześniej parametrów.
+Pierwszy, prostszy, eksperyment posłużył również do znalezienia optymalnych parametrów obu metod. Drugi eksperyment został przeprowadzony z wykorzystaniem znalezionych wcześniej parametrów. Każdy z eksperymentów został powtórzony 10 razy.
 
 \subsubsection{Rozpoznawanie nieznanych danych}
 Zachowanie wobec nieznanych danych zbadano ucząc sięć neuronową wyłącznie na przykładach parzystych cyfr. W wynikowej klasyfikacji stopień niepewności zwracanych wyników powinien być znacznie wyższy dla cyfr nieparzystych niż parzystych.
@@ -27,12 +27,12 @@ Za miarę niepewności przyjęto rozstęp międzykwartylowy próbek uzyskanych z
 
 \subsubsection{Rozpoznawanie nieznanych danych}
 Liczba znanych i nieznanych etykiet w zbiorze tekstowym jest równa, dlatego za miarę jakości rozdziału danych znanych i nieznanych przyjęto stosunek sumy średnich niepewności dla kolejnych nieznanych etykiet do sumy niepewności dla kolejnych znanych etykiet. Wartości bliskie 1 oznaczają brak rozdziału danych. W eskperymentach wynikowe miary nie przekraczały wartości 2.
-\[ quality = \frac{\sum_{l \in \{unknown\}} \overline{unc_{l}}}{\sum_{l \in \{known\}} \overline{unc_{l}}}\]
+\[ quality_{ND} = \frac{\sum_{l \in \{unknown\}} \overline{unc_{l}}}{\sum_{l \in \{known\}} \overline{unc_{l}}}\]
 
 \subsubsection{Ocena stopnia pewności wyników }
-Niepewność powinna być odwrotnie proporcjonalna do trafności klasyfikacji, dlatego za miarę jakości oceny niepewności wyników przyjęto wartość absolutną współczynnika korelacji pomiędzy średnią niepewnością a średnią trafnością klasyfikacji dla kolejnych etykiet.
+Niepewność powinna być odwrotnie proporcjonalna do trafności klasyfikacji, dlatego za miarę jakości oceny niepewności wyników przyjęto wartość absolutną współczynnika korelacji pomiędzy średnią niepewnością a średnią trafnością klasyfikacji dla kolejnych etykiet. Użyta we właściwym eksperymencie współczynnik regresji jest liczony dla etykiet od 1 do 9, ponieważ zerowa trafność dla etykiety 0 jest wspólna dla obu metod i wyraźnie zaburza wyraźnie liniową zależność reszty.
 
-\[ quality = |r_{unc\ acc}|\]
+\[ quality_{OP} = |r_{unc\ acc}|\]
 
 \subsection{Dropout - konfiguracja}
 Dropout został dodany pomiędzy ostatnią warstwą konwolucyjną sieci a pierwszą w pełni połączoną oraz pomiędzy obiema w pełni połączonymi warstwami.
