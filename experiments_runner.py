@@ -58,7 +58,7 @@ def run(agentName, config, iterations, agents):
         sumFromAllRuns += totalSum
         print "Finished iteration %d in %.2fs with score %.3f" % (i, (end - start), totalSum)
         print "%.2fs elapsed, average score for agent %s so far: %.3f" % (
-        end - startTime, agentName, sumFromAllRuns / (i + 1))
+        end - startTime, agentName, sumFromAllRuns / i)
     resultsFile.close()
     resultsSumsFile.close()
     print "Finished %d runs for agent %s with score %.3f" % (iterations, agentName, sumFromAllRuns / iterations)
@@ -110,7 +110,7 @@ class ExperimentsRunner:
             a = randint(0, len(self.actions) - 1)
         else:
             # Choose the best action according to the network.
-            a = self.q_estimator.get_best_action(s1)[0]
+            (a, uncert) = self.q_estimator.get_best_action(s1)
         reward = self.game.make_action(self.actions[a], self.config.frame_repeat)
 
         isterminal = self.game.is_episode_finished()
@@ -135,7 +135,6 @@ class ExperimentsRunner:
 
     def run(self):
         print "Starting the training!"
-
         time_start = time()
         train_results = []
         test_results = []
@@ -205,6 +204,7 @@ class ExperimentsRunner:
         print "Training scores: ", train_results
         print "Test scores: ", test_results
         print "Certainties: ", certainties
+        self.q_estimator.cleanup()
         return test_results
 
     def play(self, q_estimator):
