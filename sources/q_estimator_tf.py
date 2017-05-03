@@ -108,7 +108,7 @@ class QEstimator:
 
         # Get a random minibatch from the replay memory and learns from it.
         if self.memory.size > self.batch_size:
-            s1, a, s2, isterminal, r, q2, mask = self.memory.get_sample(self.batch_size)
+            s1, a, s2, isterminal, r, q2 = self.memory.get_sample(self.batch_size)
             q2 = np.fmax(q2, np.max(self.get_q_values(s2), axis=1))
             # the value of q2 is ignored in learn if s2 is terminal
             target_q = self.get_q_values(s1)
