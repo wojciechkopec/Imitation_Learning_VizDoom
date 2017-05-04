@@ -51,9 +51,13 @@ Na wykresach \ref{fig:b_acc_mean}, \ref{fig:d_acc_mean}, \ref{fig:d_acc_mean2}, 
 	\end{floatrow}
 \end{figure}
 
-Na wykresach \ref{fig:b_train_t}, \ref{fig:d_train_t}, \ref{fig:b_test_t}, \ref{fig:b_test_t} przedstawiono czasy treningu i testowania. Na etapie czasu testowania Boostrap wypada znacznie gorzej niż Dropout. 42 sekundy przy 5 głów i prawd=0.75 są 3.5 razy dłuższe od 12 sekund osiąganych przez Dropout na wszystkich parametrach, co jest znacznie większym narzutem niż 20\% deklarowane przez autorów metody.
-Czas testowania ponownie korzystniejszy jest dla Bootstrapa (0.157s), ponad 5 razy mniej niż Dropout (0.84s). Czas testowania jest bardzo istotny w kontekscie Q-learningu, gdzie dla każdej klatki konieczna jest ocena jakości każdego z możliwych ruchów. 
-Powody znacznych różnic czasowych mogą tkwić w szeczółach implementacji obu metod. 
+Na wykresach \ref{fig:b_train_t}, \ref{fig:d_train_t}, \ref{fig:b_test_t}, \ref{fig:d_test_t} przedstawiono czasy treningu i testowania. Na etapie czasu testowania Boostrap wypada znacznie gorzej niż Dropout. 25 sekund dla 5 głów i prawd=0.75 trwa dwa razy dłużej niż 12 sekund osiąganych przez Dropout na wszystkich parametrach, co jest znacznie większym narzutem niż 20\% deklarowane przez autorów metody.
+
+Czas testowania ponownie korzystniejszy jest dla Bootstrapa (0.157s), ponad 5 razy mniej niż Dropout (0.84s). Czas testowania jest bardzo istotny w kontekscie Q-learningu, gdzie dla każdej klatki konieczna jest ocena jakości każdego z możliwych ruchów.
+
+Czas treningu Bootstrapa jest w przybliżeniu liniowo zależny od liczby głów pomnożonych przez prawdopodobieństwo uwzględnienia krotki: $t_{train}  \sim n * p_{incl}$, natomiast czas testu jest w przybliżeniu stały. Czas treningu Dropoutu jest w przybliżeniu stały, natomiast czas testu jest w przybliżeniu liniowo zależny od liczby wywołań $t_{test}  \sim n$.
+ 
+Powody znacznych różnic czasowych mogą tkwić w szczegółach implementacji obu metod. Warto zwrócić uwagę, że dla niektórych zastosowań koszt związany z dodatkowymi obliczeniami może być nieakceptowalny. Natomiast dla zastosowań, dla których koszt działania agenta (czyli koszt zbierania próbek danych) przewyższa koszt działania GPU dłuższy czas działania Bootstrapa może być nieistotny, albo zniwelowany przy wykorzystaniu mocniejszych lub większych zasobów. 
 
 \begin{figure}[H]
 	\begin{floatrow}
@@ -74,10 +78,9 @@ Na podstawie przeprowadzonego eksperymentu za najlepszą konfigurację Bootstrap
 
 \subsection{Niepewność - wyniki eksperymentu z oceną stopnia pewności}
 
-Dla wybranych w poprzednim punkcie parametrów metod współczynnik $quality_{OP}$ dla Bootstrapa wynosi 0.845 przy wariancji 0.06, a dla Dropoutu wynosi 0.925 przy wariancji 0.04.
+Dla liczby głów $n=5$ w Bootstrapie i dla liczby wywołań $n=30$ i prawdopodobieństwach dropoutu $p=0.75$ metod współczynnik $quality_{OP}$ dla Bootstrapa z $p=0.75$ wynosi 0.833 przy wariancji 0.11, dla Bootstrapa z $p=1$ wynosi 0.823 przy wariancji 0.10, a dla Dropoutu wynosi 0.925 przy wariancji 0.04. Trafności klasyfikacji dla Bootstrapa z $p=0.75$ wynosi 0.638 a przy wariancji 0.038, dla Bootstrapa z $p=1$ wynosi 0.623 a przy wariancji 0.036 dla Dropoutu wynosi 0.527 przy wariancji 0.032.
 
 \subsection{Niepewność - wnioski}
-Bootstrap ma wyraźną przewagę na większości czynników. W drugim eksperymencie jego wyniki są nieznacznie gorsze, ale jako że obie metody osiągają bardzo wysoki współczynnik ten współczynnik jest pomijalny. Niestety, długi czas treningu Bootstrapa sprawia, że Dropout nie może być kategorycznie odrzucony.
+Bootstrap ma wyraźną przewagę na większości czynników. W drugim eksperymencie jego wyniki są nieznacznie gorsze, ale jako że obie metody osiągają bardzo wysoki współczynnik, ten współczynnik jest pomijalny. Niestety, długi czas treningu Bootstrapa sprawia, że Dropout nie może być kategorycznie odrzucony. Niewykluczone, że w docelowym rozwiązaniu gorsze wyniki Dropoutu będą niezauważalne, natomiast zwiększony czas obliczeń będzie niakceptowalny.
 
-
-
+Najważniejszym wnioskiem jest natomiast obserwacja, że obie metody bardzo skutecznie estymują stopień niepewności.
