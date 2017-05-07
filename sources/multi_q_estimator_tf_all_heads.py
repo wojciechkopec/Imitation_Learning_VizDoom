@@ -11,13 +11,13 @@ from lasagne.updates import rmsprop
 import theano
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib.distributions.python.ops.sample_stats import percentile
+
 from sources.replay_memory import ReplayMemory
 from sources.replay_memory import TransitionStore
 
 
 class QEstimator:
-    def __init__(self, available_actions_count, resolution, subnets=5, incl_prob=0.75, replay_memory_size=10000,
+    def __init__(self, available_actions_count, resolution, subnets=5, replay_memory_size=10000,
                  store_trajectory=True, dump_file_name='out/weights.dump'):
         # Q-learning settings
         self.learning_rate = 0.0001
@@ -30,12 +30,9 @@ class QEstimator:
         # NN learning settings
         self.batch_size = 256
         self.subnets = subnets
-        self.incl_prob = incl_prob
-        tf.reset_default_graph()
         self.session = tf.Session()
-        self.learn, self.get_q_values, self.function_get_best_action, self.function_get_uncertainties = self._create_network(
-            available_actions_count,
-            resolution)
+        self.learn, self.get_q_values, self.function_get_best_action = self._create_network(available_actions_count,
+                                                                                             resolution)
         init = tf.initialize_all_variables()
         self.session.run(init)
         self.memory = ReplayMemory(capacity=self.replay_memory_size, resolution=resolution)
@@ -46,10 +43,7 @@ class QEstimator:
         # Create the input variables
         s1_ = tf.placeholder(tf.float32, [None] + list(resolution) + [1], name="State")
         a_ = tf.placeholder(tf.int32, [None], name="Action")
-        target_qs = []
-        for i in range(self.subnets):
-            target_qs.append(tf.placeholder(tf.float32, [None, available_actions_count], name="TargetQ_" + str(i)))
-
+        target_q_ = tf.placeholder(tf.float32, [None, self.subnets, available_actions_count], name="TargetQ")
 
         # Add 2 convolutional layers with ReLu activation
         conv1 = tf.contrib.layers.convolution2d(s1_, num_outputs=8, kernel_size=[6, 6], stride=[3, 3],
@@ -64,7 +58,7 @@ class QEstimator:
         conv2_flat = tf.contrib.layers.flatten(conv2)
 
         first_dense_nodes = 128
-        q_array = []
+        qs = []
         for net in range(self.subnets):
             fc1 = tf.contrib.layers.fully_connected(conv2_flat, num_outputs=first_dense_nodes, activation_fn=tf.nn.relu,
                                                     weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -73,45 +67,33 @@ class QEstimator:
             q = tf.contrib.layers.fully_connected(fc1, num_outputs=available_actions_count, activation_fn=None,
                                                   weights_initializer=tf.contrib.layers.xavier_initializer(),
                                                   biases_initializer=tf.constant_initializer(0.1))
-            q_array.append(q)
+            qs.append(q)
 
+        qs = tf.stack(qs, axis =1)
 
-        for i in range(self.subnets):
-            loss = tf.losses.mean_squared_error(q_array[i], target_qs[i])
-            optimizer = tf.train.RMSPropOptimizer(self.learning_rate)
-            # Update the parameters according to the computed gradient using RMSProp.
-            train_step = optimizer.minimize(loss, name="Optimizer_" + str(i))
-        q_array = tf.stack(q_array)
-        qs = tf.reduce_mean(q_array, 0)
-        best_a = tf.argmax(qs, 1)
-        uncert = percentile(q_array, 75, 0) - percentile(q_array, 25, 0)
-        uncert = tf.abs(uncert)
+        best_a = tf.argmax(qs, 2)
 
-        def function_learn(s1, target_q, mask):
-            feed_dict = {s1_: s1}
-            optimizers = []
-            for i in range(self.subnets):
-                if mask[i]:
-                    optimizers.append("Optimizer_" + str(i))
-                    feed_dict["TargetQ_" + str(i)+":0"] = target_q[i]
+        loss = tf.contrib.losses.mean_squared_error(qs, target_q_)
 
-            self.session.run(optimizers, feed_dict=feed_dict)
+        optimizer = tf.train.RMSPropOptimizer(self.learning_rate)
+        # Update the parameters according to the computed gradient using RMSProp.
+        train_step = optimizer.minimize(loss)
+
+        def function_learn(s1, target_q):
+            feed_dict = {s1_: s1, target_q_: target_q}
+            l, _ = self.session.run([loss, train_step], feed_dict=feed_dict)
+            return l
 
         def function_get_q_values(state):
-            return self.session.run(q_array, feed_dict={s1_: state})
-
-        def function_get_uncertainties(state):
-            state = state.reshape([1, resolution[0], resolution[1], 1])
-            return self.session.run(uncert, feed_dict={s1_: state})[0]
+            return self.session.run(qs, feed_dict={s1_: state})
 
         def function_get_best_action(state):
-            action_index, uncertainties = self.session.run([best_a, uncert], feed_dict={s1_: state})
-            return action_index[0], uncertainties[0, action_index[0]]
+            return self.session.run(best_a, feed_dict={s1_: state})
 
         def function_simple_get_best_action(state):
-            return function_get_best_action(state.reshape([1, resolution[0], resolution[1], 1]))
+            return function_get_best_action(state.reshape([1, resolution[0], resolution[1], 1]))[0], 1
 
-        return function_learn, function_get_q_values, function_simple_get_best_action, function_get_uncertainties
+        return function_learn, function_get_q_values, function_simple_get_best_action
 
     def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float("-inf")):
         """ Learns from a single transition (making use of replay memory).
@@ -128,37 +110,30 @@ class QEstimator:
 
         # Get a random minibatch from the replay memory and learns from it.
         if self.memory.size > self.batch_size:
-            s1, a, s2, isterminal, r, q2 = self.memory.get_sample(self.batch_size)
-
+            s1, a, s2, isterminal, r, q2, mask = self.memory.get_sample(self.batch_size)
+            # q2 = np.fmax(q2, np.max(self.get_q_values(s2), axis=1))
             # the value of q2 is ignored in learn if s2 is terminal
-            s1_q_values = self.get_q_values(s1)
-            q2 = np.fmax(np.stack([q2 for _ in range(self.subnets)]), np.max(self.get_q_values(s2), axis=2))
+            target_q = self.get_q_values(s1)
+            q2 = np.fmax(np.stack([q2 for _ in range(self.subnets)], axis=1), np.max(self.get_q_values(s2), axis=2))
 
             # target differs from q only for the selected action. The following means:
             # target_Q(s,a) = r + gamma * max Q(s2,_) if isterminal else r
-            mask = np.random.binomial(1, 1, self.subnets)
-            target_qs = []
-            for i in range(self.subnets):
-                if mask[i]:
-                        target_q = s1_q_values[i]
-                        target_q[np.arange(target_q.shape[0]), a] = r + self.discount_factor * (1 - isterminal) * q2[i]
-                        target_qs.append(target_q)
-                else:
-                    target_qs.append([])
-            self.learn(s1, target_qs, mask)
+
+            for ind in range(self.batch_size):
+                target_q[ind, mask[ind], a[ind]] = r[ind] + self.discount_factor * (1 - isterminal[ind]) * q2[ind,mask[ind]]
+
+            #indices = np.arange(target_q.shape[0])
+            #for net in mask[0]:
+            #target_q[indices, mask, a] = r + self.discount_factor * (1 - isterminal) * q2[:, mask]
+            self.learn(s1, target_q)
             if s2_isterminal:
                 self.active_net = randint(0, self.subnets - 1)
 
     def get_best_action(self, state):
-        return self.function_get_best_action(state)
-        # if self.learning:
-        #     return self.get_best_action_learning(state)
-        # else:
-        #     return self.get_best_action_testing(state)
-
-    def get_exploratory_action(self, state):
-        uncertainties = self.function_get_uncertainties(state)
-        return np.argmax(uncertainties)
+        if self.learning:
+            return self.get_best_action_learning(state)
+        else:
+            return self.get_best_action_testing(state)
 
     def get_best_action_learning(self, state):
         (dist, currentEstAction) = self._get_best_actions_dist(state)

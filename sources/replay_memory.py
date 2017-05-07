@@ -3,7 +3,7 @@ from random import sample, randint, random
 
 
 class ReplayMemory:
-    def __init__(self, capacity, resolution, subnets=10):
+    def __init__(self, capacity, resolution):
         state_shape = (capacity, resolution[0], resolution[1], 1)
         self.s1 = np.zeros(state_shape, dtype=np.float32)
         self.s2 = np.zeros(state_shape, dtype=np.float32)
@@ -12,7 +12,6 @@ class ReplayMemory:
         self.isterminal = np.zeros(capacity, dtype=np.bool_)
         self.expectedQValue = np.zeros(capacity, dtype=np.float32)
 
-        self.subnets = subnets
         self.capacity = capacity
         self.size = 0
         self.pos = 0

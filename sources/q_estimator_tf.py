@@ -48,13 +48,15 @@ class QEstimator:
         self.store_trajectory = store_trajectory
         self.transition_store = TransitionStore(self.discount_factor)
         self.replay_memory_size = replay_memory_size
+        self.available_actions_count = available_actions_count
         # NN learning settings
         self.batch_size = 64
         if create_convolution_layers == None:
             create_convolution_layers = lambda: _create_convolution_layers(available_actions_count, resolution)
-        self.session, self.learn, self.get_q_values, self.get_best_action = self._create_network(available_actions_count,
-                                                                                             resolution,
-                                                                                             create_convolution_layers)
+        self.session, self.learn, self.get_q_values, self.get_best_action = self._create_network(
+            available_actions_count,
+            resolution,
+            create_convolution_layers)
         self.memory = ReplayMemory(capacity=self.replay_memory_size, resolution=resolution)
         self.dump_file_name = dump_file_name
 

@@ -50,11 +50,14 @@ def run(agentName, config, iterations, agents):
         results = ExperimentsRunner(agentName, config, agents[agentName], dir_name).run()
         end = time()
         totalSum = sum(results)
-        resultsFile.writelines([str(i) + " " + " ".join(map(str, results)).replace(".", ",") + "\n"])
+
+        resultsFile.writelines([str(i) + " " + " ".join(map(str, results)) + "\n"])
         resultsSumsFile.writelines(
-            [str(i) + " " + (str(totalSum) + " " + str(end - startTime)).replace(".", ",") + "\n"])
+            [str(i) + " " + (str(totalSum) + " " + str(end - startTime)) + "\n"])
         resultsFile.flush()
         resultsSumsFile.flush()
+
+
         sumFromAllRuns += totalSum
         print "Finished iteration %d in %.2fs with score %.3f" % (i, (end - start), totalSum)
         print "%.2fs elapsed, average score for agent %s so far: %.3f" % (
@@ -75,6 +78,7 @@ class ExperimentsRunner:
         self.n = self.game.get_available_buttons_size()
         self.actions = [list(a) for a in it.product([0, 1], repeat=self.n)]
         self.q_estimator = agent(self.actions, config, directory_path + "/weights.dump")
+        self.episode_state = {'explore': False}
 
     # Converts and downsamples the input image
     def preprocess(self, img):
@@ -105,15 +109,23 @@ class ExperimentsRunner:
         s1 = self.preprocess(self.game.get_state().screen_buffer)
 
         # With probability eps make a random action.
-        eps = exploration_rate(epoch)
-        if random() <= eps:
-            a = randint(0, len(self.actions) - 1)
+        if self.config.explore_whole_episode:
+            explore = self.episode_state['explore']
+        else:
+            eps = exploration_rate(epoch)
+            explore = random() <= eps
+        if explore:
+            a = self.q_estimator.get_exploratory_action(s1)
         else:
             # Choose the best action according to the network.
             (a, uncert) = self.q_estimator.get_best_action(s1)
         reward = self.game.make_action(self.actions[a], self.config.frame_repeat)
 
         isterminal = self.game.is_episode_finished()
+        if isterminal:
+            eps = exploration_rate(epoch)
+            self.episode_state['explore'] = random() <= eps
+
         s2 = self.preprocess(self.game.get_state().screen_buffer) if not isterminal else None
 
         self.q_estimator.learn_from_transition(s1, a, s2, isterminal, reward)
@@ -192,7 +204,7 @@ class ExperimentsRunner:
             print "Total elapsed time: %.2f minutes" % ((time() - time_start) / 60.0)
 
         self.game.close()
-        if self.config.playAgent:
+        if self.config.play_agent:
             print "======================================"
             print "Training finished. It's time to watch!"
             self.q_estimator.load()
