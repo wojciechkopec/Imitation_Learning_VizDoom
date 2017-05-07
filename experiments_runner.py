@@ -92,8 +92,8 @@ class ExperimentsRunner:
 
         def exploration_rate(epoch):
             """# Define exploration rate change over time"""
-            start_eps = 1.0
-            end_eps = 0.1
+            start_eps = self.config.initial_eps
+            end_eps = self.config.dest_eps
             const_eps_epochs = 0.1 * self.config.epochs  # 10% of learning time
             eps_decay_epochs = 0.6 * self.config.epochs  # 60% of learning time
 

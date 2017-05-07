@@ -10,7 +10,9 @@ import os
 class ExperimentConfig:
     def __init__(self, epochs=20, learning_steps_per_epoch=2000, test_episodes_per_epoch=100
                  , frame_repeat=12, resolution=(30, 45), config_file_path="./config/simpler_basic.cfg",
-                 play_agent=False, store_trajectory=False, explore_whole_episode=False):
+                 play_agent=False, store_trajectory=False, explore_whole_episode=False, initial_eps=1, dest_eps=0.1):
+        self.dest_eps = dest_eps
+        self.initial_eps = initial_eps
         self.explore_whole_episode = explore_whole_episode
         self.store_trajectory = store_trajectory
         self.epochs = epochs
@@ -50,8 +52,9 @@ chosenAgent = 'simpleTFAgent'
 # run(chosenAgent, ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=False, config_file_path="./config/basic.cfg", epochs=10), 5, agents)
 # run('simpleTFAgent', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
-run('simpleTFAgent', ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=False,
-                                      config_file_path="./config/defend_the_center.cfg", epochs=10), 1, agents)
+run('simpleTFAgent', ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=True,
+                                      config_file_path="./config/defend_the_center.cfg", epochs=1, initial_eps=0.1), 1,
+    agents)
 # run('bdqnAgentK5p1', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
 # run('bdqnAgentK5p1', ExperimentConfig(playAgent=False,config_file_path="./config/basic.cfg", epochs=20), 10, agents)
