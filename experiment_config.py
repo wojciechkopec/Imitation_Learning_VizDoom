@@ -1,16 +1,25 @@
 __author__ = 'wojtek'
 from sources.q_estimator_tf import QEstimator as tfQEstimator
-from sources.multi_q_estimator_tf import QEstimator as MultiTfQEstimator
+from sources.bootstrap_q_estimator_tf import QEstimator as MultiTfQEstimator
+from sources.dropout_q_estimator_tf import QEstimator as DOTfQEstimator
 from experiments_runner import ExperimentsRunner
 from experiments_runner import run as run
 from experiments_runner import play as play
 import os
+import pickle
+
+
+class ExpertConfig:
+    def __init__(self, feed_memory=[], reward_for_another_action=-1):
+        self.reward_for_another_action = reward_for_another_action
+        self.feed_memory = feed_memory
 
 
 class ExperimentConfig:
     def __init__(self, epochs=20, learning_steps_per_epoch=2000, test_episodes_per_epoch=100
                  , frame_repeat=12, resolution=(30, 45), config_file_path="./config/simpler_basic.cfg",
-                 play_agent=False, store_trajectory=False, explore_whole_episode=False, initial_eps=1, dest_eps=0.1):
+                 play_agent=False, store_trajectory=False, explore_whole_episode=False, initial_eps=1, dest_eps=0.1, expert_config = None):
+        self.expert_config = expert_config
         self.dest_eps = dest_eps
         self.initial_eps = initial_eps
         self.explore_whole_episode = explore_whole_episode
@@ -26,11 +35,24 @@ class ExperimentConfig:
     def get_scenario(self):
         return os.path.basename(self.config_file_path).replace(".cfg", "")
 
+    def jsonable(self):
+        result = self.__dict__.copy()
+        result['expert_config'] = []
+        return result
 
+
+memory = []
+#
+with open('recorder_episode_defend_the_center.pkl', 'rb') as f:
+    memory = pickle.load(f)
 agents = {}
 agents['simpleTFAgent'] = lambda actions, config, dump_file_name: tfQEstimator(len(actions), config.resolution,
-                                                                                dump_file_name=dump_file_name,
-                                                                                store_trajectory=config.store_trajectory)
+                                                                               dump_file_name=dump_file_name,
+                                                                               store_trajectory=config.store_trajectory)
+
+agents['doTFAgent'] = lambda actions, config, dump_file_name: DOTfQEstimator(len(actions), config.resolution, calls=10, dropout=0.9,
+                                                                               dump_file_name=dump_file_name,
+                                                                               store_trajectory=config.store_trajectory)
 
 
 agents['bdqnAgentK5p1'] = lambda actions, config, dump_file_name: MultiTfQEstimator(len(actions), config.resolution,
@@ -46,14 +68,14 @@ agents['bdqnAgentK5p075'] = lambda actions, config, dump_file_name: MultiTfQEsti
                                                                                      store_trajectory=config.store_trajectory)
 
 
-chosenAgent = 'simpleTFAgent'
+chosenAgent = 'bdqnAgentK5p1'
 # run(chosenAgent, ExperimentConfig(playAgent=True,config_file_path="./config/defend_the_center.cfg", epochs=20), 1, agents)
 # run(chosenAgent, ExperimentConfig(playAgent=True,config_file_path="./config/deadly_corridor.cfg", epochs=20), 10, agents)
 # run(chosenAgent, ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=False, config_file_path="./config/basic.cfg", epochs=10), 5, agents)
 # run('simpleTFAgent', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
-run('simpleTFAgent', ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=True,
-                                      config_file_path="./config/defend_the_center.cfg", epochs=1, initial_eps=0.1), 1,
+run('simpleTFAgent', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=True, resolution=(90, 60),
+                                      config_file_path="./config/defend_the_center.cfg", epochs=2, initial_eps=0.1, expert_config=ExpertConfig(memory, -0.01)), 1,
     agents)
 # run('bdqnAgentK5p1', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)

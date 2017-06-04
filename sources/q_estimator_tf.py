@@ -1,18 +1,8 @@
-import pickle
-
-from theano import tensor
-from lasagne.init import HeUniform, Constant
-from lasagne.layers import Conv2DLayer, InputLayer, DenseLayer, get_output, \
-    get_all_params, get_all_param_values, set_all_param_values
-from lasagne.nonlinearities import rectify
-from lasagne.objectives import squared_error
-from lasagne.updates import rmsprop
-import theano
 import numpy as np
 import tensorflow as tf
-
 from numpy.random import randint
-from sources.replay_memory import ReplayMemory
+
+from sources.replay_memory import ReplayMemory, PerActionReplayMemory
 from sources.replay_memory import TransitionStore
 
 
@@ -53,16 +43,20 @@ class QEstimator:
         self.batch_size = 64
         if create_convolution_layers == None:
             create_convolution_layers = lambda: _create_convolution_layers(available_actions_count, resolution)
-        self.session, self.learn, self.get_q_values, self.get_best_action = self._create_network(
+        self.session, self.learn, self.get_q_values, self.get_best_action, self.learn_actions = self._create_network(
             available_actions_count,
             resolution,
             create_convolution_layers)
-        self.memory = ReplayMemory(capacity=self.replay_memory_size, resolution=resolution)
+        self.memory = ReplayMemory(replay_memory_size, resolution)
         self.dump_file_name = dump_file_name
 
     def _create_network(self, available_actions_count, resolution, create_convolution_layers):
         session, s1, a, q2, dqn = create_convolution_layers()
-        fc1 = tf.contrib.layers.fully_connected(dqn, num_outputs=128, activation_fn=tf.nn.relu,
+        fc1 = tf.contrib.layers.fully_connected(dqn, num_outputs=256, activation_fn=tf.nn.relu,
+                                                weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                                biases_initializer=tf.constant_initializer(0.1))
+
+        fc1 = tf.contrib.layers.fully_connected(fc1, num_outputs=128, activation_fn=tf.nn.relu,
                                                 weights_initializer=tf.contrib.layers.xavier_initializer(),
                                                 biases_initializer=tf.constant_initializer(0.1))
 
@@ -70,6 +64,17 @@ class QEstimator:
                                               weights_initializer=tf.contrib.layers.xavier_initializer(),
                                               biases_initializer=tf.constant_initializer(0.1))
         best_a = tf.argmax(q, 1)
+
+        chosen_action =tf.one_hot(a, available_actions_count)
+        cross_entropy = tf.reduce_mean(
+            tf.nn.softmax_cross_entropy_with_logits(labels=chosen_action, logits=q))
+
+        actions_optimizer = tf.train.RMSPropOptimizer(self.learning_rate)
+        # Update the parameters according to the computed gradient using RMSProp.
+        actions_train_step = actions_optimizer.minimize(cross_entropy)
+
+        correct_prediction = tf.equal(tf.argmax(q, 1), tf.argmax(chosen_action, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         loss = tf.contrib.losses.mean_squared_error(q, q2)
 
@@ -91,9 +96,14 @@ class QEstimator:
         def function_simple_get_best_action(state):
             return function_get_best_action(state.reshape([1, resolution[0], resolution[1], 1]))
 
+        def function_learn_actions(states, actions):
+            feed_dict = {s1: states, a: actions}
+            e, acc, _ = session.run([cross_entropy, accuracy, actions_train_step], feed_dict=feed_dict)
+            return e, acc
+
         init = tf.global_variables_initializer()
         session.run(init)
-        return session, function_learn, function_get_q_values, function_simple_get_best_action
+        return session, function_learn, function_get_q_values, function_simple_get_best_action, function_learn_actions
 
     def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float("-inf")):
         """ Learns from a single transition (making use of replay memory).
@@ -124,12 +134,11 @@ class QEstimator:
     def get_exploratory_action(self, state):
         return randint(0, self.available_actions_count - 1)
 
-
     def save(self):
         pass
+
     def load(self):
         pass
-
 
     def learning_mode(self):
         pass
