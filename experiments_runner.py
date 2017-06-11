@@ -17,6 +17,13 @@ from sources.replay_memory import PerActionReplayMemory, ReplayMemory
 
 from vizdoom import *
 
+
+# Converts and downsamples the input image
+def preprocessIMG(img, resolution):
+    img = skimage.transform.resize(img, resolution)
+    img = img.astype(np.float32)
+    return img
+
 def play(agentName, config, directory, agents):
     runner = ExperimentsRunner(agentName, config, agents[agentName], directory)
     runner.game.close()
@@ -79,7 +86,7 @@ class ExperimentsRunner:
         self.actions = [list(a) for a in it.product([0, 1], repeat=self.n)]
         self.q_estimator = agent(self.actions, config, directory_path + "/weights.dump")
         expert_config = self.config.expert_config
-        # self.feed_expert_trajectories(expert_config)
+        # self.feed_expert_trajectories2(expert_config)
         self.q_estimator.memory.lock_current_samples()
         self.episode_state = {'explore': False}
 
@@ -103,21 +110,19 @@ class ExperimentsRunner:
             transition = expert_config.feed_memory[t]
             (s1, action, s2, r, isterminal) = transition
             s1 = self.preprocess(s1)
-            memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+            if self.actions.index(action) != 0:
+                memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+                self.q_estimator.memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
 
         print "Learning expert trajectories"
-        for it in trange(int(len(expert_config.feed_memory)/3)):
+        for it in trange(int(len(expert_config.feed_memory)/6)):
             s1, a, _, _, _, _ = memory.get_sample(batch_size)
             e, acc = self.q_estimator.learn_actions(s1, a)
-            if it % 10 == 0:
+            if it % 30 == 0:
                 print e, acc
 
-
-    # Converts and downsamples the input image
     def preprocess(self, img):
-        img = skimage.transform.resize(img, self.config.resolution)
-        img = img.astype(np.float32)
-        return img
+        return preprocessIMG(img, self.config.resolution)
 
     def perform_learning_step(self, epoch):
         """ Makes an action according to eps-greedy policy, observes the result
@@ -169,7 +174,7 @@ class ExperimentsRunner:
         print "Initializing doom..."
         game = DoomGame()
         game.load_config(config_file_path)
-        game.set_window_visible(False)
+        game.set_window_visible(True)
         game.set_mode(Mode.PLAYER)
     	game.set_screen_format(ScreenFormat.GRAY8)
     	game.set_screen_resolution(ScreenResolution.RES_640X480)
@@ -206,7 +211,6 @@ class ExperimentsRunner:
             train_results.append(train_scores.mean())
             print "Results: mean: %.1f±%.1f," % (train_scores.mean(), train_scores.std()), \
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
-            self.feed_expert_trajectories2(self.config.expert_config)
             print "\nTesting..."
             self.q_estimator.testing_mode()
             test_episode = []

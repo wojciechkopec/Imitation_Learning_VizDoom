@@ -2,6 +2,7 @@ __author__ = 'wojtek'
 from sources.q_estimator_tf import QEstimator as tfQEstimator
 from sources.bootstrap_q_estimator_tf import QEstimator as MultiTfQEstimator
 from sources.dropout_q_estimator_tf import QEstimator as DOTfQEstimator
+from sources.actions_estimator_tf import ActionsEstimator
 from experiments_runner import ExperimentsRunner
 from experiments_runner import run as run
 from experiments_runner import play as play
@@ -17,7 +18,7 @@ class ExpertConfig:
 
 class ExperimentConfig:
     def __init__(self, epochs=20, learning_steps_per_epoch=2000, test_episodes_per_epoch=100
-                 , frame_repeat=12, resolution=(30, 45), config_file_path="./config/simpler_basic.cfg",
+                 , frame_repeat=2, resolution=(30, 45), config_file_path="./config/simpler_basic.cfg",
                  play_agent=False, store_trajectory=False, explore_whole_episode=False, initial_eps=1, dest_eps=0.1, expert_config = None):
         self.expert_config = expert_config
         self.dest_eps = dest_eps
@@ -43,12 +44,18 @@ class ExperimentConfig:
 
 memory = []
 #
-with open('recorder_episode_defend_the_center.pkl', 'rb') as f:
+with open('recorder_episode_defend_the_center_4.pkl', 'rb') as f:
     memory = pickle.load(f)
 agents = {}
 agents['simpleTFAgent'] = lambda actions, config, dump_file_name: tfQEstimator(len(actions), config.resolution,
                                                                                dump_file_name=dump_file_name,
                                                                                store_trajectory=config.store_trajectory)
+
+agents['simpleActionsTFAgent'] = lambda actions, config, dump_file_name: ActionsEstimator(actions,
+                                                                                          config.resolution,
+                                                                                          config.expert_config,
+                                                                                          dump_file_name=dump_file_name,
+                                                                                          store_trajectory=config.store_trajectory)
 
 agents['doTFAgent'] = lambda actions, config, dump_file_name: DOTfQEstimator(len(actions), config.resolution, calls=10, dropout=0.9,
                                                                                dump_file_name=dump_file_name,
@@ -74,8 +81,11 @@ chosenAgent = 'bdqnAgentK5p1'
 # run(chosenAgent, ExperimentConfig(store_trajectory=True, explore_whole_episode=True, play_agent=False, config_file_path="./config/basic.cfg", epochs=10), 5, agents)
 # run('simpleTFAgent', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
-run('simpleTFAgent', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=True, resolution=(90, 60),
-                                      config_file_path="./config/defend_the_center.cfg", epochs=2, initial_eps=0.1, expert_config=ExpertConfig(memory, -0.01)), 1,
+run('simpleActionsTFAgent',
+    ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=True, resolution=(90, 60),
+                     config_file_path="./config/defend_the_center.cfg", epochs=0, test_episodes_per_epoch=30,
+                     initial_eps=0.0,
+                     expert_config=ExpertConfig(memory, -0.01)), 1,
     agents)
 # run('bdqnAgentK5p1', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
