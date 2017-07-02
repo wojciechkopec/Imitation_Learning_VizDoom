@@ -1,1 +1,26 @@
-\section{Prezentujący ekspert}
+\section{Świadomie prezentujący Ekspert}\label{presenting_expert}
+W sekcji \ref{behavioral_cloning} opisano agenta tworzącego klasyfikator (stan $\to$ akcja) na podstawie trajektorii zebranych podczas gry Eksperta. Uzyskany agent zachowywał się sensownie, ale problem stanowiło między innymi blokowanie się w rogach labiryntu i wchodzenie na miny. Główną praktyczną wadą metody \ref{dagger}, która miała na celu zaradzenie temu, jest niespójność zachowań Eksperta podczas pierwszej (ciągłej) prezentacji i zachowań podczas krótkich prezentacji podczas gry agenta oraz uciążliwość obserwacji i przejmowania sterowania od agenta w trakcie gry.
+
+Przykładowo, problem wchodzenia w ściany jest łatwo zauważalny podczas obserwacji działania agenta. Oczywistym jest też powód jego występowania - Ekspert, w przeciwnieństwie do agenta, pamięta jak dotarł do danego stanu i znajdując się w rogu pamięta, w którą stronę powinien z niego wychodzić. Badani agenci mogą pamiętać tylko kilka ostatnich klatek i nie pamiętają swoich trajektorii. Dlatego klasyfikator nauczony na trajektoriach Eksperta nie ma wystarczających informacji żeby rozróżnić konieczność wychodzenia z rogu obracając się w prawo bądź w lewo.
+
+Rozwiązaniem jest powtórne zebranie trajektorii Eksperta, kładąc przy prezentacji nacisk na zachowywanie się w sposób spójny i ułatwiający klasyfikatorowi skuteczną naukę. Możliwe jest też pokazywanie podczas sytuacji, które wcześniej sprawiały klasyfikatorowi problem, w celu pokazania poprawnego zachowania w danej sytuacji.
+
+Oczywiście, takie zachowanie Eksperta skutkuje uzyskiwaniem przez niego nieoptymalnych wyników, a co za tym idzie wyniki możliwe do osiągnięcia przez idealnie odwzorowującego agenta też są niższe. W praktyce różnica pomiędzy wynikami Eksperta i agenta powinna się zmniejszyć dzięki świadomej prezentacji, skutkując wyższymi wynikami osiąganymi przez agenta.
+
+\subsection{Techniczna implementacja}
+
+Architektura sieci neuronowej jest identyczna z architekturą zastosowaną w \ref{behavioral_cloning}.
+
+\subsection{Zachowanie}
+Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
+
+W scenariuszu \nameref{scenario_dtc} Ekspert podczas świadomej prezentacji powstrzymywał się od strzelania do odległych przeciwników i świadomie preferował strzelanie do szybszych przeciwników. Świadoma prezentacja zmniejszyłą liczbę niesłusznych strzałów nauczonego agenta.
+
+W scenariuszu \nameref{scenario_hgs} Ekspert podczas świadomej prezentacji zawsze wychodził z rogów obracając się w tę samą stronę i w miarę możliwości odwracał się od tras z minami. Będąc otoczony przez miny wybierał trasę jak najbardziej odległą od nich. Świadoma prezentacja prawie całkowicie wyeliminowała wpadanie w nieskończone pętle ruchów w rogach. W niektórych sytuacjach zdarzało się, że agent zawracał za to w ciasnych, ale możliwych do przejścia korytarzach - było to zachowanie wyraźnie nieoptymalne, ale bez zauważalnego wpływu na osiągane wyniki. Niestety, świadoma prezentacja nie wyeliminowała wchodzenia w miny. Wynik punktowy agenta zwiększył się istotnie po zastosowaniu świadomej prezentacji.
+
+To, jak ważna jest świadoma prezentacja widoczne było przy zwiększaniu wielkości trajektorii Eksperta użytych do nauki klasyfikatora. Dla \nameref{scenario_dtc}, który jest prostszym scenariuszem i dla którego zysk ze świadomej prezentacji był mniej zauważalny, zwiększanie liczby trajektorii uczących prowadziło do wyższych wyników. Dla bardziej skomplikowanego \nameref{scenario_hgs} agent nauczony na podstawie małej liczby trajektorii świadomego Eksperta przewyższał agenta nauczonego na większej liczbie trajektorii nieświadomego Eksperta i agenta nauczonego na mieszance trajektorii. 
+ 
+\subsection{Wnioski}
+
+Dla bardziej skomplikowanych scenariuszy świadoma prezentacja Eksperta jest prostym i bardzo skutecznym sposobem eliminowania części oczywistych błędów popełnianych przez agenta. Dla niektórych problemów i sytuacji może wypełniać zadanie postawione przed \ref{dagger} w wygodniejszy i bardziej naturalny sposób.
+Świadoma prezentacja nie jest formalną metodą, a raczej wytyczną. Dzięki temu można ją z powodzeniem stosować w połączeniu z innymi technikami uczenia z Ekspertem.

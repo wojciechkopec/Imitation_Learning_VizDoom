@@ -1,4 +1,4 @@
-\section{DAgger} 
+\section{DAgger}\label{dagger}
 
 Podejście Agregacji Zbioru Danych (ang. Dataset Aggregation) \cite{DBLP:journals/corr/abs-1011-0686} zostało opisane we wcześniejszym rozdziale. Kluczowym założeniem metody jest odpytywanie Eksperta o właściwe działanie w stanach, które nie były wcześniej przez niego pokazane (i nie należą do ,,poprawnych'' trajektorii), a które zostały odwiedzone przez agenta na skutek jego nieoptymalnego zachowania.
 
@@ -10,7 +10,7 @@ Aby zminimalizować ten problem, konieczne jest określenie mniejszego podzbioru
 \subsection{Implementacja} 
 Zastosowana implementacja jest rozszerzeniem \ref{behavioral_cloning}. Pierwszym krokiem jest załadowane przygotowanych wcześniej trajektorii Eksperta do pamięci agenta (zestawu danych).
 
-Następnie agent rozpoczyna działanie, bazując na swoim aktualnym stanie wiedzy. Po wystąpieniu określonych warunków, definiujących potrzebę odpytania Eksperta, działanie programu zostaje wstrzymane, a sterowanie przekazane jest do Eksperta. Aby dostosować się do ograniczeń ludzkiego Eksperta, po przekazaniu sterowania program przechodzi w tryb synchroniczny - przed każdą kolejną klatką czeka na na reakcję Eksperta. Ubocznym skutkiem tej implementacji jest pomijanie akcji "nic nie rób", która jest wykonywana dopiero po wciśnięciu dedykowanego klawisza.
+Następnie agent rozpoczyna działanie, bazując na swoim aktualnym stanie wiedzy. Po wystąpieniu określonych warunków, definiujących potrzebę odpytania Eksperta, działanie programu zostaje wstrzymane, a sterowanie przekazane jest do Eksperta. Aby dostosować się do ograniczeń ludzkiego Eksperta, po przekazaniu sterowania program przechodzi w tryb synchroniczny - przed każdą kolejną klatką czeka na na reakcję Eksperta. Ubocznym skutkiem tej implementacji jest pomijanie akcji ,,nic nie rób'', która jest wykonywana dopiero po wciśnięciu dedykowanego klawisza.
 
 Po wystąpieniu określonych warunków, definiujących koniec potrzeby odpytywania Eksperta, wszystkie stany i akcje odwiedzone w trakcie danej demonstacji dodawane są do pamięci agenta (trajektoria może być dodana do pamięci z większą wagą niż początkowe prezentacje - w przeciwnym wypadku dodanie nowych danych mogło by nie być odczuwalne). Agent aktualizuje klasyfikator akcji na podstawie noworozszerzonego zestawu danych, po czym przejmuje sterowanie od Eksperta i wraca do normalnego działania bazując na uaktualnionym stanie wiedzy.
 
@@ -44,6 +44,8 @@ Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowa
 Decyzja Eksperta jest najskuteczniejszą metodą i jest używana w dalszych eksperymentach. Ekspert może sam stwierdzić, kiedy działanie agenta jest niezgodne z pożądanym, maksymalizując skuteczność odpytywania Eksperta. Oczywiście, Ekspert musi spędzić więcej czasu obserwując działanie agenta, ale obserwacja jest dużo mniej uciążliwa (a zatem tańsza), niż działanie. Problemem w niektórych sytacjach jest możliwość rozróżnienia, kiedy agent zachowa się niepożądanie i należałoby przejąć sterowanie - w wielu sytuacjach Ekspert reaguje zbyt późno, żeby demonstracja była skuteczna.
 
 \subsection{Techniczna implementacja}
+
+Architektura sieci neuronowej jest identyczna z architekturą zastosowaną w \ref{behavioral_cloning}.
 
 Implementacja przekazywania sterowania do Eksperta w środowisku VizDoom byłaby wymagająca i czasochłonna, dlatego zastosowano znacznie prostsze, chociaż mniej eleganckie rozwiązanie.
 
@@ -82,7 +84,7 @@ W tym celu wykorzystano bibliotekę PyKeyboardEvent, która umożliwia reagowani
 
 \begin{lstlisting}[language=iPython]
 from __future__ import print_function
-from pykeyboard import PyKeyboardEvent
+from pykeyboard import PyKeyboardEventwojciech_kopec_101675.pdf
 
 
 class KeyMonitor(PyKeyboardEvent):
@@ -113,3 +115,20 @@ Wywoływana funkcja znajduje się poniżej. Klawisz 'p' przekazuje sterowanie po
             print ("Framerate: " + str(self.framerate))
         return True
 \end{lstlisting}
+
+\subsection{Zachowanie}
+Eksperymenty były prowadzone na przede wszystkim na scenariuszu \nameref{scenario_hgs}. Początkowe trajektorie Eksperta były wygenerowane zgodnie z \ref{presenting_expert}.
+
+Dla każdego z badanych scenariuszy uwzględnianie fragmentów trajektorii zaprezentowanych przez Eksperta w trakcie gry obniża początkowo wyniki. Na skutek nauczenia się niespójnych zachowań Eksperta agent zachowuje się mniej płynnie i częściej wpada w nieskończone pętle ruchów (przykładowo obracanie się naprzemian w lewo i w prawo w rogu labiryntu).
+
+W scenariuszu \nameref{scenario_hgs} głównym problemem agenta \ref{behavioral_cloning} jest nieomijanie min i celem DAggera jest wyeliminowanie tego problemu. Za każdym razem, kiedy agent zbliża się do min Ekspert przejmuje kontrolę i omija miny bądź wybiera inną ścieżkę. Pary (stan $\to$ akcja) uzsykane w ten sposób są dodawane do pamięci dziesięciokrotnie.
+
+Podczas pierwszych epizodów nauki wyniki uzyskiwane przez agenta zauważalnie się obniżają, a problem wchodzenia na miny nie jest wyeliminowany.
+
+Następne epizody nauki powoli poprawiają wyniki agenta, przywracając je do poziomu wyjściowego lub nieznacznie go przewyższającego. Agent rzadziej wchodzi w miny, ale problem w dalszym ciągu jest obecny.
+
+Kolejne epizody nauki doprowadzają do przeuczenia - wyniki obniżąją się, a agent regularnie wpada w nieskończone pętle ruchów. Wchodzenie w miny nie jest wyelimininowane. Pogorszenie zachowania agenta może wynikać ze znużenia Eksperta, a co za tym idzie pogorszenia i zmiany jego zachowań.
+
+\subsection{Wnioski}
+Dla wypróbowanych problemów DAgger nie wydaje się być skuteczny. W VizDoomie decyzje podejmowane przez ludzkiego Eksperta są bardziej skomplikowane niż w Mario Cart, przedstawianym w publikacji, co zamiast do podwyższenia wyników agenta prowadzi do obniżania jego skuteczności na skutek niespójności prezentowanych danych. Zastosowane głębokie sieci neuronowe mogą też znacznie skuteczniej uogólniać wiedzę zdobytą podczas pierwszej prezentacji Eksperta niż prostsze klasyfikatory SVM, a co za tym idzie nawet bez użycia DAggera agent potrafi znaleźć sensowne wyjście z większości sytuacji. Uzyskiwanie oceny Eksperta jest uciążliwe i kosztowne.
+
