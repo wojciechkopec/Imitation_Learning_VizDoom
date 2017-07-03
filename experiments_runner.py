@@ -144,6 +144,7 @@ class ExperimentsRunner:
             else:
                 return end_eps
 
+        print("Game variables: ", self.game.get_state().game_variables)
         s1 = self.preprocess(self.game.get_state().screen_buffer)
 
         # With probability eps make a random action.

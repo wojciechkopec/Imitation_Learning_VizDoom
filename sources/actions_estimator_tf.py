@@ -3,10 +3,14 @@ import tensorflow as tf
 from numpy.random import randint
 import sys, tty, termios
 from tqdm import trange
+from key_monitor import KeyMonitor
 
 from sources.replay_memory import ReplayMemory, PerActionReplayMemory
 from sources.replay_memory import TransitionStore
 from experiments_runner import preprocessIMG
+import pickle
+import threading
+import time
 
 
 def _create_convolution_layers(available_actions_count, resolution):
@@ -53,7 +57,7 @@ class ActionsEstimator:
             len(actions),
             resolution,
             create_convolution_layers)
-        self.memory = PerActionReplayMemory(len(expert_config.feed_memory)* 2, resolution,
+        self.memory = PerActionReplayMemory(10000, resolution,
                                             len(actions),
                                             [0, 1, 1, 1, 1, 1, 1, 1, 1])
         # self.memory = ReplayMemory(len(expert_config.feed_memory)* 2, resolution)
@@ -64,6 +68,11 @@ class ActionsEstimator:
         self.testing= True
         self.store_expert_trajectories(expert_config, self.memory)
         self.learn_all()
+        key_handler = lambda key,press: self.__toggle_user_input(key) if press else False
+        # KeyMonitor('p', key_handler).run()
+        self.keys_thread = threading.Thread(target=KeyMonitor(['p', '.', ','], key_handler).run)
+        self.keys_thread.start()
+        self.framerate = 20
 
     def _create_network(self, available_actions_count, resolution, create_convolution_layers):
         session, s1, a, q2, dqn = create_convolution_layers()
@@ -116,26 +125,32 @@ class ActionsEstimator:
                     self.uncertain_actions_count += 1
                 else:
                     self.uncertain_actions_count = 0
-
-                if self.uncertain_actions_count > 1 and not self.expert_mode:
-                    print ("Quering expert!")
-                    self.expert_mode = True
-                    self.uncertain_actions_count = 0
+                # if randint(100) >= 95 and not self.expert_mode:
+                # if self.uncertain_actions_count > 1 and not self.expert_mode:
+                #     print ("Quering expert!")
+                #     self.expert_mode = True
+                #     self.uncertain_actions_count = 0
 
                 if self.expert_mode:
-                    expert_a = a #self.get_action()
-
-                    if expert_a == a:
+                    print "Model would do " + str(self.actions[a])
+                    expert_a = self.get_expert_action()
+                    print "Expert would do " + str(self.actions[expert_a])
+                    # if expert_a == a:
+                    if True:
                         self.certain_actions_count += 1
                         print (str(self.certain_actions_count) + " actions matching")
                     else:
                         self.certain_actions_count = 0
 
+
                     a = expert_a
-                    if self.certain_actions_count > 20:
-                        self.expert_mode = False
-                        self.uncertain_actions_count = 0
-                        self.certain_actions_count = 0
+
+                    # if self.certain_actions_count > 20:
+                    #     self.expert_mode = False
+                    #     self.uncertain_actions_count = 0
+                    #     self.certain_actions_count = 0
+                else:
+                    time.sleep(1.0/self.framerate)
 
             return (a, uncertainty)
 
@@ -153,13 +168,10 @@ class ActionsEstimator:
 
     def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float("-inf")):
         if self.expert_mode:
-            self.memory.add_transition(s1, a, s2, s2_isterminal, r, q2)
+            for i in range(10):
+                self.memory.add_transition(s1, a, s2, s2_isterminal, r, q2)
         if s2_isterminal:
             self.expert_mode = False
-        # Get a random minibatch from the replay memory and learns from it.
-        # if self.memory.size > self.batch_size:
-        #     s1, a, s2, isterminal, r, q2 = self.memory.get_sample(self.batch_size)
-        #     self.learn_actions(s1, a)
 
     def get_exploratory_action(self, state):
         return randint(0, self.available_actions_count - 1)
@@ -180,7 +192,7 @@ class ActionsEstimator:
     def cleanup(self):
         pass
 
-    def get_action(self):
+    def get_expert_action(self):
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
         try:
@@ -194,16 +206,31 @@ class ActionsEstimator:
             return 2
         if move == 'a':
             return 1
+
+        if move == 'i':
+            return 1
+        if move == 'u':
+            return 5
+        if move == 'o':
+            return 3
         return 0
 
     def store_expert_trajectories(self, expert_config, memory):
         print "Decoding expert trajectories"
-        for t in trange(len(expert_config.feed_memory)):
-            transition = expert_config.feed_memory[t]
-            (s1, action, s2, r, isterminal) = transition
-            s1 = preprocessIMG(s1, self.resolution)
-            if self.actions.index(action) != 0:
-                memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+
+        for filepath in expert_config.feed_memory:
+            with open(filepath, 'rb') as f:
+                trajectories =  pickle.load(f)
+
+                for t in trange(len(trajectories)):
+                    transition = trajectories[t]
+                    (s1, action, s2, r, isterminal) = transition
+                    s1 = preprocessIMG(s1, self.resolution)
+                    if self.actions.index(action) != 0:
+                        memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+                    # if isterminal:
+                    #     break
+                del trajectories
 
     def learn_all(self):
         print "Learning expert trajectories (" + str(self.memory.size) + " frames)"
@@ -215,3 +242,17 @@ class ActionsEstimator:
                 print e, acc
             if acc > 0.95:
                 break
+
+    def __toggle_user_input(self, character):
+        if character == 'p':
+            if self.expert_mode:
+                self.learn_all()
+            self.expert_mode = not self.expert_mode
+            print ("Expert toggled: " + str(self.expert_mode))
+        elif character == '.':
+            self.framerate+=5
+            print ("Framerate: " + str(self.framerate))
+        elif character == ',':
+            self.framerate -= 5
+            print ("Framerate: " + str(self.framerate))
+        return True

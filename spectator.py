@@ -26,14 +26,15 @@ game = DoomGame()
 # game.load_config("../../scenarios/simpler_basic.cfg")
 # game.load_config("../../scenarios/rocket_basic.cfg")
 # game.load_config("config/deadly_corridor.cfg")
-#game.load_config("../../scenarios/deathmatch.cfg")
-game.load_config("config/defend_the_center.cfg")
+game.load_config("config/basic.cfg")
+# game.load_config("config/deathmatch.cfg")
+# game.load_config("config/defend_the_center.cfg")
 # game.load_config("config/cig.cfg")
 #game.load_config("../../scenarios/defend_the_line.cfg")
-#game.load_config("../../scenarios/health_gathering.cfg")
-# game.load_config("../../scenarios/my_way_home.cfg")
-#game.load_config("../../scenarios/predict_position.cfg")
-#game.load_config("../../scenarios/take_cover.cfg")
+# game.load_config("config/health_gathering.cfg")
+# game.load_config("config/my_way_home.cfg")
+# game.load_config("config/predict_position.cfg")
+# game.load_config("config/take_cover.cfg")
 
 
 # Enables freelook in engine
@@ -43,12 +44,12 @@ game.set_screen_resolution(ScreenResolution.RES_640X480)
 
 # Enables spectator mode, so you can play. Sounds strange but it is the agent who is supposed to watch not you.
 game.set_window_visible(True)
-game.set_mode(Mode.PLAYER)
+game.set_mode(Mode.SPECTATOR)
 game.set_screen_format(ScreenFormat.GRAY8)
 memory = []
 game.init()
 
-episodes = 3
+episodes = 2
 
 
 def get_action():
@@ -75,9 +76,9 @@ for i in range(episodes):
     while not game.is_episode_finished():
         state = game.get_state()
 
-        game.set_action(get_action())
-        for i in range(4):
-            game.advance_action()
+        # game.set_action(get_action())
+        # for i in range(4):
+        game.advance_action()
         next_state = game.get_state()
         last_action = game.get_last_action()
         reward = game.get_last_reward()

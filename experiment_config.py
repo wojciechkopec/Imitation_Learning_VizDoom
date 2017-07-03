@@ -42,10 +42,17 @@ class ExperimentConfig:
         return result
 
 
-memory = []
+# memory = ['recorder_episode_defend_the_center_4.pkl','recorder_episode_defend_the_center_3.pkl','recorder_episode_defend_the_center_2.pkl']
+# memory = ['recorder_episode_health_gathering_couch_2_1.pkl']
+memory = ['recorder_episode_health_gathering_2.pkl']
 #
-with open('recorder_episode_defend_the_center_4.pkl', 'rb') as f:
-    memory = pickle.load(f)
+# with open('recorder_episode_defend_the_center_4.pkl', 'rb') as f:
+#     memory = pickle.load(f)
+
+# with open('recorder_episode_defend_the_center_3.pkl', 'rb') as f:
+#     for frame in pickle.load(f):
+#         memory.append(frame)
+
 agents = {}
 agents['simpleTFAgent'] = lambda actions, config, dump_file_name: tfQEstimator(len(actions), config.resolution,
                                                                                dump_file_name=dump_file_name,
@@ -83,8 +90,8 @@ chosenAgent = 'bdqnAgentK5p1'
 #                                       config_file_path="./config/health_gathering.cfg", epochs=10), 10, agents)
 run('simpleActionsTFAgent',
     ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=True, resolution=(90, 60),
-                     config_file_path="./config/defend_the_center.cfg", epochs=0, test_episodes_per_epoch=30,
-                     initial_eps=0.0,
+                     config_file_path="./config/health_gathering.cfg", epochs=5, test_episodes_per_epoch=30,
+                     initial_eps=0,
                      expert_config=ExpertConfig(memory, -0.01)), 1,
     agents)
 # run('bdqnAgentK5p1', ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False,
