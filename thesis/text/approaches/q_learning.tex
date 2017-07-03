@@ -1,0 +1,20 @@
+\section{Q-learning}\label{q_learning}
+Q-learning, opisany dokłądniej w [ROZDZIAŁ O TEORII],  jest najpopularniejszą metodą uczenia ze wzmocnieniem. Agent uczy się wartości funkcji Q odwiedzanych par stan $\to$ akcja. Wartość funkcji Q dla danego stanu odpowiada zdyskontowanej sumie nagród, jaką można uzyskać po trafieniu do danego stanu, przy założeniu wykonywania dalej optymalnych akcji. Agent rozpoczyna działając losowo, a potem uczy się łącząc działania losowe z działaniami optymalnymi według aktualnego stanu wiedzy i obserwując ich rezultaty.
+
+Problemem Q-learningu jest konieczność długotrwałego uczenia agenta, a odpowiedzią na ten problem jest uczenie z Ekspertem. Wyniki Q-learningu będą stanowiły punkt odniesienia dla wyników innych metod.
+
+\subsection{Implementacja}
+
+Zastosowana implementacja opiera się na głębokiej sieci neuronowej jako aproksymatorze funkcji Q. Jest wyposażona w pamięć powtórek \textit{(ang. replay memory)}[REF?], a do eksploracji używana jest metoda e-zachłanna \textit{(ang. e-greedy)}[REF?]. Schemat sieci neuronowej jest następujący.
+
+[SCHEMAT SIECI]
+
+
+\subsection{Zachowanie}
+Uczenie agenta trwa długo. Zastosowane proste rozwiązanie jest w stanie nauczyć się poprawnego działania dla scenariusza \nameref{scenario_basic}. Dla \nameref{scenario_dtc} agent zatrzymuje się w optimum lokalnym, polegającym na częstym strzelaniu i kręceniu się w kółko bez przejmowania się konkretnymi przeciwnikami, a jego zachowanie nie wygląda sensownie. W \nameref{scenario_hgs} agent nie potrafi sensownie poruszać się po labiryncie.
+
+Zastosowanie bardziej wyrafinowanych metod uczenia ze wzmocnieniem, których implementacja wykracza poza zakres tej pracy, pozwala poprawić wyniki na trudniejszych scenariuszach. Dla \nameref{scenario_dtc} możliwe jest uzyskanie wyników bliskim optymalnym, ale do osiągnięcia sensownego zachowania w \nameref{scenario_hgs} konieczna jest na przykład pomoc z zewnątrz programu w postaci techniki kształtowania \textit{(ang. shaping)}[REF]. Mimo dobrych wyników, metody te ciągle wymagają przeanalizowania wielkich ilości klatek - wymagane liczby klatek są kilka rzędów wielkości większe niż liczba potrzebna do uczenia z Ekspertem.
+
+
+\subsection{Wnioski}
+Q-learning potrzebuje dużo czasu, żeby uzyskać przywoicie zachowującego się agenta, ma również problem z wychodzeniem z optimów lokalnych polityki zachowań (szczególnie przy zastosowanej prostej implementacji). Dobrze sprawdza się za to w ewolucyjnym, stopniowym poprawianiu zachowań agenta.

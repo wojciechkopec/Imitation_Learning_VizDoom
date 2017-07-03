@@ -13,8 +13,16 @@ from tqdm import trange
 from datetime import datetime
 import os
 import json
+from sources.replay_memory import PerActionReplayMemory, ReplayMemory
 
 from vizdoom import *
+
+
+# Converts and downsamples the input image
+def preprocessIMG(img, resolution):
+    img = skimage.transform.resize(img, resolution)
+    img = img.astype(np.float32)
+    return img
 
 def play(agentName, config, directory, agents):
     runner = ExperimentsRunner(agentName, config, agents[agentName], directory)
@@ -37,7 +45,7 @@ def run(agentName, config, iterations, agents):
 
     with open(dir_name + "/config", "w") as configFile:
         configFile.writelines([agentName])
-        configFile.writelines(json.dumps(config.__dict__, indent=4))
+        configFile.writelines(json.dumps(config.jsonable(), indent=4))
 
     resultsFile = open(dir_name + "/results.csv", "w")
     resultsFile.writelines([" " + " ".join(map(str, range(1, config.epochs + 1))) + "\n"])
@@ -56,7 +64,6 @@ def run(agentName, config, iterations, agents):
             [str(i) + " " + (str(totalSum) + " " + str(end - startTime)) + "\n"])
         resultsFile.flush()
         resultsSumsFile.flush()
-
 
         sumFromAllRuns += totalSum
         print "Finished iteration %d in %.2fs with score %.3f" % (i, (end - start), totalSum)
@@ -78,13 +85,44 @@ class ExperimentsRunner:
         self.n = self.game.get_available_buttons_size()
         self.actions = [list(a) for a in it.product([0, 1], repeat=self.n)]
         self.q_estimator = agent(self.actions, config, directory_path + "/weights.dump")
+        expert_config = self.config.expert_config
+        # self.feed_expert_trajectories2(expert_config)
+        self.q_estimator.memory.lock_current_samples()
         self.episode_state = {'explore': False}
 
-    # Converts and downsamples the input image
+    def feed_expert_trajectories(self, expert_config):
+        for transition in expert_config.feed_memory:
+            (s1, action, s2, r, isterminal) = transition
+            s1 = self.preprocess(s1)
+            s2 = self.preprocess(s2) if not isterminal else None
+            for i, a in enumerate(self.actions):
+                reward = r if a == action else expert_config.reward_for_another_action + r
+                self.q_estimator.learn_from_transition(s1, self.actions.index(a), s2, reward, isterminal)
+
+    def feed_expert_trajectories2(self, expert_config):
+        memory = PerActionReplayMemory(len(expert_config.feed_memory), self.config.resolution, len(self.actions),
+                                       [0, 1, 1, 1, 1, 1, 1, 1, 1])
+        # memory = ReplayMemory(len(expert_config.feed_memory), self.config.resolution)
+
+        batch_size = 64
+        print "Decoding expert trajectories"
+        for t in trange(len(expert_config.feed_memory)):
+            transition = expert_config.feed_memory[t]
+            (s1, action, s2, r, isterminal) = transition
+            s1 = self.preprocess(s1)
+            if self.actions.index(action) != 0:
+                memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+                self.q_estimator.memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+
+        print "Learning expert trajectories"
+        for it in trange(int(len(expert_config.feed_memory)/6)):
+            s1, a, _, _, _, _ = memory.get_sample(batch_size)
+            e, acc = self.q_estimator.learn_actions(s1, a)
+            if it % 30 == 0:
+                print e, acc
+
     def preprocess(self, img):
-        img = skimage.transform.resize(img, self.config.resolution)
-        img = img.astype(np.float32)
-        return img
+        return preprocessIMG(img, self.config.resolution)
 
     def perform_learning_step(self, epoch):
         """ Makes an action according to eps-greedy policy, observes the result
@@ -92,8 +130,8 @@ class ExperimentsRunner:
 
         def exploration_rate(epoch):
             """# Define exploration rate change over time"""
-            start_eps = 1.0
-            end_eps = 0.1
+            start_eps = self.config.initial_eps
+            end_eps = self.config.dest_eps
             const_eps_epochs = 0.1 * self.config.epochs  # 10% of learning time
             eps_decay_epochs = 0.6 * self.config.epochs  # 60% of learning time
 
@@ -106,6 +144,7 @@ class ExperimentsRunner:
             else:
                 return end_eps
 
+        print("Game variables: ", self.game.get_state().game_variables)
         s1 = self.preprocess(self.game.get_state().screen_buffer)
 
         # With probability eps make a random action.
@@ -136,7 +175,7 @@ class ExperimentsRunner:
         print "Initializing doom..."
         game = DoomGame()
         game.load_config(config_file_path)
-        game.set_window_visible(False)
+        game.set_window_visible(True)
         game.set_mode(Mode.PLAYER)
     	game.set_screen_format(ScreenFormat.GRAY8)
     	game.set_screen_resolution(ScreenResolution.RES_640X480)
@@ -173,7 +212,6 @@ class ExperimentsRunner:
             train_results.append(train_scores.mean())
             print "Results: mean: %.1f±%.1f," % (train_scores.mean(), train_scores.std()), \
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
-
             print "\nTesting..."
             self.q_estimator.testing_mode()
             test_episode = []
@@ -226,6 +264,7 @@ class ExperimentsRunner:
         self.game.set_mode(Mode.ASYNC_PLAYER)
         self.game.init()
         episodes_to_watch = 10
+        rewards_sum = 0
         for i in range(episodes_to_watch):
             self.game.new_episode()
             while not self.game.is_episode_finished():
@@ -240,4 +279,6 @@ class ExperimentsRunner:
             # Sleep between episodes
             sleep(1.0)
             score = self.game.get_total_reward()
+            rewards_sum+=score
             print "Total score: ", score
+        print "Average score: ", rewards_sum/episodes_to_watch

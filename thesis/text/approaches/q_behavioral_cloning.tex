@@ -1,0 +1,8 @@
+\section{Q-learning z Ekspertem}
+Q-learning jest potężną metodą, która jest zdolna osiągać wyniki znacznie prześcigające ludzkie. Jej wadą jest natomiast znaczna ilość czasu i klatek działania, których potrzeba zanim agent zacznie zachowywać się sensownie. Uczenie z Ekspertem, z drugiej strony, może na podstawie trajektorii Eksperta szybko uzyskać przyzwoicie zachowującego się agenta, którego osiągi są niższe lub równe osiągom użytego Eksperta.
+
+Wobec tych dwóch przeciwstawnych podejść dobrym pomysłem wydaje się próba wykorzystania agenta uzyskanego na pomocą uczenia z Ekspertem jako stanu początkowego dla Q-learningu - dzięki temu pomijane jest czasochłonne początkowe rozpoznawanie podstaw mechaniki środowiska, a metoda rozwija tylko za pomocą uczenia ze wzmocnieniem przyzwoitego już wcześniej agenta.
+
+Podstawowym problemem jest niekompatybilność wyjść obu metod - klasyfikator z \ref{behavioral_cloning} potrafi określić najlepszą akcję dla danego stanu, ale te informacja nie pozwala na pełne odtworzenie wartości Q poszczególnych stanów. Wartości Q dla stanów odwiedzonych przez Eksperta można odtworzyć na podstawie jego trajektorii (albo przybliżyć, jeżeli przejścia i nagrody nie są deterministyczne), ale niemożliwe będzie odtworzenie wartości Q dla akcji niewybranych przez Eksperta - należy za to zagwarantować, że ich Q wartości będą niższe niż Q wartości wybranych akcji.
+
+[UZUPEŁNIĆ]
