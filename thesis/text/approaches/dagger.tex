@@ -2,7 +2,7 @@
 
 Podejście Agregacji Zbioru Danych (ang. Dataset Aggregation) \cite{DBLP:journals/corr/abs-1011-0686} zostało opisane we wcześniejszym rozdziale. Kluczowym założeniem metody jest odpytywanie Eksperta o właściwe działanie w stanach, które nie były wcześniej przez niego pokazane (i nie należą do ,,poprawnych'' trajektorii), a które zostały odwiedzone przez agenta na skutek jego nieoptymalnego zachowania.
 
-W rzeczywistości, dla bardziej skomplikowanych zadań, odpytywanie Eksperta o decyzję dla każdego odwiedzonego przez agenta stanu jest niepraktyczne. Ocenianie wielu kolejnych stanów może być drogie i nużące dla Eksperta, co może przekładać się na obniżoną jakość decyzji. Ocena dokonywana przez eksperta może też w praktyce różnić się w zależności od tego, czy Ekspert napotkał dany stan podczas normalnego działania, czy podczas oceny pojednyczych, wyrwanych z kontekstu, stanów.
+W rzeczywistości, dla bardziej skomplikowanych zadań, odpytywanie Eksperta o decyzję dla każdego odwiedzonego przez agenta stanu jest niepraktyczne. Ocenianie wielu kolejnych stanów może być drogie i nużące dla Eksperta, co może przekładać się na obniżoną jakość decyzji. Ocena dokonywana przez eksperta może też w praktyce różnić się w zależności od tego, czy Ekspert napotkał dany stan podczas normalnego działania, czy podczas oceny pojednyczych, wyrwanych z kontekstu stanów.
 
 Aby zminimalizować ten problem, konieczne jest określenie mniejszego podzbioru stanów, dla których potrzebna jest ocena eksperta.
 
@@ -25,15 +25,15 @@ Jednym z najważniejszych problemów jest zdefiniowanie, kiedy przekazywać ster
 \item Po każdej akcji Eksperta program z większym prawdopodbieństwem może zdecydować o przekazaniu sterowania do agenta.
 \end{enumerate}
 
-Losowe przekazywanie sterowania okazało się niepraktyczną metodą - dla analizowanych problemów agent nie potrzebuje pomocy Ekspera przez większość czasu, więc losowo wybrane momenty przekazania sterowania w ogromnej większości nie dostarczają istotnej informacji. Zaletą jest natomiast automatyczność decyzji - program podczas gry agenta może działać w przyspieszonym tempie.
+Losowe przekazywanie sterowania jest niepraktyczną metodą - dla analizowanych problemów agent nie potrzebuje pomocy Eksperta przez większość czasu, więc losowo wybrane momenty przekazania sterowania w ogromnej większości nie dostarczają istotnej informacji. Zaletą jest natomiast automatyczność decyzji - program podczas gry agenta może działać w przyspieszonym tempie.
 
 \subsubsection{Analiza niepewności sieci}
 \begin{enumerate}
-\item Przed wykonaniem każdej akcji sprawdzana jest jej niepewność [REF]. W przypadku wystąpienia zadanej liczby kolejnych niepewnych akcji sterowanie przekazywane jest do Eksperta.
+\item Przed wykonaniem każdej akcji sprawdzana jest jej niepewność sieci dla danego stanu [REF]. W przypadku wystąpienia zadanej liczby kolejnych niepewnych akcji sterowanie przekazywane jest do Eksperta.
 \item Po każdej akcji Eksperta sprawdzana jest akcja, którą wykonałby agent. Jeżeli przez zadaną liczbę kolejnych kroków agent postąpiłby identycznie jak Ekspert, to sterowanie wraca do agenta.
 \end{enumerate}
 
-Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowania. Wybrane tym sposobem okna działania Eksperta częściej pokrywają się z oknami niepoprawnego działania agenta. W dalszym ciągu skuteczność metody nie jest zadowalająca - przyjęta miara niepewności powoduje, że agent może przekazać sterowanie do Eskperta w obliczu sytuacji, dla której więcej niż jedna akcja jest sensowna. Porównywanie akcji agenta i Eksperta przez zadaną liczbę kroków jest skuteczne dla problemów z niewielką liczbą akcji, ale nieskuteczne w sytuacji, w której podobny efekt można uzyskać za pomocą różnych sekwencji kroków (przykładowo dojście do danego punktu za pomocą permutacji akcji "LEWO", "PROSTO" i "LEWO i PROSTO"). Podobnie jak przy losowym podejściu, dzięki automatycznemu działaniu możliwe jest działanie programu w przyspieszonym tempie poczas gry agenta.
+Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowania. Wybrane tym sposobem okna działania Eksperta częściej pokrywają się z oknami niepoprawnego działania agenta. W dalszym ciągu skuteczność metody nie jest zadowalająca - przyjęta miara niepewności powoduje, że agent może przekazać sterowanie do Eskperta w obliczu sytuacji, dla której więcej niż jedna akcja jest sensowna. Porównywanie akcji agenta i Eksperta przez zadaną liczbę kroków jest skuteczne dla problemów z niewielką liczbą akcji, ale nieskuteczne w sytuacji, w której podobny efekt można uzyskać za pomocą różnych sekwencji kroków (przykładowo dojście do danego punktu za pomocą permutacji akcji "lewo", "prosto" i "lewo i prosto"). Podobnie jak przy losowym podejściu, dzięki automatycznemu działaniu możliwe jest działanie programu w przyspieszonym tempie poczas gry agenta.
 
 \subsubsection{Decyzja Eksperta}\label{expert_call}
 \begin{enumerate}
@@ -41,7 +41,7 @@ Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowa
 \item Kiedy Ekspert uzna, że agent nie jest już w niepożądanym stanie może oddać sterowanie agentowi.
 \end{enumerate}
 
-Decyzja Eksperta jest najskuteczniejszą metodą i jest używana w dalszych eksperymentach. Ekspert może sam stwierdzić, kiedy działanie agenta jest niezgodne z pożądanym, maksymalizując skuteczność odpytywania Eksperta. Oczywiście, Ekspert musi spędzić więcej czasu obserwując działanie agenta, ale obserwacja jest dużo mniej uciążliwa (a zatem tańsza), niż działanie. Problemem w niektórych sytacjach jest możliwość rozróżnienia, kiedy agent zachowa się niepożądanie i należałoby przejąć sterowanie - w wielu sytuacjach Ekspert reaguje zbyt późno, żeby demonstracja była skuteczna.
+Decyzja Eksperta jest najskuteczniejszą metodą i jest używana w dalszych eksperymentach. Ekspert może sam stwierdzić, kiedy działanie agenta jest niezgodne z pożądanym, maksymalizując skuteczność odpytywania Eksperta. Oczywiście, Ekspert musi spędzić więcej czasu obserwując działanie agenta, ale obserwacja jest dużo mniej uciążliwa (a zatem tańsza), niż prezentowanie. Problemem w niektórych sytacjach jest możliwość rozróżnienia, kiedy agent zachowa się niepożądanie i należałoby przejąć sterowanie - w wielu sytuacjach Ekspert reaguje zbyt późno, żeby demonstracja była skuteczna.
 
 \subsection{Techniczna implementacja}
 
@@ -49,7 +49,7 @@ Architektura sieci neuronowej jest identyczna z architekturą zastosowaną w \re
 
 Implementacja przekazywania sterowania do Eksperta w środowisku VizDoom byłaby wymagająca i czasochłonna, dlatego zastosowano znacznie prostsze, chociaż mniej eleganckie rozwiązanie.
 
-Przy odpytywaniu Eksperta o akcje program oczekuje na następny znak, który pojawi się na standardowym strumieniu wejścia (następny znak wpisany w konsoli). Wybrane znaki są przypisane do indeksów wybranych akcji, wpisanie nieznanego znaku powoduje wybranie akcji i indeksie 0, czyli ,,nic nie rób''.
+Przy odpytywaniu Eksperta o akcje program oczekuje na następny znak, który pojawi się na standardowym strumieniu wejścia programu (następny znak wpisany w konsoli). Wybrane znaki są przypisane do indeksów wybranych akcji, wpisanie nieznanego znaku powoduje wybranie akcji o indeksie 0, czyli ,,nic nie rób''.
 
 \begin{lstlisting}[language=iPython]
 
@@ -119,16 +119,16 @@ Wywoływana funkcja znajduje się poniżej. Klawisz 'p' przekazuje sterowanie po
 \subsection{Zachowanie}
 Eksperymenty były prowadzone na przede wszystkim na scenariuszu \nameref{scenario_hgs}. Początkowe trajektorie Eksperta były wygenerowane zgodnie z \ref{presenting_expert}.
 
-Dla każdego z badanych scenariuszy uwzględnianie fragmentów trajektorii zaprezentowanych przez Eksperta w trakcie gry obniża początkowo wyniki. Na skutek nauczenia się niespójnych zachowań Eksperta agent zachowuje się mniej płynnie i częściej wpada w nieskończone pętle ruchów (przykładowo obracanie się naprzemian w lewo i w prawo w rogu labiryntu).
+Dla każdego z badanych scenariuszy uwzględnianie fragmentów trajektorii zaprezentowanych przez Eksperta w trakcie gry obniża początkowo wyniki. Na skutek nauczenia się niespójnych zachowań Eksperta agent zachowuje się mniej płynnie i częściej wpada w nieskończone pętle ruchów (przykładowo obracanie się naprzemian w lewo i w prawo w rogu labiryntu), co prowadzi do osiągania niższych wyników.
 
-W scenariuszu \nameref{scenario_hgs} głównym problemem agenta \ref{behavioral_cloning} jest nieomijanie min i celem DAggera jest wyeliminowanie tego problemu. Za każdym razem, kiedy agent zbliża się do min Ekspert przejmuje kontrolę i omija miny bądź wybiera inną ścieżkę. Pary (stan $\to$ akcja) uzsykane w ten sposób są dodawane do pamięci dziesięciokrotnie.
+W scenariuszu \nameref{scenario_hgs} głównym problemem agenta \ref{behavioral_cloning} jest nieomijanie min i celem zastosowania DAggera jest wyeliminowanie tego problemu. Za każdym razem, kiedy agent zbliża się do min Ekspert przejmuje kontrolę i omija miny bądź wybiera inną ścieżkę. Pary stan $\to$ akcja uzsykane w ten sposób są dodawane do pamięci dziesięciokrotnie.
 
 Podczas pierwszych epizodów nauki wyniki uzyskiwane przez agenta zauważalnie się obniżają, a problem wchodzenia na miny nie jest wyeliminowany.
 
-Następne epizody nauki powoli poprawiają wyniki agenta, przywracając je do poziomu wyjściowego lub nieznacznie go przewyższającego. Agent rzadziej wchodzi w miny, ale problem w dalszym ciągu jest obecny.
+Następne epizody nauki powoli poprawiają wyniki agenta, przywracając je do poziomu wyjściowego lub nieznacznie go przewyższającego. Agent rzadziej wchodzi w miny, ale problem w dalszym ciągu pozostaje obecny.
 
-Kolejne epizody nauki doprowadzają do przeuczenia - wyniki obniżąją się, a agent regularnie wpada w nieskończone pętle ruchów. Wchodzenie w miny nie jest wyelimininowane. Pogorszenie zachowania agenta może wynikać ze znużenia Eksperta, a co za tym idzie pogorszenia i zmiany jego zachowań.
+Kolejne epizody nauki doprowadzają do przeuczenia - wyniki obniżąją się, a agent regularnie wpada w nieskończone pętle ruchów. Wchodzenie w miny nie zostaje wyelimininowane. Pogorszenie zachowania agenta może wynikać ze znużenia Eksperta, a co za tym idzie zmiany jego zachowań i pogorszenia jego decyzji.
 
 \subsection{Wnioski}
-Dla wypróbowanych problemów DAgger nie wydaje się być skuteczny. W VizDoomie decyzje podejmowane przez ludzkiego Eksperta są bardziej skomplikowane niż w Mario Cart, przedstawianym w publikacji, co zamiast do podwyższenia wyników agenta prowadzi do obniżania jego skuteczności na skutek niespójności prezentowanych danych. Zastosowane głębokie sieci neuronowe mogą też znacznie skuteczniej uogólniać wiedzę zdobytą podczas pierwszej prezentacji Eksperta niż prostsze klasyfikatory SVM, a co za tym idzie nawet bez użycia DAggera agent potrafi znaleźć sensowne wyjście z większości sytuacji. Uzyskiwanie oceny Eksperta jest uciążliwe i kosztowne.
+Dla wypróbowanych problemów DAgger nie wydaje się być skuteczny. W VizDoomie decyzje podejmowane przez ludzkiego Eksperta są bardziej skomplikowane niż w Mario Cart, przedstawianym w publikacji, co, na skutek niespójności przedstawianych przez Eksperta zachowań, zamiast do podwyższenia wyników agenta prowadzi do obniżania jego skuteczności. Zastosowane głębokie sieci neuronowe mogą też znacznie skuteczniej uogólniać wiedzę zdobytą podczas pierwszej prezentacji Eksperta niż prostsze klasyfikatory SVM, a co za tym idzie nawet bez użycia DAggera agent potrafi znaleźć sensowne wyjście z większości sytuacji. Uzyskiwanie oceny Eksperta jest uciążliwe i kosztowne.
 
