@@ -1,0 +1,39 @@
+\section{Proces decyzyjny Markova}\label{mdp}
+
+Środowisko, w którym porusza się agent jest matematycznie zamodelowane za pomocą Procesu decyzyjnego Markova \textit{(ang. MDP - Markov decision process)} [REF?].
+
+Intuicyjnie, Proces decyzyjny Markova opisuje środowisko, w którym porusza się agent i które w każdym momencie czasu ma jakiś określony stan i umożliwia wykonanie określonych akcji, za które agent może otrzymać nagrodę. Rezultat wykonania jednej z akcji, czyli stan, w którym znajdzie się agent po wykonaniu akcji, jest zależny tylko od aktualnego stanu agenta i wybranej akcji, a nie jest zależne od poprzednich stanów środowiska. Takie środowisko ma właściwość braku pamięci, albo \textit{właśność Markova}. Im bardziej odległe w przyszłości nagrody, tym mniej są wartościowe (są dyskontowane). Celem agenta jest zgromadzenie nagród o jak największej sumie wartości.
+
+\vspace{5mm}
+
+Formalnie, Proces decyzyjny Markowa jest opisany krotką $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$.
+\begin{itemize}
+\item $S$ jest skończonym zbiorem możliwych stanów środowiska,
+\item $A_s$ jest skończonym zbiorem możliwych wykonywalnych akcji w stanie $s$,
+\item $T_a(s,s')$, funkcja przejść, jest funkcją prawdopodobieństwa trafienia do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$,
+\item $R_a(s,s')$, funkcja nagrody determinuje nagrodę (lub wartością oczekiwaną nagrody, obie mogą być negatywne) otrzymywaną po wykonaniu akcji $a$ w stanie $s$ i trafieniu na skutek tego do stanu $s'$,
+\item $\gamma \in [0,1]$ jest współczynnikiem dyskontowym, obniżającym wartość nagród uzyskanych w przyszłości.
+\end{itemize}
+
+Celem jest maksymalizacja $$\sum_{t=0}{\gamma^t R(s_t,s_{t+1})}$$
+
+gdzie kolejne $t$ są kolejnymi momentami czasowymi. Ponadto:
+
+\begin{itemize}
+\item Polityką (strategią) $\pi$, realizowaną przez agenta, nazywamy funkcję $ \pi: S \rightarrow A$, która określa, jak agent powinien się zachować w danym stanie w celu osiągnięcia maksymalnej możliwej nagrody.
+\item Funkcja użyteczności $U(s)$ lub wartości \textit{(ang. Value)} $V(s)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć znajdując się stanie $s$ i postępując dalej zgodnie z aktualną polityką. Poniższe równanie nazywane jest równaniem Bellmana.
+
+$$U(s) = V(s) = (max_{a \in A(s)} \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma U(s')))$$
+\item Funkcja Q $Q(s,a)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć wykonując w stanie $s$ akcję $a$ i postępując dalej zgodnie z aktualną polityką.
+
+$$Q(s,a) = \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma max_{a' \in A(s)}Q(s',a'))$$
+
+\end{itemize}
+
+\vspace{5mm}
+
+W badanym problemie środowisko VizDoom jest \textit{częściowo obserwowalnym procesem decyzyjnym Markova}, co oznacza, że stan obserwowany przez agenta nie zawiera pełnych informacji o środowsisku. Jest też stochastyczne, co oznacza że skutki działań agenta nie są deterministyczne - wielokrotne wykonanie tej samej akcji w tym samym stanie może przynieść różne rezultaty.
+
+Znając funkcje przejść możliwe jest iteracyjne określenie optymalnej polityki działania agenta. 
+
+

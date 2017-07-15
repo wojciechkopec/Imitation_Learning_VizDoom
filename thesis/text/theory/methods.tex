@@ -1,0 +1,42 @@
+\section{Metody}
+
+Podejścia stosowane do uczenia ze wzmocnieniem możemy podzielić na trzy rodzaje, w zależności od typu informacji na której bazuje agent \cite{wjaskowski2016}:
+
+\begin{enumerate}
+\item Agent z polityką - uczy się polityki  $\pi: S \rightarrow A$. Przykłady:
+\begin{itemize}
+\item algorytmy ewolucyjne
+\item uczenie z ekspertem
+\end{itemize}
+\item Agent z funkcją użyteczności U - czy się funkcji U. Przykłady:
+\begin{itemize}
+\item adaptatywne programowanie dynamiczne \textit{(ang. adaptative dynamic programming, ADP)}.
+\item metoda różnica czasowych \textit{(ang. temporal difference learning, TDL)}.
+\end{itemize}
+\item Agent z funkcją użyteczności Q - czy się funkcji Q. Przykłady:
+\begin{itemize}
+\item Q-learning (TDL)
+\item SARSA \textit{(ang. State, Action, Reward, State, Action)} (TDL)
+\end{itemize}
+\end{enumerate}
+
+\subsection{Metoda różnic czasowych}
+
+Metoda różnic czasowych [REF Sutton, Bellman] opiera się na uaktualnianiu stanu wiedzy agenta na podstawie różnicy pomiędzy spodziewanym a zaobserwowanym wynikiem.
+
+Agent trafiający do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$ może uaktualnić stan swojej wiedzy:
+
+$$U(s) \leftarrow U(s) + \alpha (R(s,s') + \gamma U(s') - U (s))$$
+
+lub
+
+$$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma max_{a'}Q(s',a') - Q (s,a))$$
+
+gdzie $\alpha$ jest współczynnikiem prędkości uczenia.
+
+
+
+
+
+
+
