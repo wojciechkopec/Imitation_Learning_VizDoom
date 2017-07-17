@@ -1,3 +1,34 @@
 \section{Środowisko VizDoom}
 
-Środowisko VizDoom, przedstawione w \cite{DBLP:journals/corr/KempkaWRTJ16}, jest narzędziem do testowania algorytmów sterowania na podstawie surowych danych o obrazie 3D. Środowisko bazujące na klasycznej grze Doom, w której gracz widzi świat z perspektywy pierwszej osoby i strzela do piekielnych potworów.
+Środowisko VizDoom, przedstawione w \cite{DBLP:journals/corr/KempkaWRTJ16}, jest narzędziem do testowania algorytmów sterowania na podstawie surowych danych o obrazie 3D. Środowisko bazujące na klasycznej grze Doom, w której gracz widzi trójwymiarowy świat z perspektywy pierwszoosobowej i strzela do piekielnych potworów. W stosunku do nauki w środowisku 2D, takim jak Atari 2600 [REF], nauka w środowisku  3D jest wielkim krokiem naprzód i stanowi znacznie lepsze przybliżenie nauki w realnym świecie.
+
+VizDoom oferuje wygodny interfejs, który doskonale wpisuje się w standardowy szkielet metod uczenia ze wzmocnieniem. VizDoom potrzebuje mało zasobów, może działać bez środowiska graficznego, jest wydajny, pozwala na uruchamianie wielu instancji równolegle oraz na wygodne tworzenie nowych scenariuszy dopasowanych do potrzeb problemów badawczych. Vizdoom udostępnia interfejs programistyczny dla Pythona, Javy, C++ i Lua. Preferowany i najbardziej rozwijany jest Python.
+
+Przykładowe minimalne użycie środowiska VizDoom przedstawione jest poniżej (prezentowany kod jest zmodyfikowanym przykładem \textit{scenarios.py} dołączonym do środowiska):
+
+\begin{lstlisting}[language=iPython]
+from vizdoom import DoomGame
+
+game = DoomGame()
+
+game.load_config("../../scenarios/basic.cfg")
+
+game.set_screen_resolution(ScreenResolution.RES_640X480)
+game.set_window_visible(True)
+game.init()
+
+# Creates all possible actions depending on how many buttons there are.
+actions = prepare_actions(game.get_available_buttons_size())
+
+episodes = 10
+
+for i in range(episodes):
+    game.new_episode()
+    while not game.is_episode_finished():
+        # Gets the state and possibly to something with it
+        state = game.get_state()
+        # Makes a random action and save the reward.
+        reward = game.make_action(choose(state, actions))
+	new_state  = game.get_state() 
+	learn(state,game.get_last_action(), reward, new_state)
+\end{lstlisting}

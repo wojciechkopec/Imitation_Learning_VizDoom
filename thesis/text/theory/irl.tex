@@ -1,1 +1,15 @@
-\section{Odwrócone uczenie ze wzmocnieniem}
+\section{Odwrócone uczenie ze wzmocnieniem \textit{(ang. Inverse reinforcement learning, IRL)}}
+Użycie kopiowania zachowań i wywodzących sie z niego metod \ref{imitation_learning} pozwala na wytrenowanie agenta odruchowego, który dla danego stanu będzie potrafił określić optymalną akcję na jeden krok do przodu. Taki agent zna optymalną politykę, ale nie jest świadomy jej powodów. Odwrócone uczenie ze wzmocnieniem opiera się na założeniu, że w ogólności optymalna polityka agenta nie stanowi najlepszego i najbardziej zwięzłego opisu zadania podstawionego przed agentem - najbardziej precyzyjnym opisem, pozwalającym na większą dowolność i adaptację jest znajomość funkcji nagród $R_a(\cdot,\cdot)$.
+
+Oczywiście, bez modelu środowiska funkcja $R_a(\cdot,\cdot)$ nie jest dostępna, dlatego zadaniem postawionym przed odwróconym uczeniem ze wzmocnieniem jest odtworzenie $R_a(\cdot,\cdot)$ na podstawie dostarczonych trajektorii eksperta.
+
+Zadanie odwróconego uczenia ze wzmocnieniem jest znacznie trudniejsze od zwykłego uczenia ze wzmocnieniem. Przede wszystkim, IRL musi się zmierzyć z 2 problemami:
+
+\begin{itemize}
+\item Niejasność $R_a(\cdot,\cdot)$ - w większości przypadków, dla danych trajektorii eksperta istnieje nieskończenie wiele pasujących $R_a(\cdot,\cdot)$. Formalnie oznacza to, że IRL nie ma zdefiniowanego poprawnego rozwiązania.
+\item Złożoność obliczeniowa - samo uczenie ze wzmocnieniem jest bardzo wymagające obliczeniowo. W odwróconym uczeniu ze wzmocnieniem, sprawdzanie $R_a(\cdot,\cdot)$ uzyskanych w kolejnych krokach wymaga każdorazowego rozwiązywania problemu uczenia ze wzmocnieniem na podstawie aktualnej funkcji $R_a(\cdot,\cdot)$, co oznacza, że IRL wymaga większego o rząd wielkości kosztu obliczeniowego niż RL.
+\end{itemize}
+
+Przykładowe zastosowania odwróconego uczenia ze wzmocnieniem to parkowanie samochodu [REF Abbeel, Dolgov, Ng and Thrun, IROS 2008], nawigacja na podstawie obrazów satelitarnych [REF Ratliff, Bagnell and Zinkevich, ICML 2006] albo wykonywanie ewolucji helipkopterem [REF Abbeel, Ng].
+
+
