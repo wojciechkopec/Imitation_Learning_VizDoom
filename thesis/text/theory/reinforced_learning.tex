@@ -1,2 +1,21 @@
 \section{Uczenie ze wzmocnieniem}
 
+W przypadku, kiedy funkcja przejść $T_a(s,s')$ albo funkcja nagród $R_a(s,s')$ nie jest znana (albo wielkość przestrzeni stanów $S$ sprawia, że analityczne podejście nie jest możliwe), mamy do czynienia z \textit{uczeniem ze wzmocnieniem (ang. Reinforcement learning, RL)}.
+
+Intuicyjnie, uczenie ze wzmocnieniem opisuje sytuację, w której agent porusza się w nieznanym środowisku. Na podstawie obserwowanych rezultatów swoich działań buduje wiedzę o środowisku, pozwalającą określić strategię działania optymalną dla danej wizji środowiska. Postępując według tej strategii zdobywa dalsze doświadczenia, pozwalające dalej uaktualniać wiedzę o środowisku i politykę agenta.
+
+\subsection{Uczenie ze wzmocnieniem a uczenie nadzorowane}
+W rozdziale \ref{mdp} określono politykę $\pi$ jako funkcję $\pi: S \rightarrow A$, określającą optymalną akcję do wykonania $a$ dla każdego stanu $s$. Odpowiednikiem w uczenia nadzorowanego byłoby określenie $\pi$ jako klasyfikatora $S \rightarrow A$. Do uczenia ze wzmocnieniem nie stosuje się jednak technik uczenia nadzorowanego, ponieważ, bez rozwiązania całego problemu, nigdy nie są znane ,,poprawne'' akcje $a$ dla danych stanów $s$. Mimo, że środowisko dostarcza czasem informacji zwrotnej w postaci nagród lub kar, to wykonanie danej akcji w danym stanie jest najczęściej konsekwencją całej poprzedniej sekwencji ruchów - określenie, który z ruchów w sekwencji był faktycznie kluczowy dla uzyskania określonego rezultatu jest nietrywialne.
+
+Przykładowo, w partii szachów zwycięski ruch jest najczęściej konsekwencją konkretnych zagrań lub błędów popełnionych wiele ruchów wcześniej - algorytm uczący musi w jakiś sposób określić, które z ruchów były decydujące dla końcowego wyniku. Ruchy, które doprowadzają do zwycięstwa mogą krótkodystansowo przynosić straty (np. poświęcenie figury) - algorytm uczący musi zrozumieć, że mimo negatywnej informacji zwrotnej dany ruch był porządany.
+
+\subsection{Zalety i zastosowanie}
+
+Uczenie ze wzmocnieniem jest narzędziem, które świetnie sprawdza się w sytuacjach, w których środowisko jest zbyt skomplikowane, żeby analitycznie znaleźć optymalną politykę działania. Dzięki temu, że model przejść i model nagród opisane są rozkładami prawdopodobieństwa, a nie stałymi zależnościami, uczenie ze wzmocnieniem radzi sobie bez problemu z modelowaniem zachowań w bardzo niepewnym świecie. Dzięki współczynnikowi dyskontowemu $\gamma$, możliwe jest balansowanie pomiędzy optymalizacją krótko i długoterminowych zysków.
+
+Najważniejsza jest jednak możliwość działania bez żadnej wiedzy i silnych założeń na temat środowiska, a którym znajduje się agent. RL zakłada brak wiedzy o modelu świata, a wszystkie informacje czerpane są z doświadczeń na temat interakcji ze środowiskiem. Jest to kluczowa właściwość, ponieważ dla wielu praktycznych problemów, które adresuje RL stworzenie dokładnego modelu świata jest niemożliwe (np. stworzenie dokładnego matematycznego modelu aerodynamiki i zachowania śmigłowca), albo mimo znajomości modelu matematycznego przestrzeń możliwych stanów jest zbyt wielka, by analitycznie osiągnąć rozwiązanie (np. szachy, go).
+
+Uczenie ze wzmocnieniem stosuje się z powodzeniem do sterowania robotami, samochodami i windami, grania w gry planszowe (szachy, backgammon, go, warcaby) i gry komputerowe. [REF]
+
+
+
