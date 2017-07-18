@@ -1,21 +1,21 @@
 \section{Proces decyzyjny Markova}\label{mdp}
 
-Środowisko, w którym porusza się agent jest matematycznie zamodelowane za pomocą Procesu decyzyjnego Markova \textit{(ang. MDP - Markov decision process)} [REF?].
+Program - agent porusza się w środowisku, które jest matematycznie zamodelowane jako Proces decyzyjny Markova \textit{(ang. MDP - Markov decision process)} [REF?].
 
-Intuicyjnie, Proces decyzyjny Markova opisuje środowisko, w którym porusza się agent i które w każdym momencie czasu ma jakiś określony stan i umożliwia wykonanie określonych akcji, za które agent może otrzymać nagrodę. Rezultat wykonania jednej z akcji, czyli stan, w którym znajdzie się agent po wykonaniu akcji, jest zależny tylko od aktualnego stanu agenta i wybranej akcji, a nie jest zależne od poprzednich stanów środowiska. Takie środowisko ma właściwość braku pamięci, albo \textit{właśność Markova}. Im bardziej odległe w przyszłości nagrody, tym mniej są wartościowe (są dyskontowane). Celem agenta jest zgromadzenie nagród o jak największej sumie wartości.
+Intuicyjnie, Proces decyzyjny Markova opisuje środowisko, w którym porusza się agent i które w każdym momencie czasu ma jakiś określony stan i umożliwia wykonanie określonych akcji, za które agent może otrzymać jakąś pozytywną lub negatywną nagrodę. Rezultat wykonania jednej z akcji, czyli stan, w którym znajdzie się agent po wykonaniu akcji, jest zależny tylko od aktualnego stanu agenta i wybranej akcji, a nie jest zależny od poprzednich stanów środowiska. Takie środowisko ma właściwość braku pamięci, albo \textit{właśność Markova}. Celem agenta jest zgromadzenie nagród o jak największej sumie wartości. Im bardziej odległe w przyszłości nagrody, tym mniej są wartościowe (są dyskontowane).
 
 \vspace{5mm}
 
-Formalnie, Proces decyzyjny Markowa jest opisany krotką $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$.
+Formalnie, Proces decyzyjny Markowa jest opisany krotką $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$, gdzie:
 \begin{itemize}
 \item $S$ jest skończonym zbiorem możliwych stanów środowiska,
-\item $A_s$ jest skończonym zbiorem możliwych wykonywalnych akcji w stanie $s$,
-\item $T_a(s,s')$, funkcja przejść, jest funkcją prawdopodobieństwa trafienia do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$,
-\item $R_a(s,s')$, funkcja nagrody determinuje nagrodę (lub wartością oczekiwaną nagrody, obie mogą być negatywne) otrzymywaną po wykonaniu akcji $a$ w stanie $s$ i trafieniu na skutek tego do stanu $s'$,
+\item $A_s$ jest skończonym zbiorem możliwych akcji wykonywalnych w stanie $s$,
+\item $T_a(s,s')$ - funkcja przejść, jest funkcją prawdopodobieństwa trafienia do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$,
+\item $R_a(s,s')$ - funkcja nagrody, determinuje nagrodę (lub wartością oczekiwaną nagrody, obie mogą być negatywne) otrzymywaną po wykonaniu akcji $a$ w stanie $s$ i trafieniu na skutek tego do stanu $s'$,
 \item $\gamma \in [0,1]$ jest współczynnikiem dyskontowym, obniżającym wartość nagród uzyskanych w przyszłości.
 \end{itemize}
 
-Celem jest maksymalizacja $$\sum_{t=0}{\gamma^t R(s_t,s_{t+1})}$$
+Celem jest maksymalizacja zdyskontowanej sumy nagród $$\sum_{t=0}{\gamma^t R(s_t,s_{t+1})}$$
 
 gdzie kolejne $t$ są kolejnymi momentami czasowymi. Ponadto:
 

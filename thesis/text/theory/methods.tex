@@ -5,24 +5,24 @@ Podejścia stosowane do uczenia ze wzmocnieniem możemy podzielić na trzy rodza
 \begin{enumerate}
 \item Agent z polityką - uczy się polityki  $\pi: S \rightarrow A$. Przykłady:
 \begin{itemize}
-\item algorytmy ewolucyjne (Nie uczenie ze wzmocnieniem).
-\item uczenie z ekspertem (Nie uczenie ze wzmocnieniem).
+\item algorytmy ewolucyjne,
+\item uczenie przez demonstację.
 \end{itemize}
-\item Agent z funkcją użyteczności U - czy się funkcji U. Przykłady:
+\item Agent z funkcją użyteczności U. Przykłady:
 \begin{itemize}
-\item adaptatywne programowanie dynamiczne \textit{(ang. adaptative dynamic programming, ADP)}.
+\item adaptatywne programowanie dynamiczne \textit{(ang. adaptative dynamic programming, ADP)},
 \item metoda różnica czasowych \textit{(ang. temporal difference learning, TDL)}.
 \end{itemize}
-\item Agent z funkcją użyteczności Q - czy się funkcji Q. Przykłady:
+\item Agent z funkcją użyteczności Q. Przykłady:
 \begin{itemize}
-\item Q-learning (TDL)
+\item Q-learning (TDL),
 \item SARSA \textit{(ang. State, Action, Reward, State, Action)} (TDL)
 \end{itemize}
 \end{enumerate}
 
 Poniżej przedstawione zostaną najważniejsze metody.
 
-\subsection{Metoda różnic czasowych}
+\subsection{Metoda różnic czasowych}\label{tdl}
 
 Metoda różnic czasowych [REF Sutton, Bellman] opiera się na uaktualnianiu stanu wiedzy agenta na podstawie różnicy pomiędzy spodziewanym a zaobserwowanym wynikiem.
 
@@ -49,10 +49,10 @@ Mimo podobnych wzorów i definicji nauka funkcji Q ma jedną, diametralną przew
 \begin{itemize}
 \item Agent z funkcją Q wybiera akcję $a = argmax_{a \in A} Q(s,a)$.
 
-\item Agent z funkcją U wybiera akcję, która maksymalizuje $U(s')$ - wartość stanu, do którego trafi agent: $a = argmax_{a \in A} sum_{s'} T_a(s,s')U(s')$. Obliczenie tego wyrażenia wymaga znajomości modelu przejść $T_a(\cdot, \cdot)$, czyli modelu świata. Można przyjąć, że dla trudniejszych i realnych problemów model świata nie jest dostępny.
+\item Agent z funkcją U wybiera akcję, która maksymalizuje $U(s')$ - wartość stanu, do którego trafi agent: $a = argmax_{a \in A} \sum_{s'} T_a(s,s')U(s')$. Obliczenie tego wyrażenia wymaga znajomości modelu przejść $T_a(\cdot, \cdot)$, czyli modelu świata. Można przyjąć, że dla trudniejszych i realnych problemów model świata nie jest dostępny.
 \end{itemize}
 
-Z tego powodu większość wiodących rozwiązań w dziedzinie uczenia ze wzmocnieniem oparta jest na Q-learningu. SARSA może zachowywać się nieznacznie lepiej, ale w więksozści przypadków będzie się uczyła wolniej bez wpływu na jakość agenta. Dalsza część pracy przyjmuje Q-learning jako obowiązującą metodę rozwiązywania problemu uczenia ze wzmocnieniem.
+Z tego powodu większość wiodących rozwiązań w dziedzinie uczenia ze wzmocnieniem oparta jest na Q-learningu. SARSA może dla niektórych problemów zachowywać się nieznacznie lepiej niż Q-learning, ale w większości przypadków będzie się uczyła wolniej bez wpływu na jakość agenta. Dalsza część pracy przyjmuje Q-learning jako obowiązującą metodę rozwiązywania problemu uczenia ze wzmocnieniem.
 
 Niezależnie od metody, dla sensownej wielkości problemów uczenie ze wzmocnieniem jest wymagające obliczeniowo i czasowo. Mimo wspomagających agenta technik, nauka sprowadza się najczęściej do interaktowania ze środowiskiem metodą prób i błędów - potrzeba wiele prób i błędów, zanim agent zacznie pojmować zasady rządzące środowiskiem w którym się znajduje, a potem dużo dalszych zanim znajdzie dla danego środowiska satysfakcjonująco skuteczną politykę działania.
 [DOKOŃCZYĆ?]
