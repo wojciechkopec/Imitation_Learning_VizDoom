@@ -24,7 +24,7 @@ Poniżej przedstawione zostaną najważniejsze metody.
 
 \subsection{Metoda różnic czasowych}\label{tdl}
 
-Metoda różnic czasowych [REF Sutton, Bellman] opiera się na uaktualnianiu stanu wiedzy agenta na podstawie różnicy pomiędzy spodziewanym a zaobserwowanym wynikiem.
+Metoda różnic czasowych \cite{Sutton:1988:LPM:637912.637937} opiera się na uaktualnianiu stanu wiedzy agenta na podstawie różnicy pomiędzy spodziewanym a zaobserwowanym wynikiem.
 
 Agent trafiający do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$ może uaktualnić stan swojej wiedzy:
 
@@ -37,7 +37,7 @@ $$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma max_{a'}Q(s',a') - Q (s,a)
 
 gdzie $\alpha$ jest współczynnikiem prędkości uczenia. Jeżeli $\alpha$ w odpowiedni sposób zmniejsza się w czasie, to TDL gwarantuje zbieżność do optimum globalnego \cite{wjaskowski2016}. 
 
-\subsection{Funkcja U, Q i SARSA}
+\subsection{Funkcja U, Q i SARSA}\label{qlearning}
 \begin{itemize}
 \item Funkcja U (patrz: rozdział \ref{mdp}) opisuje użyteczność stanu,
 \item Funkcja Q (patrz: rozdział \ref{mdp}) opisuje użyteczność wykonania danej akcji w danym stanie,
