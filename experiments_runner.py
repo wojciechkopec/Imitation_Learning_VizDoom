@@ -72,6 +72,7 @@ def run(agentName, config, iterations, agents):
     resultsFile.close()
     resultsSumsFile.close()
     print "Finished %d runs for agent %s with score %.3f" % (iterations, agentName, sumFromAllRuns / iterations)
+    return sumFromAllRuns / iterations
 
 
 class ExperimentsRunner:
@@ -102,7 +103,6 @@ class ExperimentsRunner:
     def feed_expert_trajectories2(self, expert_config):
         memory = PerActionReplayMemory(len(expert_config.feed_memory), self.config.resolution, len(self.actions),
                                        [0, 1, 1, 1, 1, 1, 1, 1, 1])
-        # memory = ReplayMemory(len(expert_config.feed_memory), self.config.resolution)
 
         batch_size = 64
         print "Decoding expert trajectories"
@@ -191,55 +191,17 @@ class ExperimentsRunner:
         test_results = []
         certainties = []
         for epoch in range(self.config.epochs):
-            print "\nEpoch %d\n-------" % (epoch + 1)
-            train_episodes_finished = 0
-            train_scores = []
-
-            print "Training..."
-            self.q_estimator.learning_mode()
-            self.game.new_episode()
-            for learning_step in trange(self.config.learning_steps_per_epoch):
-                self.perform_learning_step(epoch)
-                if self.game.is_episode_finished():
-                    score = self.game.get_total_reward()
-                    train_scores.append(score)
-                    self.game.new_episode()
-                    train_episodes_finished += 1
-
-            print "%d training episodes played." % train_episodes_finished
-
-            train_scores = np.array(train_scores)
-            train_results.append(train_scores.mean())
-            print "Results: mean: %.1f±%.1f," % (train_scores.mean(), train_scores.std()), \
-                "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
-            print "\nTesting..."
-            self.q_estimator.testing_mode()
-            test_episode = []
-            test_scores = []
-            certaintiesSum = 0
-            certaintiesCount = 0
-            for test_episode in trange(self.config.test_episodes_per_epoch):
-                self.game.new_episode()
-
-                while not self.game.is_episode_finished():
-                    state = self.preprocess(self.game.get_state().screen_buffer)
-                    (best_action_index, certainty) = self.q_estimator.get_best_action(state)
-                    certaintiesSum += certainty
-                    certaintiesCount += 1
-                    self.game.make_action(self.actions[best_action_index], self.config.frame_repeat)
-                r = self.game.get_total_reward()
-                test_scores.append(r)
-
-            test_scores = np.array(test_scores)
-            test_results.append(test_scores.mean())
-            certainties.append(certaintiesSum / certaintiesCount)
-            print "Results: mean: %.1f±%.1f," % (
-                test_scores.mean(), test_scores.std()), "min: %.1f" % test_scores.min(), "max: %.1f" % test_scores.max()
-            print "Certainty: %.2f" % (certaintiesSum / certaintiesCount)
+            train_results.append(self.training_epoch(epoch))
+            test_scores, certainty = self.testing_epoch()
+            test_results.extend(test_scores)
+            certainties.append(certainty)
             print "Saving the network weigths..."
             self.q_estimator.save()
 
             print "Total elapsed time: %.2f minutes" % ((time() - time_start) / 60.0)
+        if self.config.epochs == 0:
+            test_scores, certainty = self.testing_epoch()
+            test_results.extend(test_scores)
 
         self.game.close()
         if self.config.play_agent:
@@ -256,6 +218,51 @@ class ExperimentsRunner:
         print "Certainties: ", certainties
         self.q_estimator.cleanup()
         return test_results
+
+    def testing_epoch(self):
+        print "\nTesting..."
+        self.q_estimator.testing_mode()
+        test_episode = []
+        test_scores = []
+        certaintiesSum = 0
+        certaintiesCount = 0
+        for test_episode in trange(self.config.test_episodes_per_epoch):
+            self.game.new_episode()
+
+            while not self.game.is_episode_finished():
+                state = self.preprocess(self.game.get_state().screen_buffer)
+                (best_action_index, certainty) = self.q_estimator.get_best_action(state)
+                certaintiesSum += certainty
+                certaintiesCount += 1
+                self.game.make_action(self.actions[best_action_index], self.config.frame_repeat)
+            r = self.game.get_total_reward()
+            test_scores.append(r)
+        test_scores = np.array(test_scores)
+        print "Results: mean: %.1f±%.1f," % (
+            test_scores.mean(), test_scores.std()), "min: %.1f" % test_scores.min(), "max: %.1f" % test_scores.max()
+        print "Certainty: %.2f" % (certaintiesSum / certaintiesCount)
+        return test_scores, certaintiesSum / certaintiesCount
+
+    def training_epoch(self, epoch):
+        print "\nEpoch %d\n-------" % (epoch + 1)
+        train_episodes_finished = 0
+        train_scores = []
+        print "Training..."
+        self.q_estimator.learning_mode()
+        self.game.new_episode()
+        for learning_step in trange(self.config.learning_steps_per_epoch):
+            self.perform_learning_step(epoch)
+            if self.game.is_episode_finished():
+                score = self.game.get_total_reward()
+                train_scores.append(score)
+                self.game.new_episode()
+                train_episodes_finished += 1
+        print "%d training episodes played." % train_episodes_finished
+        train_scores = np.array(train_scores)
+        print "Results: mean: %.1f±%.1f," % (train_scores.mean(), train_scores.std()), \
+            "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max()
+        return train_scores.mean()
+
 
     def play(self, q_estimator):
         # Load the network's parameters from a file
@@ -282,3 +289,4 @@ class ExperimentsRunner:
             rewards_sum+=score
             print "Total score: ", score
         print "Average score: ", rewards_sum/episodes_to_watch
+        return rewards_sum/episodes_to_watch
