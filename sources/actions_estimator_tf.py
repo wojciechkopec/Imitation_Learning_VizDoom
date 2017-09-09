@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from numpy.random import randint
+import random
 import sys, tty, termios
 from tqdm import trange
 from key_monitor import KeyMonitor
@@ -48,6 +49,7 @@ class ActionsEstimator:
         self.available_actions_count = len(actions)
         self.actions = actions
         self.resolution = resolution
+        self.dropout = 0.5
         # NN learning settings
 
         self.batch_size = 64
@@ -71,11 +73,14 @@ class ActionsEstimator:
         key_handler = lambda key,press: self.__toggle_user_input(key) if press else False
         # KeyMonitor('p', key_handler).run()
         self.keys_thread = threading.Thread(target=KeyMonitor(['p', '.', ','], key_handler).run)
+        self.keys_thread.daemon = True
         self.keys_thread.start()
         self.framerate = 20
 
     def _create_network(self, available_actions_count, resolution, create_convolution_layers):
         session, s1, a, q2, dqn = create_convolution_layers()
+        keep_prob = tf.placeholder(tf.float32)  # dropout (keep probability)
+        dqn = tf.nn.dropout(dqn, keep_prob)
         fc1 = tf.contrib.layers.fully_connected(dqn, num_outputs=256, activation_fn=tf.nn.relu,
                                                 weights_initializer=tf.contrib.layers.xavier_initializer(),
                                                 biases_initializer=tf.constant_initializer(0.1))
@@ -83,7 +88,7 @@ class ActionsEstimator:
         fc2 = tf.contrib.layers.fully_connected(fc1, num_outputs=128, activation_fn=tf.nn.relu,
                                                 weights_initializer=tf.contrib.layers.xavier_initializer(),
                                                 biases_initializer=tf.constant_initializer(0.1))
-
+        fc2 = tf.nn.dropout(fc2, keep_prob)
         q = tf.contrib.layers.fully_connected(fc2, num_outputs=available_actions_count, activation_fn=None,
                                               weights_initializer=tf.contrib.layers.xavier_initializer(),
                                               biases_initializer=tf.constant_initializer(0.1))
@@ -108,15 +113,15 @@ class ActionsEstimator:
         train_step = optimizer.minimize(loss)
 
         def function_learn(s, target):
-            feed_dict = {s1: s, q2: target}
+            feed_dict = {s1: s, q2: target, keep_prob: self.dropout}
             l, _ = session.run([loss, train_step], feed_dict=feed_dict)
             return l
 
         def function_get_q_values(state):
-            return session.run(q, feed_dict={s1: state})
+            return session.run(q, feed_dict={s1: state, keep_prob: 1})
 
         def function_get_best_action(state):
-            a, sftmx = session.run([best_a, sm], feed_dict={s1: state})
+            a, sftmx = session.run([best_a, sm], feed_dict={s1: state, keep_prob: 1})
             a = a[0]
             uncertainty = 1 - sftmx[0][a]
 
@@ -158,7 +163,7 @@ class ActionsEstimator:
             return function_get_best_action(state.reshape([1, resolution[0], resolution[1], 1]))
 
         def function_learn_actions(states, actions):
-            feed_dict = {s1: states, a: actions}
+            feed_dict = {s1: states, a: actions, keep_prob: self.dropout}
             e, acc, _ = session.run([cross_entropy, accuracy, actions_train_step], feed_dict=feed_dict)
             return e, acc
 
@@ -187,10 +192,10 @@ class ActionsEstimator:
 
     def testing_mode(self):
         self.testing = True
-        self.learn_all()
+        # self.learn_all()
 
     def cleanup(self):
-        pass
+        self.session.close()
 
     def get_expert_action(self):
         fd = sys.stdin.fileno()
@@ -217,7 +222,8 @@ class ActionsEstimator:
 
     def store_expert_trajectories(self, expert_config, memory):
         print "Decoding expert trajectories"
-
+        random.shuffle(expert_config.feed_memory)
+        frames_count = 0
         for filepath in expert_config.feed_memory:
             with open(filepath, 'rb') as f:
                 trajectories =  pickle.load(f)
@@ -228,19 +234,30 @@ class ActionsEstimator:
                     s1 = preprocessIMG(s1, self.resolution)
                     if self.actions.index(action) != 0:
                         memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+                        frames_count += 1
+                    if frames_count >= expert_config.frames_limit:
+                        break
                     # if isterminal:
                     #     break
                 del trajectories
+                if frames_count >= expert_config.frames_limit:
+                    return
+
 
     def learn_all(self):
         print "Learning expert trajectories (" + str(self.memory.size) + " frames)"
         batch_size = 64
+        acc_above_threshold = 0
         for it in trange(int(self.memory.size )):
             s1, a, _, _, _, _ = self.memory.get_sample(batch_size)
             e, acc = self.learn_actions(s1, a)
             if it % 50 == 0:
                 print e, acc
             if acc > 0.95:
+                acc_above_threshold+=1
+            else:
+                acc_above_threshold = 0
+            if acc_above_threshold >10:
                 break
 
     def __toggle_user_input(self, character):

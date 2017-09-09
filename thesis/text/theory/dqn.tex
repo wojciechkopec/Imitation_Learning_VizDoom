@@ -1,8 +1,8 @@
 \section{Aproksymatory i głębokie sieci Q}
 
-Zdefiniowana w podrozdziale \ref{methods} przykłądowa reguła aktualizacji wartości funkcji Q wygląda następująco:
+Zdefiniowana w podrozdziale \ref{methods} przykładowa reguła aktualizacji wartości funkcji Q wygląda następująco:
 
-$$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma max_{a'}Q(s',a') - Q (s,a))$$
+$$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (max_{a'}Q(s',a') - Q (s,a)))$$
 
 Wynika z niej, że po wykonaniu ruchu wartość funkcji Q dla poprzedniego stanu aktualizujemy na podstawie otrzymanej nagrody i wartości funkcji Q dla stanu aktualnego. Oznacza to, że dla każdego stanu, który analizujemy, konieczna jest znajomość jego wartości funkcji Q dla wszystkich możliwych akcji. Oznacza to, że dla dokładnego przedstawienia funkcji $Q(s,a)$  konieczne jest zapamiętanie $\left\vert{S}\right\vert \cdot \left\vert{A}\right\vert$ wartości. Co więcej, aby uzyskać sensowne wartości tej funkcji konieczne jest odwiedzenie każdego ze stanów wiele razy, zanim aktualizowana stopniowo wartość funkcji Q będzie bliska prawdziwej. Wiele z tych stanów jest też bardzo podobnych do siebie nawzajem, więc wiedza wyniesiona dla jednego stanu powinna się w pewien sposób generalizować na podobne stany.
 
@@ -21,17 +21,17 @@ Aproksymator (za \cite{wjaskowski2016}):
 \item w większości przypadków przyspiesza uczenie w stosunku do wersji stablicowanej ze względu na uogólnianie wiedzy
 \end{itemize}
 
-Jako jedne z pierwszych i prostszych aproksymatorów stosowano funkcje liniowe, opierające się na ręcznie zdefiniowanych cechach: $\hat{Q}_{\theta}(s,a) = \theta_0 + \theta_1cecha1 + \theta_2cecha2 + ... + \theta_ncechan$. Przykładem zastosowania może być gra w warcaby, opisana w \cite{Samuel:1959:SML:1661923.1661924}. Zaletami liniowego aproksymatora są prostota i łatwość interpretacji, a także szybkość obliczania i nauki. 
-Dalszym krokiem było wykorzystanie sieci neuronowych jako aproksymatorów w grze w Backgammona \cite{Tesauro1992451}. W pierszej wersji algorytmu wykorzystano ręcznie zaprojektowane cechy, w kolejnych wykorzystano prawie surową informację o rozkłądzie pionków na planszy. Sieć neuronowa jest bardziej skomplikowanym i trudniejszym do nauczenia aproksymatorem, ale jest w stanie zamodelować znacznie bardziej złożone funkcje.
+Jako jedne z pierwszych i prostszych aproksymatorów stosowano funkcje liniowe, opierające się na ręcznie zdefiniowanych cechach: $\hat{Q}_{\theta}(s,a) = \theta_0 + \theta_1x_1 + \theta_2x_2 + ... + \theta_nx_n$, gdzie wektor $x = (x_1, x_2, …, x_n)$ jest wektorem cech. Przykładem zastosowania może być gra w warcaby, opisana w \cite{Samuel:1959:SML:1661923.1661924}. Zaletami liniowego aproksymatora są prostota i łatwość interpretacji, a także szybkość obliczania i nauki. 
+Dalszym krokiem było wykorzystanie sieci neuronowych jako aproksymatorów w grze w Backgammona \cite{Tesauro1992451}. W pierszej wersji algorytmu wykorzystano ręcznie zaprojektowane cechy, w kolejnych wykorzystano prawie surową informację o rozkładzie pionków na planszy. Sieć neuronowa jest bardziej skomplikowanym i trudniejszym do nauczenia aproksymatorem, ale jest w stanie zamodelować znacznie bardziej złożone funkcje.
 
 \subsection{Uczenie na podstawie surowych danych obrazowych - Atari 2600}
 
-Jednym z największych przełomów uczenia ze wzmocnieniem ostatnich lat była praca \cite{mnih2015human}, w której autorzy wykorzystali głębokie sieci neuronowe do stworzenia agenta potrafiącego grać na ludzkim poziomie w klasyczne gry z Atari 2600, wykorzystując jako reprezentację stanu jedynie surowy zapis obrazu 2D. Dotychczas, jak w poprzednich przykładach, algorytmy uczenia ze wzmocnieniem opierały się na ekspercko wykreowanej reprezentacji stanów - \cite{mnih2015human} pokazali, że możliwe jest stworzenie rozwiązania, które samo będzie potrafiło ekstrahować wysokopoziomowe cechy z niskopoziomowych danych. Zaproponowana architektura, jak również pomysłowe usprawnienia zwiększające stabilność uczenia zaproponowane w artykule, a opisane w rozdziale \ref {enhancements} stanowią obecnie podstawę i punkt odniesienia dla większości dalszych badań na temat uczenia ze wzmocnieniem.
+Jednym z największych przełomów uczenia ze wzmocnieniem ostatnich lat była praca \cite{mnih2015human}, w której autorzy wykorzystali głębokie sieci neuronowe do stworzenia agenta potrafiącego grać na ludzkim poziomie w klasyczne gry z Atari 2600, wykorzystując jako reprezentację stanu jedynie surowy zapis obrazu 2D. Dotychczas, jak w poprzednich przykładach, algorytmy uczenia ze wzmocnieniem opierały się na manualnie stworzonej reprezentacji stanów. W \cite{mnih2015human} pokazano, że możliwe jest stworzenie rozwiązania, które samo będzie potrafiło ekstrahować wysokopoziomowe cechy z niskopoziomowych danych. Zaproponowana architektura, jak również pomysłowe usprawnienia zwiększające stabilność uczenia zaproponowane w artykule, a opisane w rozdziale \ref {enhancements} stanowią obecnie podstawę i punkt odniesienia dla większości dalszych badań na temat uczenia ze wzmocnieniem.
 
-Jako aproksymator funkcji Q wykorzystano głęboką sięć neuronową. Z tego powodu opisywane podejście określa się często skrótem DQN \textit{ang. Deep Q Network)}, czyli głęboka sieć Q. Zastosowana architektura wygląda następujaco:
+Jako aproksymator funkcji Q wykorzystano głęboką sięć neuronową. Z tego powodu opisywane podejście określa się często skrótem DQN \textit{(ang. Deep Q Network)}, czyli głęboka sieć Q. Zastosowana architektura wygląda następujaco:
 
 [RYSUNEK SIECI]
 
-Analogicznie jak w obenie stosowanych architekturach rozpoznawania obrazu, pierwsze warstwy sieci to warstwy konwolucyjne, które wykrywają kolejno nisko i wysokopoziomowe cechy obrazu. Dalsze warstwy, w pełni połączone, łączą informacje z warstw konwolucyjnych we wnioski na temat stanu świata, na podstawie których następne warstwy mogą określić wartość funkcji Q.
+Analogicznie jak w obecnie stosowanych architekturach rozpoznawania obrazu, pierwsze warstwy sieci to warstwy konwolucyjne, które wykrywają kolejno nisko i wysokopoziomowe cechy obrazu. Dalsze warstwy, w pełni połączone, łączą informacje z warstw konwolucyjnych we wnioski na temat stanu świata, na podstawie których następne warstwy mogą określić wartość funkcji Q.
 
 
