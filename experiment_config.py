@@ -12,9 +12,10 @@ import pickle
 
 
 class ExpertConfig:
-    def __init__(self, feed_memory=[], reward_for_another_action=-1):
+    def __init__(self, feed_memory=[], reward_for_another_action=-1, frames_limit=sys.maxint):
         self.reward_for_another_action = reward_for_another_action
         self.feed_memory = feed_memory
+        self.frames_limit = frames_limit
 
 
 class ExperimentConfig:
@@ -39,13 +40,10 @@ class ExperimentConfig:
 
     def jsonable(self):
         result = self.__dict__.copy()
-        result['expert_config'] = []
+        result['expert_config'] = result['expert_config'].__dict__.copy()
         return result
 
 
-type = "simple_expert"
-scenario = "dtc"
-memory = map(lambda x: type + "_trajectories/" + type +"_" +scenario + "_" + str(x)+".pkl", range(1,3))
 
 
 agents = {}
@@ -74,14 +72,15 @@ agents['bdqnAgentK5p075'] = lambda actions, config, dump_file_name: MultiTfQEsti
                                                                                      subnets=5,
                                                                                      incl_prob=0.75,
                                                                                      dump_file_name=dump_file_name,
-
-
                                                                                      store_trajectory=config.store_trajectory)
+
+type = "simple_expert"
+scenario = "health"
+memory = map(lambda x: type + "_trajectories/" + type + "_" + scenario + "_" + str(x) + ".pkl", range(1, 6))
+
+frames_limit = int(sys.argv[1])
 run('simpleActionsTFAgent',
     ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False, resolution=(90, 60),
-                     config_file_path="./config/defend_the_center.cfg", epochs=0, test_episodes_per_epoch=10,
-                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01)), 3, agents)
-
-
-
-
+                     config_file_path="./config/health_gathering.cfg", epochs=0, test_episodes_per_epoch=10,
+                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01, frames_limit=frames_limit)), 10,
+    agents)

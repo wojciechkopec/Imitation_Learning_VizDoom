@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from numpy.random import randint
+import random
 import sys, tty, termios
 from tqdm import trange
 from key_monitor import KeyMonitor
@@ -72,6 +73,7 @@ class ActionsEstimator:
         key_handler = lambda key,press: self.__toggle_user_input(key) if press else False
         # KeyMonitor('p', key_handler).run()
         self.keys_thread = threading.Thread(target=KeyMonitor(['p', '.', ','], key_handler).run)
+        self.keys_thread.daemon = True
         self.keys_thread.start()
         self.framerate = 20
 
@@ -193,7 +195,7 @@ class ActionsEstimator:
         # self.learn_all()
 
     def cleanup(self):
-        pass
+        self.session.close()
 
     def get_expert_action(self):
         fd = sys.stdin.fileno()
@@ -220,7 +222,8 @@ class ActionsEstimator:
 
     def store_expert_trajectories(self, expert_config, memory):
         print "Decoding expert trajectories"
-
+        random.shuffle(expert_config.feed_memory)
+        frames_count = 0
         for filepath in expert_config.feed_memory:
             with open(filepath, 'rb') as f:
                 trajectories =  pickle.load(f)
@@ -231,9 +234,15 @@ class ActionsEstimator:
                     s1 = preprocessIMG(s1, self.resolution)
                     if self.actions.index(action) != 0:
                         memory.add_transition(s1, self.actions.index(action), s1, isterminal, r, -1)
+                        frames_count += 1
+                    if frames_count >= expert_config.frames_limit:
+                        break
                     # if isterminal:
                     #     break
                 del trajectories
+                if frames_count >= expert_config.frames_limit:
+                    return
+
 
     def learn_all(self):
         print "Learning expert trajectories (" + str(self.memory.size) + " frames)"

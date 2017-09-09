@@ -288,5 +288,6 @@ class ExperimentsRunner:
             score = self.game.get_total_reward()
             rewards_sum+=score
             print "Total score: ", score
+        self.game.close()
         print "Average score: ", rewards_sum/episodes_to_watch
         return rewards_sum/episodes_to_watch
