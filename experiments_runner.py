@@ -190,6 +190,9 @@ class ExperimentsRunner:
         train_results = []
         test_results = []
         certainties = []
+        print "Initial test"
+        test_scores, certainty = self.testing_epoch()
+        test_results.extend(test_scores)
         for epoch in range(self.config.epochs):
             train_results.append(self.training_epoch(epoch))
             test_scores, certainty = self.testing_epoch()
@@ -199,9 +202,7 @@ class ExperimentsRunner:
             self.q_estimator.save()
 
             print "Total elapsed time: %.2f minutes" % ((time() - time_start) / 60.0)
-        if self.config.epochs == 0:
-            test_scores, certainty = self.testing_epoch()
-            test_results.extend(test_scores)
+
 
         self.game.close()
         if self.config.play_agent:
