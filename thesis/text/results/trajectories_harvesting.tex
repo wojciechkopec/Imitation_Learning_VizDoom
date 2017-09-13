@@ -1,0 +1,62 @@
+\section{Gromadzenie trajektorii eksperta}
+
+Do zbierania trajektorii eksperta przeznaczony jest dedykowany program napisany w języku python, \textit{spectator.py}, opisany wcześniej w rozdziale \ref{behavioral_cloning_tech}. Program powstał poprzez modyfikację programu o tej samej nazwie dołączonego do środowiska VizDoom.
+
+\subsection{Konfiguracja VizDoom}
+Instancja VizDoom inicjalizowana jest z następującymi ustawieniami:
+
+\begin{lstlisting}[language=iPython]
+game.set_window_visible(True)
+game.set_mode(Mode.SPECTATOR)
+\end{lstlisting}
+
+Tryb SPECTATOR, wbrew intuicji, umożliwia komputerowi obserwowanie gry człowieka - eksperta. W tym trybie gra reaguje na wejście z klawiatury i myszki, jak przy normalnej grze w Dooma oraz umożliwia odczytywanie aktualnego stanu, ostatnio wykonanej akcji i wartości ostatnio otrzymanej nagrody. Przejście do następnego stanu jest osiągane poprzez wywołanie metody \textit{game.advance\_action()}. Tryb SPECTATOR jest synchroniczny, co oznacza że gra oczekuje na wywołanie \textit{game.advance\_action()} przed przejściem do następnego stanu (zatrzymanie przetwarzania w programie skutkuje zatrzymaniem przetwarzania w grze). Nie oznacza to jednak, że w tym trybie gra oczekuje z wykonamiem każdej klatki, aż gracz wykona jakiś ruch - brak ruchu ze strony gracza również interpretowany jest jako ruch.
+
+\begin{lstlisting}[language=iPython]
+ 	game.advance_action()
+        next_state = game.get_state()
+        last_action = game.get_last_action()
+        reward = game.get_last_reward()
+\end{lstlisting}
+
+Obrazy z gry zapisywane i przetwarzane są nie w kolorze, ale w skali szarosci. Dzięki temu zajętość pamięciowa każdego ze stanów jest trzykrotnie mniejsza niż kolorowego odpowiednika. Według autorów platformy VizDoom i według krótkich eksperymentów przeprowadzonych w ramach tej pracy spadek jakości agentów w stosunku do kolorowego trybu jest pomijalny.
+\begin{lstlisting}[language=iPython]
+game.set_screen_format(ScreenFormat.GRAY8)
+game.set_screen_resolution(ScreenResolution.RES_640X480)
+\end{lstlisting}
+
+Obraz oglądany i zapisywany jest w rozdzieczości 640 na 480 pikseli. Użycie mniejszego obrazu podczas gry sprawiłoby, że mniejsze szczegóły byłyby trudne do rozróżnienia, co znacząco utrudniałoby działanie ludzkiego gracza. Obrazy są zapisywane w pełnej rozdzielczości pomimo, że użyte algorytmy wykorzystują obraz w znacznie mniejszym rozmiarze. Dzięki temu raz zebrane trajektorie eskperta mogą być przeskalowywane do wielu różnych rozmiarów z minimalną stratą jakości obrazu. Skutkiem ubocznym jest bardzo duża wielkość plików z zapisanymi trajektoriami eksperta (do 4GB dla pliku z zapisem 6 tysięcy króków gry).
+
+\subsection{Zapis i odczyt trajektorii}
+\subsubsection{Zapis}
+W każdym kroku działania programu \textit{spectator.py} odczytywane są wartości:
+
+\begin{itemize}
+\item{stanu początkowego}
+\item{wykonanej akcji}
+\item{stanu, w którym znalazł się agent po wykonaniu akcji}
+\item{otrzymanej nagrody}
+\item{informacji, czy dany stan jest końcowy dla danego epizodu}
+\end{itemize}
+
+Te pięć wartości łączone jest w jedną krotkę, a każda krotka dodawana jest do listy krotek.
+
+Program \textit{spectator.py} pozwala ekspertowi odbyć zadaną liczbę epizodów, po czym serializuje listę krotek z zapisem trajektorii do pliku za pomocą biblioteki \textit{pickle}.
+
+Dla scenariuszy \textit{Trudne zbieranie apteczek} i \textit{Obrona środka} na raz zbierane są trajektorie 3 epizodów. Przy poprawnej grze każdy z epizodów składa się z około 2 tysięcy kroków, których odbycie zajmuje od jednej do półtorej minuty. Pięć minut ciągłej prezentacji pozwala na wygenerowanie danych wystarczających do nauki i jest wystarczająco krótkim czasem, żeby nie znużyć eksperta.
+
+\subsubsection{Zestaw danych uczących}
+Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apteczek}) i dla każdego rodzaju eksperta (\textit{Zwykły ekspert} i \textit{Świadomie prezentujący ekspert}) wygenerowano po 5 zbiorów trajektorii, czyli odpowiednio po 15 epizodów.
+[ILE KROKÓW?]
+
+\subsubsection{Odczyt}
+
+Program agenta otrzymuje listę plików z paczkami trajektorii do wykorzystania i informację o maksymalnej liczbie klatek, jaką ma wczytać. Program przetwarza pliki w losowej kolejności. Z każdego pliku trajektorie odczytywane są po kolei, aż limit odczytanych klatek nie zostanie osiągnięty lub aż wszystkie pliki nie zostaną przetworzone.
+Dane w ramach jednego pliku nie są przetwarzane w losowej kolejności, ponieważ:
+\begin{itemize}
+\item{agent mógłby wyciągać dodatkowe informacje na podstawie przebytej sekwencji stanów (np. odtwarzać wartości q)}
+\item{liczba kroków z poszczególnymi akcjami może być silnie niezbalansowana, a losowe próbkowanie trajektorii mogło by skutkować zestawem danych zupełnie pozbawionym informacji o niektórych akcjach}
+\end{itemize}
+Odczytane klatki zapisywane są bezpośrednio do pamięci powtórek agenta, po uprzednim przeskalowaniu obrazów-stanów do zadanej rozdzielczości.
+
+Na każdym etapie uczenia program pomija klatki, w których nie została wykonana żadna akcja. To zachowanie opiera się na założeniu, że optymalne zachowanie agenta można osiągnąć bez wykonywania ruchu ,,czekania'', czyli braku ruchu, a klatki z akcją,,czekania'' pojawiające się w trajektoriach eksperta są artefaktami spowodowanymi nieoptymalną grą eksperta lub nieoptymalnym interfejsem zbierania danych eksperta.

@@ -1,0 +1,22 @@
+\section{Świadomie prezentujący ekspert - wyniki}
+
+\subsection {Zachowanie eksperta}
+Podczas prezentacji ekspert gra tak, żeby na podstawie jego trajektorii mógł zostać utworzony wewnętrznie spójny zestaw danych do nauki. Stara się nie działać na podstawie pamięci, żeby uzasadnienie każdej decyzji mogło zostać wywnioskowane tylko i wyłącznie na podstawie dostępnego klasyfikatorowi stanu. Ekspert dokłada dodatkowych starań, żeby jego działania były spójne, mimo upływającego czasu i wykonywania powtarzalnych czynności. Ekspert generuje i rozwiązuje sytuacje, w których wstępnie nauczony agent nie zachowywał się poprawnie. W szczególności:
+\begin{itemize}
+\item{w scenariuszu \textit{Trudne zbieranie apteczek} znajdując się w rogu lub na ciasnym zakręcie zawsze wychodzi z niego obracając się w tę samą stronę}
+\item{w scenariuszu \textit{Trudne zbieranie apteczek} znajdując się przed miną nie wymija jej, ale w miarę możliwości odwraca się i szuka innej drogi}
+\item{w scenariuszu \textit{Obrona środka} pozwala przeciwnikom podejść bliżej (klatki z ,,czekaniem'' nie są brane pod uwagę), żeby zaprezentować zachowanie w otoczeniu przeciwników}
+\item{W scenariuszu \textit{Obrona środka} nie odwraca się do zapamiętanych przeciwników, którzy nie są widoczni na ekranie}
+\end{itemize}
+
+\begin{figure}[H]
+\csvautotabular{data/pa_expert_results_dtc.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{świadomie prezentującego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}.}\label{tab:presenting_expert_results_dtc}}
+\end{figure}
+
+\begin{figure}[H]
+\csvautotabular{data/pa_expert_results_hg.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{świadomie prezentującego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Trudne zbieranie apteczek}.}\label{tab:/presenting_expert_results_dtc}}
+\end{figure}
+
+
+
+

@@ -22,7 +22,7 @@ Problem ten został rozwiązany przez zrównoważenie zbioru danych przy użyciu
 
 Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akcja była zdefiniowana oddzielnie, łącznie z akcjami stanowiącymi złożenie innych, podstawowych akcji. Przykładowo akcje ,,lewo'', ,,prosto'' i ,,lewo i prosto'' są dla modelu zupełnie niezwiązane, mimo że często można byłoby stosować je zamiennie. W przypadku Kopiowania zachowań możliwe byłoby stworzenie klasyfikatora  stan $\to$ akcja, który jest jednocześnie klasyfikatorem binarnym dla każdej podstawowej akcji z osobna. Taki klasyfikator mógłby zamiast wybierać pomiędzy ,,lewo'', ,,prosto'' i ,,lewo i prosto'' zdecydować ,,lewo'' - tak i ,,prosto'' - tak, uzyskując ,,lewo i prosto''. Jednakże takie rozwiązanie nie zostało w tej pracy zbadane.
 
-\subsection{Techniczna implementacja}
+\subsection{Techniczna implementacja} \label{behavioral_cloning_tech}
 
 Zbieranie danych zostało zrealizowane za pomocą trybu SPECTATOR środowiska VizDoom, pozwalającemu agentowi obserować grę człowieka. Podczas gry eksperta zapisywane są stany, akcje i nagrody dla każdej kolejnej klatki. Trajektoria eksperta serializowana jest do pliku za pomocą narzędzia \textit{pickle} dostępnego dla języka python.
 

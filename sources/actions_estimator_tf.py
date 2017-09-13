@@ -39,6 +39,7 @@ def _create_convolution_layers(available_actions_count, resolution):
 class ActionsEstimator:
     def __init__(self, actions, resolution, expert_config, create_convolution_layers=None, replay_memory_size=100000,
                  store_trajectory=True, dump_file_name='out/weights.dump'):
+        self.expert_config = expert_config
         # Q-learning settings
         self.learning_rate = 0.00025
         # learning_rate = 0.0001
@@ -68,11 +69,11 @@ class ActionsEstimator:
         self.certain_actions_count = 0
         self.expert_mode = False
         self.testing= True
+        self.last_frames_count = 0
         self.store_expert_trajectories(expert_config, self.memory)
         self.learn_all()
-        key_handler = lambda key,press: self.__toggle_user_input(key) if press else False
-        # KeyMonitor('p', key_handler).run()
-        self.keys_thread = threading.Thread(target=KeyMonitor(['p', '.', ','], key_handler).run)
+
+        self.keys_thread = threading.Thread(target=KeyMonitor(['p', '.', ','], lambda key,press: self.__toggle_user_input(key) if press else False).run)
         self.keys_thread.daemon = True
         self.keys_thread.start()
         self.framerate = 20
@@ -130,30 +131,41 @@ class ActionsEstimator:
                     self.uncertain_actions_count += 1
                 else:
                     self.uncertain_actions_count = 0
-                # if randint(100) >= 95 and not self.expert_mode:
-                # if self.uncertain_actions_count > 1 and not self.expert_mode:
-                #     print ("Quering expert!")
-                #     self.expert_mode = True
-                #     self.uncertain_actions_count = 0
+
+                switch_condition = False
+                if self.expert_config.switch_expert_mode == 'random':
+                    switch_condition = randint(100) >= 95 and not self.expert_mode
+                elif self.expert_config.switch_expert_mode == 'uncertainty':
+                    switch_condition = self.uncertain_actions_count > 1 and not self.expert_mode
+
+                if switch_condition:
+                    print ("Quering expert!")
+                    self.expert_mode = True
+                    self.uncertain_actions_count = 0
 
                 if self.expert_mode:
                     print "Model would do " + str(self.actions[a])
                     expert_a = self.get_expert_action()
                     print "Expert would do " + str(self.actions[expert_a])
-                    # if expert_a == a:
-                    if True:
+
+                    if expert_a == a:
                         self.certain_actions_count += 1
                         print (str(self.certain_actions_count) + " actions matching")
                     else:
                         self.certain_actions_count = 0
 
-
                     a = expert_a
 
-                    # if self.certain_actions_count > 20:
-                    #     self.expert_mode = False
-                    #     self.uncertain_actions_count = 0
-                    #     self.certain_actions_count = 0
+                    exit_condition = False
+                    if self.expert_config.switch_expert_mode == 'random':
+                        exit_condition = randint(100) >= 95
+                    elif self.expert_config.switch_expert_mode == 'uncertainty':
+                        exit_condition = self.certain_actions_count > 20
+
+                    if exit_condition > 20:
+                        self.expert_mode = False
+                        self.uncertain_actions_count = 0
+                        self.certain_actions_count = 0
                 else:
                     time.sleep(1.0/self.framerate)
 
@@ -173,7 +185,7 @@ class ActionsEstimator:
 
     def learn_from_transition(self, s1, a, s2, s2_isterminal, r, q2=float("-inf")):
         if self.expert_mode:
-            for i in range(10):
+            for i in range(5):
                 self.memory.add_transition(s1, a, s2, s2_isterminal, r, q2)
         if s2_isterminal:
             self.expert_mode = False
@@ -192,7 +204,9 @@ class ActionsEstimator:
 
     def testing_mode(self):
         self.testing = True
-        # self.learn_all()
+        self.expert_mode = False
+        self.learn_all()
+
 
     def cleanup(self):
         self.session.close()
@@ -225,6 +239,7 @@ class ActionsEstimator:
         random.shuffle(expert_config.feed_memory)
         frames_count = 0
         for filepath in expert_config.feed_memory:
+            print "loading " + filepath
             with open(filepath, 'rb') as f:
                 trajectories =  pickle.load(f)
 
@@ -237,18 +252,23 @@ class ActionsEstimator:
                         frames_count += 1
                     if frames_count >= expert_config.frames_limit:
                         break
-                    # if isterminal:
-                    #     break
                 del trajectories
                 if frames_count >= expert_config.frames_limit:
                     return
 
 
-    def learn_all(self):
+    def learn_all(self, iterations = -1):
+        if self.last_frames_count == self.memory.size:
+            print "Memory unchanged, skipping learning"
+            return
         print "Learning expert trajectories (" + str(self.memory.size) + " frames)"
         batch_size = 64
         acc_above_threshold = 0
-        for it in trange(int(self.memory.size )):
+        init = tf.global_variables_initializer()
+        self.session.run(init)
+        if iterations == -1:
+            iterations = int(self.memory.size)
+        for it in trange(iterations):
             s1, a, _, _, _, _ = self.memory.get_sample(batch_size)
             e, acc = self.learn_actions(s1, a)
             if it % 50 == 0:
@@ -259,11 +279,12 @@ class ActionsEstimator:
                 acc_above_threshold = 0
             if acc_above_threshold >10:
                 break
+        self.last_frames_count = self.memory.size
 
     def __toggle_user_input(self, character):
         if character == 'p':
-            if self.expert_mode:
-                self.learn_all()
+            if self.expert_config.switch_expert_mode != 'expert_call':
+                return True
             self.expert_mode = not self.expert_mode
             print ("Expert toggled: " + str(self.expert_mode))
         elif character == '.':

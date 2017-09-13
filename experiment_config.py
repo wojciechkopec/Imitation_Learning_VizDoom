@@ -12,10 +12,11 @@ import pickle
 
 
 class ExpertConfig:
-    def __init__(self, feed_memory=[], reward_for_another_action=-1, frames_limit=sys.maxint):
+    def __init__(self, feed_memory=[], reward_for_another_action=-1, frames_limit=sys.maxint, switch_expert_mode='expert_call'):
         self.reward_for_another_action = reward_for_another_action
         self.feed_memory = feed_memory
         self.frames_limit = frames_limit
+        self.switch_expert_mode = switch_expert_mode
 
 
 class ExperimentConfig:
@@ -74,13 +75,25 @@ agents['bdqnAgentK5p075'] = lambda actions, config, dump_file_name: MultiTfQEsti
                                                                                      dump_file_name=dump_file_name,
                                                                                      store_trajectory=config.store_trajectory)
 
-type = "simple_expert"
+type = "presenting_expert"
 scenario = "health"
-memory = map(lambda x: type + "_trajectories/" + type + "_" + scenario + "_" + str(x) + ".pkl", range(1, 6))
+map_config = "health_gathering"
+epochs = 3
+frames_limit = 9000
 
-frames_limit = int(sys.argv[1])
+if len(sys.argv) > 1:
+    frames_limit = int(sys.argv[1])
+if len(sys.argv) > 2:
+    type = sys.argv[2]
+if len(sys.argv) > 4:
+    scenario = sys.argv[3]
+    map_config = sys.argv[4]
+if len(sys.argv) > 5:
+    epochs = int(sys.argv[5])
+
+memory = map(lambda x: type + "_trajectories/" + type + "_" + scenario + "_" + str(x) + ".pkl", range(1, 6))
 run('simpleActionsTFAgent',
     ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False, resolution=(90, 60),
-                     config_file_path="./config/health_gathering.cfg", epochs=0, test_episodes_per_epoch=10,
-                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01, frames_limit=frames_limit)), 10,
+                     config_file_path="./config/" + map_config + ".cfg", epochs=epochs, test_episodes_per_epoch=20,
+                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01, frames_limit=frames_limit)), 1,
     agents)
