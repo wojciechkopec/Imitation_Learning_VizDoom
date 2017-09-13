@@ -43,10 +43,11 @@ Te pięć wartości łączone jest w jedną krotkę, a każda krotka dodawana je
 
 Program \textit{spectator.py} pozwala ekspertowi odbyć zadaną liczbę epizodów, po czym serializuje listę krotek z zapisem trajektorii do pliku za pomocą biblioteki \textit{pickle}.
 
-Dla scenariuszy \textit{Trudne zbieranie apteczek} i \textit{Obrona środka} na raz zbierane są trajektorie 3 epizodów. Przy poprawnej grze każdy z epizodów składa się z 1,5 do 2 tysięcy kroków, których odbycie zajmuje od jednej do półtorej minuty. Pięć minut ciągłej prezentacji pozwala na wygenerowanie danych wystarczających do nauki i jest wystarczająco krótkim czasem, żeby nie znużyć eksperta. Dla scenariusza \textit{Podstawowego} na raz zbierane są trajektorie 10 epizodów. Ten scenariusz jest krótki w porównaniu do poprzednich, a każdy epizod trwa zaledwie kilka sekund.
+Dla scenariuszy \textit{Trudne zbieranie apteczek} i \textit{Obrona środka} na raz zbierane są trajektorie 3 epizodów. Przy poprawnej grze każdy z epizodów składa się z około 2 tysięcy kroków, których odbycie zajmuje od jednej do półtorej minuty. Pięć minut ciągłej prezentacji pozwala na wygenerowanie danych wystarczających do nauki i jest wystarczająco krótkim czasem, żeby nie znużyć eksperta.
 
 \subsubsection{Zestaw danych uczących}
-Dla każdego scenariusza (\textit{Podstawowy}, \textit{Obrona środka} i \textit{Trudne zbieranie apteczek})  i dla każdego rodzaju eksperta (\textit{Zwykły ekspert} i \textit{Świadomie prezentujący ekspert}) wygenerowano po 5 zbiorów trajektorii (czyli odpowiednio po 50 i 15 epizodów dla scenariusza \textit{Podstawowego} i pozostałych.
+Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apteczek}) i dla każdego rodzaju eksperta (\textit{Zwykły ekspert} i \textit{Świadomie prezentujący ekspert}) wygenerowano po 5 zbiorów trajektorii, czyli odpowiednio po 15 epizodów.
+[ILE KROKÓW?]
 
 \subsubsection{Odczyt}
 

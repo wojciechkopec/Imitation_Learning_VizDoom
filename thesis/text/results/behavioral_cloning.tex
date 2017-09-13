@@ -1,1 +1,30 @@
 \section{Kopiowanie zachowań - wyniki}
+
+\subsection {Zachowanie eksperta}
+Podczas prezentacji ekspert zachowuje się tak, jak zachowywałby się człowiek podczas normalnej gry. Działa na podstawie akutalnie widzianego stanu i pamięci na temat poprzednio odwiedzonych stanów (np. pamięta, że poza polem widzenia agenta został niezabity przeciwnik, lub że za rogiem labiryntu zostały niezebrane apteczki). W szczególności ekspert:
+\begin{itemize}
+\item{w scenariuszu \textit{Trudne zbieranie apteczek} wraca od regionów, w których zostały pominięte wcześniej apteczki}
+\item{w scenariuszu \textit{Trudne zbieranie apteczek} znajdując się w rogu lub na ciasnym zakręcie wychodzi z zakrętu na podstawie zapamiętanego wcześniej kierunku ruchu}
+\item{w scenariuszu \textit{Obrona środka} wbrew optymalnej taktyce okazyjnie strzela do odległych przeciwników}
+\item{W scenariuszu \textit{Obrona środka} odwraca się przeciwników, którzy nie są już widoczni na ekranie}
+\end{itemize}
+
+
+\subsection{Wyniki}
+
+W tabelach \ref{tab:simple_expert_results_dtc} i \ref{tab:simple_expert_results_hg} przedstawione są wyniki osiągnięte przez agenta w eksperymentach.
+
+Przy testowaniu scenariusza \textit{Obrona środka} dla każdej konfiguracji zostało nauczonych 10 agentów, z których każdy został przetestowany odgrywając 10 epizodów. Wynikowa próbka danych składa się ze 100 wyników dla każdej z konfiguracji.
+
+Przy testowaniu scenariusza \textit{Trudne zbieranie apteczek} dla każdej konfiguracji zostało nauczonych od 82 do 111 agentów, z których każdy został przetestowany odgrywając 20 epizodów. Wynikowa próbka danych składa się z od 1640 do 2220 wyników dla każdej z konfiguracji.
+
+
+\begin{figure}[H]
+\csvautotabular{data/simple_expert_results_dtc.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{zwykłego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}.}\label{tab:simple_expert_results_dtc}}
+\end{figure}
+
+\begin{figure}[H]
+\csvautotabular{data/simple_expert_results_hg.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{zwykłego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Trudne zbieranie apteczek}.}\label{tab:simple_expert_results_hg}}
+\end{figure}
+
+\subsection{Zachowanie eksperta}

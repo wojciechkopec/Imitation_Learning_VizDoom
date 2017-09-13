@@ -1,1 +1,37 @@
-\section{DAgger - wyniki}
+\section{Agregacja zbioru danych - wyniki}
+
+Na początku działania algorytmu agent jest uczony identycznie jak w metodzie \textit{klonowania zachowań}, na zestawie trajektorii \textit{świadomie prezentującego eksperta} o wielkośc 6000 kroków. Następnie agent odgrywa 3 epizody o długości 2000 kroków, podczas których ekspert może przejąć kontrolę nad agentem i poprawić jego zachowanie. Kroki wykonane przez eksperta są dodawane do \textit{pamięci powtórek} 5 razy (zwiększenie wagi decyzji eksperta). Po zakończeniu każdego epizodu wagi sieci neuronowej są resetowane, a cała sieć jest uczona od początku na podstawie rozszerzonego zestawu danych (tzn. na podstawie początkowych trajektorii uczących i kroków wykonanych podczas gry przez eksperta). Po nauczeniu sieci wykonywanych jest 20 epizodów testowych.
+
+Testy zostały przeprowadzone wyłącznie na scenariuszu \textit{Trudne zbieranie apteczek}, ponieważ na scenariuszu \textit{Obrona środka} nie widać było wyraźnego pola do poprawy w stosunku do wyników metody \textit{klonowania zachowań} z zestawem trajektorii \textit{świadomie prezentującego eksperta}.
+
+Eksperyment został powtórzony 10 razy. Już po tej niewielkiej liczbie powtórzeń można było zaobserwować tendencję zachowania wynikowego agenta i osiąganych przez niego wyników, dlatego dalsze czasochłonne eksperymenty nie były kontynuowane. Testy z wykorzystaniem pozostałych technik przekazywania kontroli do eksperta nie były wykonane z powodu niezadawalających wyników wykonanych eksperymentów.
+
+\subsection {Zachowanie eksperta}
+Ekspert skupia się na wyeliminowaniu problemu wchodzenia w miny. Ekspert przejmuje kontrolę gdy agent zachowuje się, jakby miał popełnić błąd. Ekspert sporadycznie reaguje na nieoptymalne, ale nie błędne zachowanie agenta. Wielokrotnie ekspert nie potrafi zareagować na działanie agenta wystarczająco szybko, żeby uniknąć popełnienia błędu. Ponieważ ekspert zawsze przejmuje kontrolę w sytuacjach awaryjnych, jego zachowania mogą być odmienne od zachowań, które przejawiałby w identycznej sytuacji podczas normalnej gry. W szczególności ekspert:
+
+\begin{itemize}
+\item{znajdując się przed miną nie wymija jej, ale w miarę możliwości odwraca się i szuka innej drogi}
+\item{jeżeli agent zapętli się na niewielkim fragmencie labiryntu skierowuje go do innych rejonów}
+\item{pomaga wychodzić z krótkich pętli zachowań (np. zablokowanie w rogu) w optymalnym kierunku}
+\item{sporadycznie nakierowuje agenta na konkretne apteczki, jeżeli w danej sytuacji jego polityka wyboru apteczek jest błędna}
+\item{wielokrotnie przejmuje kontrolę nad agentem zbyt późno, żeby zapobiec wejściu w minę}
+\end{itemize}
+
+W tabeli \ref{tab:dagger_results} przedstawiono średnie wyniki uzyskiwane przez metodę \textit{agregacji zbioru danych} podczas eksperymentów. Punktem startowym są wyniki uzyskane za pomocą metody \textit{klonowania zachowań}, bez dodatkowych działań eksperta. W kolejnych wierszach tabeli przedstawione są średnie wyniki testów w kolejnych epizodach nauki. Ocenione kroki oznaczają orientacyjną liczbę kroków, które ocenił ekspert (wliczając to początkowe trajektorie uczące). Obejrzane kroki to liczba kroków wykonanych podczas nauki (wliczając to początkowe trajektorie uczące i kroki agenta, które obserwował ekspert). Zmiana wyniku i odchylenie standardowe wyniku oznaczają średnią i odchylenie standardowe zmiany wyniku testowego w stosunku do wyników testowych sprzed 1 epizodu. 
+
+\begin{figure}[H]
+\csvautotabular{data/dagger_results.csv}{\caption{Wyniki agenta nauczonego za pomocą metody \textit{agregacji zbioru danych} w zależności od liczby kroków uczących w scenariuszu \textit{Trudne zbieranie apteczek}.}\label{tab:dagger_results}}
+\end{figure}
+
+\subsection {Zachowanie agenta}
+Wizualna ocena zachowania agenta jest odwrotna do osiąganych wyników dla istotnej części potórzeń eksperymentu. Już po pierwszym epizodzie zaczynają się pojawiać objawy przeuczenia: agent ,,wpada w rezonans'' na rozwidleniach i w rogach labiryntu (na zmiane wykonując akcje ,,lewo'' i ,,prawo'' nie ruszając się prawie z miejsca) oraz wielokrotnie utyka w jednym, małym obszarze labiryntu (np. wybierając na każdym rozwidleniu skręt w prawo i wracając po chwili do punktu wyjścia). W niektórych przypadach można zaobserwować częściowe omijanie min, najczęściej jednak ten sam agent po kilku wzorowych ominięciach min wchodzi bez zawahania prosto w następną. Zdaża się też, że agent postawiony przed miną brzy braku jakichkolwiek apteczek w polu widzenia po chwili ,,rezonującego'' wahania wchodzi z premedytacją prosto w tę minę. Po zakończeniu uczenia agent regularnie zacina się w losowych miejscach labiryntu, co nie zdarza się raczej na początku uczenia.
+
+Mimo wzrostu średnich wyników punktowych, na podstawie oceny wizualnej agent zachowuje się gorzej po zastosowaniu metody agregacji zbioru danych niż przed jej zastosowaniem.
+
+\subsection {Analiza i wnioski}
+
+Ekspert przejmuje kontrolę w tylko w sytuacjach awaryjnych, a jego decyzje muszą być dołączone do zbioru danych z większą wagą, żeby wywarły jakikolwiek wpływ na zachowanie agenta. Z powodu pierwszego z aspektu zachowanie eksperta podczas prezentacji ,,poprawiających'' może zasadniczo różnić się od zachowania które ekspert przejawiałby znajdując się w analogicznej sytuacji podczas normalnej, ciągłej gry. Przy tak małym zestawie danych uczących zachowania niespójne z początkowymi trajektoriami uczącymi sprawiają, że agent generalizuje ,,poprawki'' eksperta na inne sytuacje, co pogarsza jego zachowanie tam, gdzie zachowywał się wcześniej poprawnie.
+
+Preces nauki jest długi i obciążający dla eksperta, z przeplatającymi się momentami oczekiwania na zakończenie przetwarzania i momentami skupionej kontroli zachowań agenta - dlatego czas trawania całego algorytmu, a nie kroki wykonane podczas nauki przez agenta powinny być przedmiotem porównania. Z punktu widzenia eksperta poświęcenie tego samego czasu na generowanie kolejnych trajektorii prezentacyjnych jest znacznie mniej obciążające niż obserowanie agenta i rozważanie w każdym momencie, czy agent jest na skraju popełnienia błędu i konieczna jest reakcja.
+
+Średni wynik uzsykiwany przez agenta w kolejnych iteracjach metody rośnie, ale wzrost wyników jest wolniejszy niż przy nauce inną metodą przy analogicznym zwiększaniu liczby kroków uczących. Znaczny rozrzut wyników sprawia też, że metodę trudno uznać za godną zaufania.
