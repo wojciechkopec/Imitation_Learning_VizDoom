@@ -1,5 +1,5 @@
 # Imitation_Learning_VizDoom
-Learing from visual input with VizDoom environment.
+Learning from visual input with VizDoom environment.
 <br>
 See VizDoom page: https://github.com/Marqt/ViZDoom
 
