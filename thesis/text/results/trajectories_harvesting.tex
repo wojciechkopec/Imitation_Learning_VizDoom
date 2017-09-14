@@ -19,7 +19,7 @@ Tryb SPECTATOR, wbrew intuicji, umożliwia komputerowi obserwowanie gry człowie
         reward = game.get_last_reward()
 \end{lstlisting}
 
-Obrazy z gry zapisywane i przetwarzane są nie w kolorze, ale w skali szarosci. Dzięki temu zajętość pamięciowa każdego ze stanów jest trzykrotnie mniejsza niż kolorowego odpowiednika. Według autorów platformy VizDoom i według krótkich eksperymentów przeprowadzonych w ramach tej pracy spadek jakości agentów w stosunku do kolorowego trybu jest pomijalny.
+Obrazy z gry zapisywane i przetwarzane są skali szarosci, a nie w kolorze. Dzięki temu zajętość pamięciowa każdego ze stanów oraz wielkość początkowych warstw uczonej sieci neuronowej jest trzykrotnie mniejsza niż kolorowego odpowiednika. Według autorów platformy VizDoom i według krótkich eksperymentów przeprowadzonych w ramach tej pracy spadek jakości agentów w stosunku do kolorowego trybu jest pomijalny.
 \begin{lstlisting}[language=iPython]
 game.set_screen_format(ScreenFormat.GRAY8)
 game.set_screen_resolution(ScreenResolution.RES_640X480)
@@ -43,10 +43,10 @@ Te pięć wartości łączone jest w jedną krotkę, a każda krotka dodawana je
 
 Program \textit{spectator.py} pozwala ekspertowi odbyć zadaną liczbę epizodów, po czym serializuje listę krotek z zapisem trajektorii do pliku za pomocą biblioteki \textit{pickle}.
 
-Dla scenariuszy \textit{Trudne zbieranie apteczek} i \textit{Obrona środka} na raz zbierane są trajektorie 3 epizodów. Przy poprawnej grze każdy z epizodów składa się z około 2 tysięcy kroków, których odbycie zajmuje od jednej do półtorej minuty. Pięć minut ciągłej prezentacji pozwala na wygenerowanie danych wystarczających do nauki i jest wystarczająco krótkim czasem, żeby nie znużyć eksperta.
+Dla scenariuszy \textit{Trudne zbieranie apteczek} i \textit{Obrona środka} przy jednym uruchomieniu programu zbierane są trajektorie 3 epizodów. Przy poprawnej grze każdy z epizodów składa się z około 2 tysięcy kroków, których odbycie zajmuje od jednej do półtorej minuty. Pięć minut ciągłej prezentacji pozwala na wygenerowanie danych wystarczających do nauki i jest wystarczająco krótkim czasem, żeby nie znużyć eksperta.
 
-\subsubsection{Zestaw danych uczących}
-Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apteczek}) i dla każdego rodzaju eksperta (\textit{Zwykły ekspert} i \textit{Świadomie prezentujący ekspert}) wygenerowano po 5 zbiorów trajektorii, czyli odpowiednio po 15 epizodów.
+\subsubsection{Zestaw trajektorii uczących}
+Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apteczek}) i dla każdego rodzaju eksperta (\textit{zwykły ekspert} i \textit{świadomie prezentujący ekspert}) wygenerowano po 5 zbiorów trajektorii, czyli odpowiednio po 15 epizodów.
 [ILE KROKÓW?]
 
 \subsubsection{Odczyt}
@@ -54,7 +54,7 @@ Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apt
 Program agenta otrzymuje listę plików z paczkami trajektorii do wykorzystania i informację o maksymalnej liczbie klatek, jaką ma wczytać. Program przetwarza pliki w losowej kolejności. Z każdego pliku trajektorie odczytywane są po kolei, aż limit odczytanych klatek nie zostanie osiągnięty lub aż wszystkie pliki nie zostaną przetworzone.
 Dane w ramach jednego pliku nie są przetwarzane w losowej kolejności, ponieważ:
 \begin{itemize}
-\item{agent mógłby wyciągać dodatkowe informacje na podstawie przebytej sekwencji stanów (np. odtwarzać wartości q)}
+\item{agent mógłby zdobywać dodatkowe informacje na podstawie przebytej sekwencji stanów (np. odtwarzać wartości q)}
 \item{liczba kroków z poszczególnymi akcjami może być silnie niezbalansowana, a losowe próbkowanie trajektorii mogło by skutkować zestawem danych zupełnie pozbawionym informacji o niektórych akcjach}
 \end{itemize}
 Odczytane klatki zapisywane są bezpośrednio do pamięci powtórek agenta, po uprzednim przeskalowaniu obrazów-stanów do zadanej rozdzielczości.
