@@ -1,0 +1,8 @@
+Konfiguracja,Wynik,Gen. trajektorii,Algorytm,Czas
+Zwykły ekspert 12 000 kroków,929.9,10min,3min,13min
+Prezentujący ekspert 12 000 kroków,1078.4,10min,3min,13min
+Agregacja zbioru danych 12 000 kroków*,942.29,5min,14min,19min
+Prezentujący ekspert 12 000 kroków **,979.9,10min,4min,14min
+Prezentujący ekspert 18 000 kroków **,1078.4,15min,5min,20min
+Q-learning 300 000 kroków***,1000,0min,9h,9h
+Q-learning 1 000 000 kroków***,1300,0min,29h,29h
