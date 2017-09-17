@@ -1,5 +1,44 @@
 \section{Wykorzystany agent - implementacja}
 
-Implementacja agenta, który posłużył do wykonania eksperymentów opsiywanych w tym rozdziale znajduje się w pliku \textit{actions\_estimator\_tf.py}. Agent może realizować zarówno algorytmy \textit{kopiowania zachowań} jak i \textit{agregacji zbioru danych}.
+Implementacja agenta, który posłużył do wykonania eksperymentów opsiywanych w tym rozdziale znajduje się w pliku \textit{actions\_estimator\_tf.py}. Agent w zależności od ustawień może realizować zarówno algorytmy \textit{kopiowania zachowań} jak i \textit{agregacji zbioru danych}. Implementacja agenta opiera się na głębokiej sieci konwolucyjnej modelującą funkcję wyboru $stan \rightarrow akcja$.
+
+
+\subsection{Sieć neuronowa}
+
+\subsubsection{Architektura}
+Zastosowana architektura opiera się na tej zaproponowanej w pracy \cite{mnih2015human} i wykorzystanej dalej w przykładach środowiska VizDoom i w pracy \cite{DBLP:journals/corr/KempkaWRTJ16}. Sieć składa się kolejno z:
+
+\begin{enumerate}
+\item{warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy konwolucyjnej z 8 filtrami o wielkości 3x3, krokiem 2x2 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{warstwy w pełni połączonej o wielkości 256 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy w pełni połączonej o wielkości 128 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{warstwy wyjściowej w pełni połączonej z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, w której każdy neuron wyjściowy odpowiada jednej akcji}
+\item{warstwy softmax}
+\end{enumerate}
+
+W stosunku do wersji z pracy pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout, ale wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów.
+
+Liczba i wielkości warstw zostały dobrane eksperymentalnie. Pozostałe parametry sieci, w szczególności parametry filtrów warstw konwolucyjnych zostały wybrane na podstawie wzorców z literatury.
+
+\subsubsection{Pamięć powtórek}
+Dla części scenariuszy (\textit{Obrona środka}) problemem przy uczeniu jest niezbalansowanie zbioru danych (niektóre akcje występują znacznie rzadziej niż inne). Zamiast popularnej metody \textit{oversamplingu} zastosowano rozwiązanie, w którym dla każdej z akcji przetrzymywana jest osobna pamięć powtórek. Przy wielkości batcha n i liczbie dostępnych akcji a z każdej z kolejnych pamięci powtórek 
+pobierana jest losowa próbka o wielkości n/a. Uzyskane podpróbki łączone są w losowej kolejności i zwracane jako ostateczna próbka.
+
+Implementacja pamięci znajduje się w pliku \textit{replay\_memory.py}.
+
+\subsubsection{Pozostałe ustawienia}
+
+Wagi sieci aktualizowane są za pomocą metody RMSProp \textit{(ang. Root Mean Square Propagation)}. Prędkość uczenia \textit{(ang. learning rate)} została eksperymentalnie ustalona na 0.00025. Sieć jest uczona za pomocą paczek danych \textit{(ang. batch)} o wielkości 64.
+
+
+
+
+
+
+
+
 
 

@@ -1,1 +1,22 @@
 \chapter{Wnioski i perspektywy rozwoju}
+
+Celem tej pracy było zbadanie skuteczności \textit{uczenia przez demonstację} na podstawie informacji obrazowej w środowisku 3D. Badania zostały zrealizowane na przykładzie popularnej gry 3D Doom, z wykrzystaniem platformy VizDoom.
+
+Dzięki eksperymentom przeprowadzonym na najtrudniejszych scenariuszach zaproponowanych w ramach platformy VizDoom wykazano, że oparte na głębokich sieciach neuronowych agenty nauczone przy pomocy metod \textit{uczenia przez demonstrację} uzyskują wyniki zbliżone do wyników uzyskanych za pomocą \textit{Q-learningu} przy ponad skukrotnie krótszym czasie nauki. 
+
+W ramach pracy skutecznie zaimplementowano i przetestowano metodę \textit{klonowania zachowań (ang. behavioral cloning)}, która pozwoliła na nauczenie skutecznych agentów na podstawie prezentacji porządanego zachowania przez ludzkiego eksperta, bez konieczności interakcji ze środowiskiem.
+
+Następnie zaimplementowano i przetestowano metodę \textit{agregacji zbioru danych (ang. Dataset Aggregation, DAgger)}, wykazując i analizując jej nieskuteczność w zastosowaniu do badanego problemu.
+
+Ostatecznie zaprezentowano i eksperymentalnie wykazano, że w \textit{uczeniu przez demonstrację} świadoma prezentacja eksperta, mająca na uwadze potrzeby percepcyjne uczonego agenta, może skutecznie podnieść uzyskiwane wyniki.
+
+\subsubsection{Perspektywy rozwoju}
+
+Uzyskane agenty prezentują wysoki poziom skuteczności i świadomości otoczenia, ale w ramach żadnej z metod nie udało się wyeliminować wszystkich nieprawidłowych zachowań.
+
+Jednym z obiecujących kierunków rozwoju jest znalezienie skutecznego sposobu umożliwienia ekspertowi oznaczania wybranych zachowań jako nieprawidłowe i generowanie na tej podstawie informacji uczących dla agenta.
+
+Poprawienie drobnych nieprawidłowości i niedoskonałości agentów za pomocą metod \textit{uczenia przez demonstrację} jest trudne do zrealizowania, dlatego innym kierunkiem rozwoju, zaproponowanym niedawno przez innych badaczy w pracy \cite{DBLP:journals/corr/HesterVPLSPSDOA17}, jest łączenie metod \textit{uczenia przez demonstrację} z \textit{Q-learningiem}. Połączony algorytm byłby w stanie szybko uzyskać przyzwoicie zachowującego się agenta nauczonego na podstawie prezentacji eksperta, a następnie doskonalić jego zachowanie i eliminować niedoskonałości za pomocą klasycznych metod uczenia ze wzmocnieniem.
+
+
+

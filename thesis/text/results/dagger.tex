@@ -19,6 +19,8 @@ Ekspert skupia się na wyeliminowaniu problemu wchodzenia w miny. Ekspert przejm
 \item{wielokrotnie przejmuje kontrolę nad agentem zbyt późno, żeby zapobiec wejściu w minę}
 \end{itemize}
 
+
+\subsection{Wyniki}\label{dagger_results}
 W tabeli \ref{tab:dagger_results} przedstawiono średnie wyniki uzyskiwane przez metodę \textit{agregacji zbioru danych} podczas eksperymentów. Punktem startowym są wyniki uzyskane za pomocą metody \textit{klonowania zachowań}, bez dodatkowych działań eksperta. W kolejnych wierszach tabeli przedstawione są średnie wyniki testów w kolejnych epizodach nauki. Ocenione kroki oznaczają orientacyjną liczbę kroków, które ocenił ekspert (wliczając to początkowe trajektorie uczące). Obejrzane kroki to liczba kroków wykonanych podczas nauki (wliczając to początkowe trajektorie uczące i kroki agenta, które obserwował ekspert). Zmiana wyniku i odchylenie standardowe wyniku oznaczają średnią i odchylenie standardowe zmiany wyniku testowego w stosunku do wyników testowych sprzed 1 epizodu. 
 
 Uczenie sieci na podstawie 6000 kroków trajektorii trwa około minuty, podobnie jak wykonanie 20 gier testowych. Każdy epizod gry agenta trwa około dwie minuty, ponieważ przejęcie kontroli nad agentem i decydowanie o optymalnym ruchu dla danego stanu jest w praktyce wolniejsze niż normalna, płynna gra. W sumie każda iteracja metody \textit{agregacji zbioru danych} trwa około 4 minut.
