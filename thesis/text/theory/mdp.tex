@@ -1,10 +1,10 @@
 \section{Proces decyzyjny Markowa}\label{mdp}
 
-Środowisko, w którym porusza się program jest matematycznie zamodelowane jako proces decyzyjny Markowa \textit{(ang. Markov decision process, MDP)} \cite{bellman1954}. Oznacza to, że środowisko ma w każdym momencie czasu określony stan i umożliwia wykonanie określonych akcji, za które agent może otrzymać pozytywną lub negatywną nagrodę. Rezultatem wykonania akcji w danym stanie jest przejście do następnego stanu. Zakłada się, że nowy stan jest zależny tylko od stanu poprzedniego i wykonanej akcji. Takie środowisko ma właściwość braku pamięci\textit{lub inaczej, właśność Markowa}. Celem agenta jest zgromadzenie nagród o jak największej sumie wartości. Im bardziej odległe w przyszłości nagrody, tym mniej są wartościowe (są dyskontowane).
+Środowisko, w którym porusza się program, albo inaczej agent, jest matematycznie zamodelowane jako proces decyzyjny Markowa \textit{(ang. Markov decision process, MDP)} \cite{bellman1954}. Oznacza to, że środowisko ma w każdym momencie czasu określony stan i umożliwia wykonanie określonych akcji, za które agent może otrzymać pozytywną lub negatywną nagrodę. Rezultatem wykonania akcji w danym stanie jest przejście do następnego stanu. Zakłada się, że nowy stan jest zależny tylko od stanu poprzedniego i wykonanej akcji. Takie środowisko ma właściwość braku pamięci (lub inaczej, \textit{właśność Markowa}). Celem agenta jest zgromadzenie nagród o jak największej sumie wartości. Im bardziej odległe w przyszłości nagrody, tym mniej są wartościowe (są dyskontowane).
 
 \vspace{5mm}
 
-Formalnie, proces decyzyjny Markowa definiujemy jako krotkę $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$, gdzie:
+Formalnie, proces decyzyjny Markowa definiujemy jako piątkę $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$, gdzie:
 \begin{itemize}
 \item $S$ jest skończonym zbiorem możliwych stanów środowiska,
 \item $A_s$ jest skończonym zbiorem możliwych akcji wykonywalnych w stanie $s$,
@@ -30,8 +30,6 @@ $$Q(s,a) = \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma \max_{a' \in A(s)}Q(s',a'))$$
 
 \vspace{5mm}
 
-W badanym problemie środowisko VizDoom jest \textit{częściowo obserwowalnym procesem decyzyjnym Markowa}, co oznacza, że stan obserwowany przez agenta nie zawiera pełnej informacji o środowsisku. Środowisko to jest stochastyczne, co oznacza że skutki działań agenta nie są deterministyczne - wielokrotne wykonanie tej samej akcji w tym samym stanie może przynieść różne rezultaty.
-
 Znając funkcje przejść możliwe jest iteracyjne określenie optymalnej polityki działania agenta. 
 
-
+W badanym problemie środowisko VizDoom jest \textit{częściowo obserwowalnym procesem decyzyjnym Markowa}, co oznacza, że stan obserwowany przez agenta nie zawiera pełnej informacji o środowsisku. Środowisko to jest stochastyczne, co oznacza że skutki działań agenta nie są deterministyczne - wielokrotne wykonanie tej samej akcji w tym samym stanie może przynieść różne rezultaty.

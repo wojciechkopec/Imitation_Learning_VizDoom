@@ -9,18 +9,19 @@ Oczywiście, takie zachowanie eksperta skutkuje uzyskiwaniem przez niego nieopty
 
 \subsection{Techniczna implementacja}
 
-Architektura sieci neuronowej jest identyczna z architekturą zastosowaną w \ref{behavioral_cloning}.
+Techniczna implementacja jest identyczna z opisaną w rozdziale \ref{behavioral_cloning}.
 
 \subsection{Zachowanie}
 Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
 
 W scenariuszu \nameref{scenario_dtc} ekspert podczas świadomej prezentacji powstrzymywał się od strzelania do odległych przeciwników i świadomie preferował strzelanie do szybszych przeciwników. Świadoma prezentacja zmniejszyła liczbę niepotrzebnych strzałów nauczonego agenta.
 
-W scenariuszu \nameref{scenario_hgs} ekspert podczas świadomej prezentacji zawsze wychodził z rogów obracając się w tę samą stronę i w miarę możliwości odwracał się od tras z minami. Będąc otoczony przez miny wybierał trasę jak najbardziej odległą od nich. Świadoma prezentacja prawie całkowicie wyeliminowała wpadanie w nieskończone pętle ruchów w rogach. W niektórych sytuacjach zdarzało się, że agent zawracał za to w ciasnych, ale możliwych do przejścia korytarzach - było to zachowanie wyraźnie nieoptymalne, ale bez zauważalnego wpływu na osiągane wyniki. Niestety, świadoma prezentacja nie wyeliminowała wchodzenia w miny. Wynik punktowy agenta zwiększył się istotnie po zastosowaniu świadomej prezentacji.
+W scenariuszu \nameref{scenario_hgs} ekspert podczas świadomej prezentacji zawsze wychodził z rogów obracając się w tę samą stronę i czasami odwracał się od tras z minami. Świadoma prezentacja prawie całkowicie wyeliminowała wpadanie w nieskończone pętle ruchów w rogach. W niektórych sytuacjach zdarzało się, że agent zawracał za to w ciasnych, ale możliwych do przejścia korytarzach - było to zachowanie wyraźnie nieoptymalne, ale bez zauważalnego wpływu na osiągane wyniki. Niestety, świadoma prezentacja nie wyeliminowała wchodzenia w miny. Wynik punktowy agenta zwiększył się istotnie po zastosowaniu świadomej prezentacji.
 
-To, jak ważna jest świadoma prezentacja widoczne było przy zwiększaniu wielkości trajektorii eksperta użytych do nauki klasyfikatora. Dla \nameref{scenario_dtc}, który jest prostszym scenariuszem i dla którego zysk ze świadomej prezentacji był mniej zauważalny, zwiększanie liczby trajektorii uczących prowadziło do wyższych wyników. Dla bardziej skomplikowanego \nameref{scenario_hgs} agent nauczony na podstawie małej liczby trajektorii świadomego eksperta przewyższał agenta nauczonego na większej liczbie trajektorii nieświadomego eksperta i agenta nauczonego na mieszance trajektorii. 
+To, jak ważna jest świadoma prezentacja widoczne było przy zwiększaniu wielkości trajektorii eksperta użytych do nauki klasyfikatora. Dla obu scenariuszy agent nauczony na podstawie małej liczby trajektorii świadomego eksperta przewyższał agenta nauczonego na większej liczbie trajektorii nieświadomego eksperta i agenta nauczonego na mieszance trajektorii. 
  
 \subsection{Wnioski}
 
-Dla bardziej skomplikowanych scenariuszy świadoma prezentacja eksperta jest prostym i bardzo skutecznym sposobem eliminowania części oczywistych błędów popełnianych przez agenta. Dla niektórych problemów i sytuacji może wypełniać zadanie postawione przed \ref{dagger} w wygodniejszy i bardziej naturalny sposób.
+Dla obu scenariuszy świadoma prezentacja eksperta jest prostym i bardzo skutecznym sposobem eliminowania części oczywistych błędów popełnianych przez agenta. Dla niektórych problemów i sytuacji może wypełniać zadanie postawione przed metodą agregacji zbioru dnaych w wygodniejszy i bardziej naturalny sposób.
+
 Świadoma prezentacja nie jest formalną metodą, a raczej wytyczną. Dzięki temu można ją z powodzeniem stosować w połączeniu z innymi technikami uczenia z ekspertem.

@@ -2,7 +2,7 @@
 
 Kopiowanie zachowań (ang. \textit{Behavioral Cloning}) stanowi najbardziej podstawowe podejście do uczenia przez demonstację. Na podstawie zebranych trajektorii eksperta uczony jest klasyfikator, który przyjmując na wejściu stan $s$ ma za zadanie przewidzieć, jaką akcję $a$ wykonałby w danej sytuacji ekspert.
 
-Mimo że dla wielu problemów Kopiowanie zachowań jest nieskuteczne (powody opisane są w \ref{bcloning}), na wyniki osiągane na badanych scenariuszach VizDoom są bardzo zadawalające.
+Mimo że dla wielu problemów Kopiowanie zachowań jest nieskuteczne (powody opisane są w rozdziale \ref{bcloning}), to wyniki osiągane na badanych scenariuszach VizDoom są bardzo zadawalające.
 
 Kopiowanie zachowań jest podstawą bardziej zaawansowanych technik opisanych w dalszych punktach.
 
@@ -24,7 +24,7 @@ Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akc
 
 Zbieranie danych zostało zrealizowane za pomocą trybu SPECTATOR środowiska VizDoom, pozwalającemu agentowi obserować grę człowieka. Podczas gry eksperta zapisywane są stany, akcje i nagrody dla każdej kolejnej klatki. Trajektoria eksperta serializowana jest do pliku za pomocą narzędzia \textit{pickle} dostępnego dla języka python.
 
-Eksperta gra przy rozdzielczości 640x480 pikseli, i takiej wielkości obrazy zapisywane są do pliku z trajektorią. Konsekwencją są bardzo duże rozmiary plików (3GB dla 6 tysięcy klatek). Obrazy nie są zmniejszane przed zapisem, żeby umożliwić swobodne manipulowanie wielkością obrazów używanych do uczenia klasyfikatora, bez konieczności generowania nowych trajektorii eksperta przy innych ustawieniach obrazu.
+Eksperta gra przy rozdzielczości 640x480 pikseli, i takiej wielkości obrazy zapisywane są do pliku z trajektorią. Konsekwencją są bardzo duże rozmiary plików (4GB dla 6 tysięcy klatek). Obrazy nie są zmniejszane przed zapisem, żeby umożliwić swobodne manipulowanie wielkością obrazów używanych do uczenia klasyfikatora, bez konieczności generowania nowych trajektorii eksperta przy innych ustawieniach obrazu.
 
 \vspace{5mm}
 
@@ -63,7 +63,7 @@ with open('recorder_episode.pkl', 'wb') as f:
 
 \subsection{Zachowanie}
 Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
-W obu przypadkach kopiowanie zachowań nauczone tylko na podstawie 3 trajektorii eksperta (6 tysięcy klatek) osiągało wizualnie sensowne zachowanie agentów i zaskakująco dobre wyniki.
+W obu przypadkach kopiowanie zachowań nauczone już na podstawie 3 trajektorii eksperta (6 tysięcy klatek) osiągało wizualnie sensowne zachowanie agentów i zaskakująco dobre wyniki.
 
 Dla \nameref{scenario_dtc} agentowi zdarzało się strzelać w nieodpowiednim momencie lub nie strzelać, kiedy było to potrzebne. Częste było też nieoptymalne zachowanie w postaci strzelania do odległych przeciwników, podczas gdy inni przeciwnicy mogli podkraść się za plecy agenta zabijając go i kończąc grę.
 
@@ -71,9 +71,9 @@ W tym scenariuszu zwiększanie liczby trajektorii eksperta użytych do uczenia z
 
 Dla \nameref{scenario_hgs} agentowi często zdarzało się blokować w rogach labiryntu, wpadając w nieskończoną pętlę akcji. Problem i rozwiązanie zostało opisane w \ref{presenting_expert}. Po wyelimininowaniu problemu agent zachowywał się wizualnie sensownie i osiągał przyzwoite wyniki. Problemem jest tylko nauczenie agenta omijania min.
 
-Na początku pracy ze scenariuszem ludzki Ekspert uznał miny za mniejsze apteczki i nie zauważył spadku życia po wejściu w nie. Wyniki uzyskiwane przez eksperta wchodzącego czasami w miny były tylko nieznacznie lepsze od wyników agenta nauczonego na podstawie tych trajektorii.
+Na początku pracy ze scenariuszem ludzki ekspert uznał miny za mniejsze apteczki i nie zauważył spadku życia po wejściu w nie. Wyniki uzyskiwane przez eksperta wchodzącego czasami w miny były tylko nieznacznie lepsze od wyników agenta nauczonego na podstawie tych trajektorii.
 
-W tym scenariuszu zwiększanie liczby trajektorii eksperta użytych do uczenia nie polepszało wyników agenta. 
+W pbu scenariuszach, po osiągnięciu pewnego poziomu, zwiększanie liczby trajektorii eksperta użytych do uczenia nie polepszało wyników agenta. 
 
 \subsection{Wnioski}
 W badanych scenariuszach Kopiowanie zachowań osiąga znacznie lepsze wyniki, niż sugerowałaby literatura i uzyskuje je w ciągu ułamka czasu potrzebnego klasycznym metodom uczenia ze wzmocnieniem. Uzyskani agenci w większości przypadków zachowują się sensownie, chociaż czasem popełniają systematyczne błędy. Kopiowanie zachowań wydaje się świetnym punktem startowym dla VizDooma i wydaje się wskazane, żeby inne metody rozszerzały to podejście, zamiast je zastępować.

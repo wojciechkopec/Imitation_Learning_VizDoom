@@ -12,7 +12,8 @@ W większości przypadków ekspert jest człowiekiem, który potrafi wykonać za
 \end{itemize}   
 
 Omawiane poniżej publikacje wykorzystują często ekspertów komputerowych - za ekspertów służą oddzielne, niezależne programy (przykładowo znające model środowiska i potrafiące dokonywać optymalnych decyzji). Przy nauce od komputerowych ekspertów nie występują opisane powyżej problemy, (w szczególności koszt i niespójność), co znacznie ułatwia i przyspiesza badania nad algorytmami uczenia przez demonstrację. Z drugiej strony, prawidłowości zaobserowane przy eksperymentach z ekspertem komputerowym mogą nie zachodzić przy użyciu ludzkiego eksperta i odwrotnie.
-Eksperci komputerowi mogą się sprawdzić w sytuacji, w której jeden wielozadaniowy i uniersalny agent uczy się wykonywania wielu zadań na podstawie prezentacji wielu wyspecjalizowanych do danego zadania programów.
+
+Eksperci komputerowi mogą się za to sprawdzić w sytuacji, w której jeden wielozadaniowy i uniersalny agent uczy się wykonywania wielu zadań na podstawie prezentacji wielu wyspecjalizowanych do danego zadania programów.
 
 Głównym celem stawianym przed uczeniem przez demonstrację jest szybkie uzyskiwanie zadowalających wyników lub uzyskiwanie ich bez potrzeby kontaktu ze środowiskiem w trakcie treningu.
 
@@ -31,8 +32,9 @@ W celu wyeliminowania tych ograniczeń \cite{DBLP:journals/corr/abs-1011-0686} p
 Opisane rozwiązanie zostało z powodzeniem przetestowane na przykładzie grania w proste gry, gdzie danymi wejściowymi były surowe dane obrazowe z ekranu. Wadą tego podejścia jest brak odrzucania nieskutecznych polityk podczas iteracji, co może prowadzić do niestabilnych wyników.
 
 Wykorzystanie analogicznego rozwiązania proponują \cite{DBLP:journals/corr/BengioVJS15}. Ich propozycja zakłada wybieranie z prawdopodobieństwem $\epsilon$ polityki eksperta i z prawdopodobieństwem $1-\epsilon$ polityki wyuczonej. Początkowa wartość $\epsilon$ powinna wynosić 1, aby klasyfikator mógł nauczyć się  odtwarzać politykę eksperta. Wraz z postępem nauki $\epsilon$ powinno stopniowo maleć do 0, aby klasyfikator miał szanse nauczyć się stanów nieodwiedzonych przez eksperta.
-\subsection{Agregacją zbioru danych}
-W kolejnej publikacji \cite{DBLP:journals/corr/abs-1011-0686} prezentują nowe podejście, nazwane agregacją zbioru danych \textit{(ang. Dataset Aggregation, DAgger)}. W uproszczeniu, podejście to jest następujące. W pierwszej iteracji algorytm zbiera dane testowe stosując politykę pokazaną przez eksperta, po czym trenuje klasyfikator odwzorowujący zachowanie eksperta na danym zbiorze danych. W każdej kolejnej iteracji algorytm stosuje politykę wygenerowaną w poprzedniej iteracji i dodaje dane uzyskane podczas jej stosowania do zbioru danych, po czym trenuje klasyfikator tak, by odwzorowywał zachowanie eksperta na całym zbiorze danych. Podobnie jak w poprzednim algorytmie, żeby przyspieszyć uczenie na pierwszych etapach algorytmu, dodano opcjonalną losową możliwość odpytania eksperta o decyzję dla wybranego stanu. Uzyskane z pomocą tej metody wyniki są wyraźnie lepsze od wyników metody SMILEe.
+
+\subsection{Agregacją zbioru danych}\label{dagger_desc}
+W kolejnej publikacji \cite{DBLP:journals/corr/abs-1011-0686} prezentują nowe podejście, nazwane agregacją zbioru danych \textit{(ang. Dataset Aggregation, DAgger)}. W uproszczeniu, podejście to jest następujące: w pierwszej iteracji algorytm zbiera dane testowe stosując politykę pokazaną przez eksperta, po czym trenuje klasyfikator odwzorowujący zachowanie eksperta na danym zbiorze danych. W każdej kolejnej iteracji algorytm stosuje politykę wygenerowaną w poprzedniej iteracji i dodaje dane uzyskane podczas jej stosowania do zbioru danych, po czym trenuje klasyfikator tak, by odwzorowywał zachowanie eksperta na całym zbiorze danych. Podobnie jak w poprzednim algorytmie, żeby przyspieszyć uczenie na pierwszych etapach algorytmu, dodano opcjonalną losową możliwość odpytania eksperta o decyzję dla wybranego stanu. Uzyskane z pomocą tej metody wyniki są wyraźnie lepsze od wyników metody SMILEe.
 
 Metodę testowano z wykorzystaniem klasyfikatorów SVM na przykładzie gry wyścigowej 3D Mario Cart (ludzki ekspert wybiera pomiędzy skręcaniem w lewo i w prawo) oraz z komputerowym ekspertem na przykładzie gry Mario.
 
