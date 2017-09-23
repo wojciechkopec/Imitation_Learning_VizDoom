@@ -12,9 +12,7 @@ Ważną różnicę w stosunku do Q-learningu stanowi fakt, że czas trwania meto
 
 Kopiowanie zachowań sprowadza się do klasycznego problemu uczenia nadzorowanego z wieloma klasami (możliwymi akcjami), z których tylko jedna etykieta na raz jest poprawna. Dane wejściowe stanowią obrazy przedstawiające stan, wynikiem jest etykieta akcji, którą należy wykonać. Jako klasyfikatora użyto głębokiej sieci neuronowej, o artchitekturze bazującej na architekturze z rozdziału \ref{q_learning}.
 
-Różnica pomiędzy architekturami sporowadza się do uczenia i interpretacji wyników. Przy Q-learningu sieć musi przewidywać wartość funkcji Q dla wszystkich akcji, a przy Kopiowaniu zachowań wystarczy określenie najbardziej pasującej akcji. Wykonane i przewidywane akcje są zakodowane za pomocą \textit{one-hot encoding}, a wynik uzyskiwany jest przez zastosowanie funkcji \textit{softmax} na wartościach q z architektury Q-learningu. Schemat sieci wygląda następująco.
-
-[SCHEMAT SIECI]
+Różnica pomiędzy architekturami sporowadza się do uczenia i interpretacji wyników. Przy Q-learningu sieć musi przewidywać wartość funkcji Q dla wszystkich akcji, a przy Kopiowaniu zachowań wystarczy określenie najbardziej pasującej akcji. Wykonane i przewidywane akcje są zakodowane za pomocą \textit{one-hot encoding}, a wynik uzyskiwany jest przez zastosowanie funkcji \textit{softmax} na wartościach q z architektury Q-learningu. Schemat sieci opisany jest w rozdziale \ref{agent_net}.
 
 Co istotne, dla większości scenariuszy problem uczenia stan $\to$ akcja charakteryzuje się niezbalansowanym zbiórem danych. Akcje ,,strzelaj'' występują znacznie rzadziej niż akcje ruchu. Oznacza to, że klasyfikator naiwnie nauczony na niezmienionym zbiorze danych, mimo dobrej teoretycznej trafności, będzie zupełnie nieskuteczny (np. nie wybierze nigdy akcji ,,strzelaj'').
 

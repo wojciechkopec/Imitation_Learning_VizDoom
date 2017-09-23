@@ -27,8 +27,15 @@ Uczenie sieci przebiega z prędkością około 100 kroków na sekundę, a jego p
 
 Maksymalny wynik możliwy do osiągnięcia w scenariuszu \textit{Obrona środka} to 25, a w scenariuszu \textit{Trudne zbieranie apteczek} 2100. Ekspert w większości prezentacji osiąga maksymalne wyniki, ale zdarzają się też wyniki porónywalne z wynikami zaprezentowanymi w tabelach.
 
-W tabelach \ref{tab:simple_expert_results_dtc} i \ref{tab:simple_expert_results_hg} przedstawione są wyniki osiągnięte przez agenta w przeprowadzonych eksperymentach.
+W tabelach \ref{tab:simple_expert_results_dtc} i \ref{tab:simple_expert_results_hg} oraz na rysunkach \ref{fig:simple_expert_results_dtc} i \ref{fig:simple_expert_results_hg} przedstawione są wyniki osiągnięte przez agenta w przeprowadzonych eksperymentach.
 
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/se_dtc_plot.png}}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{zwykłego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}}\label{fig:simple_expert_results_dtc}}
+\end{figure}
+
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/se_hg_plot.png}}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{zwykłego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Trudne zbieranie apteczek}}\label{fig:simple_expert_results_hg}}
+\end{figure}
 
 \begin{figure}[H]
 \csvautotabular{data/simple_expert_results_dtc.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{zwykłego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}.}\label{tab:simple_expert_results_dtc}}

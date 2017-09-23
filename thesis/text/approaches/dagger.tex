@@ -29,11 +29,13 @@ Losowe przekazywanie sterowania jest niepraktyczną metodą - dla analizowanych
 
 \subsubsection{Analiza niepewności sieci}
 \begin{enumerate}
-\item Przed wykonaniem każdej akcji sprawdzana jest jej niepewność sieci dla danego stanu [REF]. W przypadku wystąpienia zadanej liczby kolejnych niepewnych akcji sterowanie przekazywane jest do eksperta.
+\item Przed wykonaniem każdej akcji sprawdzana jest niepewność sieci dla danego stanu, przybliżana przez 1 - wartość aktywacji funkcji softmax dla danej akcji. W przypadku wystąpienia zadanej liczby kolejnych niepewnych akcji sterowanie przekazywane jest do eksperta.
 \item Po każdej akcji eksperta sprawdzana jest akcja, którą wykonałby agent. Jeżeli przez zadaną liczbę kolejnych kroków agent postąpiłby identycznie jak ekspert, to sterowanie wraca do agenta.
 \end{enumerate}
 
-Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowania. Wybrane tym sposobem okna działania eksperta częściej pokrywają się z oknami niepoprawnego działania agenta. W dalszym ciągu skuteczność metody nie jest zadowalająca - przyjęta miara niepewności powoduje, że agent może przekazać sterowanie do Eskperta w obliczu sytuacji, dla której więcej niż jedna akcja jest sensowna. Porównywanie akcji agenta i eksperta przez zadaną liczbę kroków jest skuteczne dla problemów z niewielką liczbą akcji, ale nieskuteczne w sytuacji, w której podobny efekt można uzyskać za pomocą różnych sekwencji kroków (przykładowo dojście do danego punktu za pomocą permutacji akcji ,,lewo'', ,,prosto'' i ,,lewo i prosto''). Podobnie jak przy losowym podejściu, dzięki automatycznemu działaniu możliwe jest działanie programu w przyspieszonym tempie poczas gry agenta. [NIEPEWNOŚĆ DO DYSKUSJI]
+Analiza niepewności sieci jest skuteczniejsza niż losowe przekazywanie sterowania. Wybrane tym sposobem okna działania eksperta częściej pokrywają się z oknami niepoprawnego działania agenta. W dalszym ciągu skuteczność metody nie jest zadowalająca - przyjęta miara niepewności powoduje, że agent może przekazać sterowanie do eskperta w obliczu sytuacji, dla której więcej niż jedna akcja jest sensowna. Porównywanie akcji agenta i eksperta przez zadaną liczbę kroków jest skuteczne dla problemów z niewielką liczbą akcji, ale nieskuteczne w sytuacji, w której podobny efekt można uzyskać za pomocą różnych sekwencji kroków (przykładowo dojście do danego punktu za pomocą permutacji akcji ,,lewo'', ,,prosto'' i ,,lewo i prosto''). Podobnie jak przy losowym podejściu, dzięki automatycznemu działaniu możliwe jest działanie programu w przyspieszonym tempie poczas gry agenta.
+
+Przyjęta miara niepewności łączy niepewność wynikającą z niewiedzy sieci i niepewność wynikającą z równożędności akcji, podczas gdy konieczne jest analizowanie tylko pierwszej z nich. Z uwagi na zachowanie całej metody lepsza miara nie była analizowana.
 
 \subsubsection{Decyzja eksperta}\label{expert_call}
 \begin{enumerate}

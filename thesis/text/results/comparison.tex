@@ -27,13 +27,23 @@ $\ast\ast$$\ast$ Przybliżone wartości wyników zaprezentowanych w pracy \cite{
 \end{figure}
 
 \subsubsection{Obrona środka}
-Przewaga metody ze \textit{świadomie prezentującym ekspertem} nad bazowym \textit{kopiowaniem zachowań} jest szczególnie widoczna w scenariuszu \textit{Obrona środka}: ,,świadomie'' trenowany agent osiąga zdecydowanie wyższe średnie wyniki obarczone znacznie mniejszą wariancją, a jego wyniki stabilizują się na najwyższym poziomie już po 6000 kroków, w przeciwieństwie do 9000 kroków metody bazowej.
+
+Przewaga metody ze \textit{świadomie prezentującym ekspertem} nad bazowym \textit{kopiowaniem zachowań} jest szczególnie widoczna w scenariuszu \textit{Obrona środka}: ,,świadomie'' trenowany agent osiąga zdecydowanie wyższe średnie wyniki obarczone znacznie mniejszą wariancją, a jego wyniki stabilizują się na najwyższym poziomie już po 6000 kroków, w przeciwieństwie do 9000 kroków metody bazowej. Porównanie wyników zaprezentowane jest na rysunku \ref{fig:dtc_comparison}.
+
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/comp_dtc_plot.png}}{\caption{Porównanie wyników poszczególnych metod dla scenariusza \textit{Obrona środka}}\label{fig:dtc_comparison}}
+\end{figure}
 
 Z ostatecznego porównania wykluczono metodę \textit{agregacji zbioru danych} ponieważ, jak wspomniano w dedykowanym jej podrozdziale, agent uzyskany za pomocą \textit{świadomie prezentującego eksperta} nie przejawia żadnych zachowań, które \textit{agregacja} miała poprawiać. Wstępne eksperymenty pokazywały też niezadawalające osiągi tej metody i problemy analogiczne jak dla scenariusza \textit{Trudne zbieranie apteczek}.
 
+
 \subsubsection{Trudne zbieranie apteczek}
 
-W tabeli \ref{tab:health_comparison} przedstawiono porównanie wyników badanych metod z wynikami uzyskanymi przez autorów środowiska VizDoom za pomocą tradycyjnych metod uczenia ze wzmocnieniem.
+W tabeli \ref{tab:health_comparison} i na rysunku \ref{fig:health_comparison} przedstawiono porównanie wyników badanych metod z wynikami uzyskanymi przez autorów środowiska VizDoom za pomocą tradycyjnych metod uczenia ze wzmocnieniem.
+
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/comp_hg_plot.png}}{\caption{Porównanie wyników poszczególnych metod dla scenariusza \textit{Trudne zbieranie apteczek}}\label{fig:health_comparison}}
+\end{figure}
 
 \textit{Prezentujący ekspert} występuje w zestawieniu trzykrotnie: pierwszy wpis traktuje metodę jako osobny i samodzielny przebieg. Kolejne wpisy zakładają, że najpierw konieczne było nauczenie agenta za pomocą \textit{zwykłego eksperta} (6000 kroków). Zachowanie takiego agenta zostało przeanalizowane, a następnie \textit{prezentujący ekspert} przeprowadził kolejną prezentację (6000 lub 12000 kroków) mając na uwadze błedy popełniane przez pierwszego agenta.
 
