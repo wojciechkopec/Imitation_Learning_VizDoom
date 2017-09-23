@@ -1,5 +1,5 @@
 \section{Odwrócone uczenie ze wzmocnieniem}
-Użycie kopiowania zachowań i wywodzących sie z niego metod pozwala na wytrenowanie agenta, który dla danego stanu będzie potrafił określić optymalną akcję na jeden krok do przodu. Taki agent zna optymalną politykę, ale nie jest świadomy jej powodów. Odwrócone uczenie ze wzmocnieniem  \textit{(ang. Inverse reinforcement learning, IRL)} opiera się na założeniu, że w ogólności optymalna polityka agenta nie stanowi najlepszego i najbardziej zwięzłego opisu zadania podstawionego przed agentem - najbardziej precyzyjnym opisem, pozwalającym na większą dowolność i adaptację jest znajomość funkcji nagród $R_a(\cdot,\cdot)$.
+Użycie kopiowania zachowań i wywodzących się z niego metod pozwala na wytrenowanie agenta, który dla danego stanu będzie potrafił określić optymalną akcję na jeden krok do przodu. Taki agent zna optymalną politykę, ale nie jest świadomy jej powodów. Odwrócone uczenie ze wzmocnieniem  \textit{(ang. Inverse reinforcement learning, IRL)} opiera się na założeniu, że w ogólności optymalna polityka agenta nie stanowi najlepszego i najbardziej zwięzłego opisu zadania podstawionego przed agentem - najbardziej precyzyjnym opisem, pozwalającym na większą dowolność i adaptację jest znajomość funkcji nagród $R_a(\cdot,\cdot)$.
 
 Oczywiście, bez modelu środowiska funkcja $R_a(\cdot,\cdot)$ nie jest dostępna, dlatego zadaniem postawionym przed odwróconym uczeniem ze wzmocnieniem jest odtworzenie $R_a(\cdot,\cdot)$ na podstawie dostarczonych trajektorii eksperta.
 
@@ -10,6 +10,6 @@ Zadanie odwróconego uczenia ze wzmocnieniem jest znacznie trudniejsze od zwykł
 \item Złożoność obliczeniowa - samo uczenie ze wzmocnieniem jest bardzo wymagające obliczeniowo. W odwróconym uczeniu ze wzmocnieniem, sprawdzanie $R_a(\cdot,\cdot)$ uzyskanych w kolejnych krokach wymaga każdorazowego rozwiązywania problemu uczenia ze wzmocnieniem na podstawie aktualnej funkcji $R_a(\cdot,\cdot)$, co oznacza, że IRL wymaga większego o rząd wielkości kosztu obliczeniowego niż RL.
 \end{itemize}
 
-Przykładowe zastosowania odwróconego uczenia ze wzmocnieniem to parkowanie samochodu \cite{DBLP:conf/iros/AbbeelDNT08}, nawigacja na podstawie obrazów satelitarnych \cite{Ratliff:2006:MMP:1143844.1143936} albo wykonywanie ewolucji helipkopterem\cite{DBLP:journals/cacm/CoatesAN09}.
+Przykładowe zastosowania odwróconego uczenia ze wzmocnieniem to parkowanie samochodu \cite{DBLP:conf/iros/AbbeelDNT08}, nawigacja na podstawie obrazów satelitarnych \cite{Ratliff:2006:MMP:1143844.1143936} albo wykonywanie ewolucji helikopterem\cite{DBLP:journals/cacm/CoatesAN09}.
 
 

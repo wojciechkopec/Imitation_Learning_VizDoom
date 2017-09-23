@@ -6,7 +6,7 @@ Podejścia stosowane do uczenia ze wzmocnieniem możemy podzielić na trzy rodza
 \item Agent z polityką - uczy się polityki  $\pi: S \rightarrow A$. Przykłady:
 \begin{itemize}
 \item algorytmy ewolucyjne,
-\item uczenie przez demonstację.
+\item uczenie przez demonstrację.
 \end{itemize}
 \item Agent z funkcją użyteczności $U$. Przykłady:
 \begin{itemize}
@@ -32,7 +32,7 @@ Agent trafiający do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$ może uaktua
 \begin{itemize}
 \item Funkcja U (patrz: rozdział \ref{mdp}) opisuje użyteczność stanu,
 \item Funkcja Q (patrz: rozdział \ref{mdp}) opisuje użyteczność wykonania danej akcji w danym stanie,
-\item SARSA stanowi wariację metody Q. W Q-learningu wartość funkcji Q jest aktualizowa na podstawie wartości Q dla najlepszej akcji do wykonywania w stanie $s'$ ($\gamma \max_{a'}Q(s',a') - Q (s,a))$), natomaist w SARSIE na podstawie wykonanej przez agenta akcji ($\gamma (Q(s',a') - Q (s,a)))$), czyli przebytej przez agenta trajektorii $ s \rightarrow a \rightarrow s' \rightarrow a'$. Aktualizacja TD w SARSA-ie wygląda następująco:
+\item SARSA stanowi wariację metody Q. W Q-learningu wartość funkcji Q jest aktualizowana na podstawie wartości Q dla najlepszej akcji do wykonywania w stanie $s'$ ($\gamma \max_{a'}Q(s',a') - Q (s,a))$), natomiast w SARSIE na podstawie wykonanej przez agenta akcji ($\gamma (Q(s',a') - Q (s,a)))$), czyli przebytej przez agenta trajektorii $ s \rightarrow a \rightarrow s' \rightarrow a'$. Aktualizacja TD w SARSA-ie wygląda następująco:
 
 $$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (Q(s',a') - Q (s,a)))$$
 
@@ -48,5 +48,5 @@ Mimo podobnych wzorów i definicji nauka funkcji Q ma jedną, diametralną przew
 
 Z tego powodu większość wiodących rozwiązań w dziedzinie uczenia ze wzmocnieniem oparta jest na Q-learningu.  Dalsza część pracy przyjmuje Q-learning jako obowiązującą metodę rozwiązywania problemu uczenia ze wzmocnieniem.
 
-Niezależnie od metody, dla realnych i interesujących naukowo problemów uczenie ze wzmocnieniem jest wymagające obliczeniowo i czasowo. Mimo wspomagających agenta technik, nauka sprowadza się najczęściej do interakcji ze środowiskiem metodą prób i błędów - potrzeba wiele prób i błędów, zanim agent zacznie pojmować zasady rządzące środowiskiem w którym się znajduje, a potem dużo dalszych zanim znajdzie dla danego środowiska satysfakcjonująco skuteczną politykę działania.
+Niezależnie od metody, dla realnych i interesujących naukowo problemów uczenie ze wzmocnieniem jest wymagające obliczeniowo i czasowo. Mimo wspomagających agenta technik, nauka sprowadza się najczęściej do interakcji ze środowiskiem metodą prób i błędów - potrzeba wiele prób i błędów, zanim agent zacznie pojmować zasady rządzące środowiskiem w którym się znajduje, a potem dużo dalszych zanim znajdzie dla danego środowiska satysfakcjonującą skuteczną politykę działania.
 
