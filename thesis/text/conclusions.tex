@@ -1,14 +1,16 @@
 \chapter{Wnioski i perspektywy rozwoju}
 
-Celem tej pracy było zbadanie skuteczności \textit{uczenia przez demonstację} na podstawie informacji obrazowej w środowisku 3D. Badania zostały zrealizowane na przykładzie popularnej gry 3D Doom, z wykrzystaniem platformy VizDoom.
+Celem pracy było zbadanie skuteczności \textit{uczenia przez demonstrację} na podstawie informacji obrazowej w środowisku 3D. Badania zostały zrealizowane na przykładzie popularnej gry 3D Doom, z wykorzystaniem platformy VizDoom.
 
-Dzięki eksperymentom przeprowadzonym na najtrudniejszych scenariuszach zaproponowanych w ramach platformy VizDoom wykazano, że oparte na głębokich sieciach neuronowych agenty nauczone przy pomocy metod \textit{uczenia przez demonstrację} uzyskują wyniki zbliżone do wyników uzyskanych za pomocą \textit{Q-learningu} przy ponad skukrotnie krótszym czasie nauki. 
+Dzięki eksperymentom przeprowadzonym na najtrudniejszych scenariuszach zaproponowanych w ramach platformy VizDoom wykazano, że oparte na głębokich sieciach neuronowych agenty nauczone przy pomocy metod \textit{uczenia przez demonstrację} uzyskują wyniki zbliżone do wyników uzyskanych za pomocą \textit{Q-learningu}, przy ponad stukrotnie krótszym czasie nauki. Uzyskane agenty przejawiają wysoką świadomość środowiska 3D w którym się znajdują, poprawnie rozpoznając i zachowując się w stosunku do ruchomych i nieruchomych obiektów oraz w stosunku do przeciwników. Zachowanie agentów pozwala na skutecznie, chociaż nie bezbłędne, wykonywanie stawianych przed nimi zadań, a wizualna i punktowa ocena ich działań jest porównywalna z osiągami agentów uzyskanym za pomocą \textit{Q-learningu}.
 
-W ramach pracy skutecznie zaimplementowano i przetestowano metodę \textit{klonowania zachowań (ang. behavioral cloning)}, która pozwoliła na nauczenie skutecznych agentów na podstawie prezentacji porządanego zachowania przez ludzkiego eksperta, bez konieczności interakcji ze środowiskiem.
+W ramach pracy skutecznie zaimplementowano i przetestowano metodę \textit{klonowania zachowań (ang. behavioral cloning)}, która pozwoliła na nauczenie skutecznych agentów bez konieczności interakcji ze środowiskiem, na podstawie tylko kilkuminutowej prezentacji pożądanego zachowania przez ludzkiego eksperta.
 
-Następnie zaimplementowano i przetestowano metodę \textit{agregacji zbioru danych (ang. Dataset Aggregation, DAgger)}, wykazując i analizując jej nieskuteczność w zastosowaniu do badanego problemu.
+Następnie zaimplementowano i przetestowano metodę \textit{agregacji zbioru danych (ang. Dataset Aggregation, DAgger)}, której zachowanie i uzyskane wyniki są znacznie gorsze od oczekiwanych. Za możliwą przyczynę tego zachowania wskazano rozbieżność pomiędzy dystrybucją zachowania eksperta podczas początkowej fazy prezentacji i późniejszej oceny działań agenta w trakcie nauki. Przy wykorzystaniu ludzkiego eksperta do nauki nietrywialnych zadań niezgodność zachowań w obu fazach może być trudna do wyeliminowania, co obniża przydatność metody \textit{agregacji zbioru danych} dla praktycznych zastosowań.
 
-Ostatecznie zaprezentowano i eksperymentalnie wykazano, że w \textit{uczeniu przez demonstrację} świadoma prezentacja eksperta, mająca na uwadze potrzeby percepcyjne uczonego agenta, może skutecznie podnieść uzyskiwane wyniki.
+Ostatecznie zbadano i eksperymentalnie wykazano, że przy \textit{uczeniu przez demonstrację} świadoma prezentacja eksperta, mająca na uwadze ograniczenia percepcyjne uczonego agenta, może skutecznie poprawić uzyskiwane przez niego wyniki. Agent nauczony na podstawie świadomej prezentacji wyrównuje wyniki bazowej metody \textit{kopiowania zachowań} przy dwa razy mniejszej liczbie kroków uczących i osiąga zacznie lepsze i bardziej stabilne wyniki.
+
+Agent uczony przez 4 minuty na podstawie 10 minutowej, świadomej prezentacji eksperta prześciga agenta uczonego przez 10 godzin za pomocą \textit{Q-learningu} i osiąga wyniki zbliżone do wyników agenta uczonego przez 30 godzin.
 
 \subsubsection{Perspektywy rozwoju}
 

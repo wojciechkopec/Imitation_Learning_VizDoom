@@ -1,11 +1,11 @@
 \section{Wykorzystany agent - implementacja}
 
-Implementacja agenta, który posłużył do wykonania eksperymentów opsiywanych w tym rozdziale znajduje się w pliku \textit{actions\_estimator\_tf.py}. Agent w zależności od ustawień może realizować zarówno algorytmy \textit{kopiowania zachowań} jak i \textit{agregacji zbioru danych}. Implementacja agenta opiera się na głębokiej sieci konwolucyjnej modelującą funkcję wyboru $stan \rightarrow akcja$.
+Implementacja agenta, który posłużył do wykonania eksperymentów opisywanych w tym rozdziale znajduje się w pliku \textit{actions\_estimator\_tf.py}. Agent w zależności od ustawień może realizować zarówno algorytmy \textit{kopiowania zachowań} jak i \textit{agregacji zbioru danych}. Implementacja agenta opiera się na głębokiej sieci konwolucyjnej modelującą funkcję wyboru $stan \rightarrow akcja$.
 
 
 \subsection{Sieć neuronowa}
 
-\subsubsection{Architektura}
+\subsubsection{Architektura}\label{agent_net}
 Zastosowana architektura opiera się na tej zaproponowanej w pracy \cite{mnih2015human} i wykorzystanej dalej w przykładach środowiska VizDoom i w pracy \cite{DBLP:journals/corr/KempkaWRTJ16}. Sieć składa się kolejno z:
 
 \begin{enumerate}

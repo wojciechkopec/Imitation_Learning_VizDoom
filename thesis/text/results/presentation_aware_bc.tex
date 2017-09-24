@@ -16,7 +16,15 @@ Przy testowaniu scenariusza \textit{Obrona środka} dla każdej konfiguracji zos
 
 Przy testowaniu scenariusza \textit{Trudne zbieranie apteczek} dla każdej konfiguracji zostało nauczonych od 82 do 111 agentów, z których każdy został przetestowany odgrywając 20 epizodów. Wynikowa próbka danych składa się z od 1620 do 1720 wyników dla każdej z konfiguracji.
 
-W tabelach \ref{tab:presenting_expert_results_dtc} i \ref{tab:presenting_expert_results_hg} przedstawione są wyniki osiągnięte przez agenta w przeprowadzonych eksperymentach.
+W tabelach \ref{tab:presenting_expert_results_dtc} i \ref{tab:presenting_expert_results_hg}  oraz na rysunkach \ref{fig:presenting_expert_results_dtc} i \ref{fig:presenting_expert_results_hg}  przedstawione są wyniki osiągnięte przez agenta w przeprowadzonych eksperymentach.
+
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/pe_dtc_plot.png}}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{świadomie prezentującego  eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}}\label{fig:presenting_expert_results_dtc}}
+\end{figure}
+
+\begin{figure}[H]
+		\ffigbox{\includegraphics[scale = 0.7]{figures/figures/results/pe_hg_plot.png}}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{świadomie prezentującego  eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Trudne zbieranie apteczek}}\label{fig:presenting_expert_results_hg}}
+\end{figure}
 
 \begin{figure}[H]
 \csvautotabular{data/pa_expert_results_dtc.csv}{\caption{Wyniki agenta nauczonego na podstawie trajektorii \textit{świadomie prezentującego eksperta} w zależności od liczby kroków uczących w scenariuszu \textit{Obrona środka}.}\label{tab:presenting_expert_results_dtc}}
@@ -43,7 +51,7 @@ Osiągane przez niego wyniki znacznie wzrosły, a ich wariancja wyraźnie zmala�
 
 Podejście \textit{kopiowania zachowań ze świadomie prezentującym ekspertem} zgodnie z oczekiwaniami okazuje się skutecznym narzędziem, któremu udało się wyeliminować większość problemów metody bazowej. Eksperymenty potwierdzają hipotezę, że źródłem większości błędów metody \textit{kopiowania zachowań} jest nieumiejętność klasyfikatora do rozróżnienia pewnych klas sytuacji na skutek braku pełnej informacji dostępnej ekspertowi, ale niedostępnej agentowi.
 
-Jedyny problem, którego nie udało się wyeliminować, to wchodzenie w miny w scenariuszu \textit{Trudne zbieranie apteczek}. Zastosowana metoda jest w stanie pokazać, jak agent powinien się zachować w określonej sytuacji, ale nie dostarcza wystarczających narzędzi, żeby pokazać że dane zachowanie jest nieporządane.
+Jedyny problem, którego nie udało się wyeliminować, to wchodzenie w miny w scenariuszu \textit{Trudne zbieranie apteczek}. Zastosowana metoda jest w stanie pokazać, jak agent powinien się zachować w określonej sytuacji, ale nie dostarcza wystarczających narzędzi, żeby pokazać że dane zachowanie jest niepożądane.
 
 
 
