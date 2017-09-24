@@ -10,7 +10,7 @@ game.set_window_visible(True)
 game.set_mode(Mode.SPECTATOR)
 \end{lstlisting}
 
-Tryb SPECTATOR, wbrew intuicji, umożliwia komputerowi obserwowanie gry człowieka - eksperta. W tym trybie gra reaguje na wejście z klawiatury i myszki, jak przy normalnej grze w Dooma oraz umożliwia odczytywanie aktualnego stanu, ostatnio wykonanej akcji i wartości ostatnio otrzymanej nagrody. Przejście do następnego stanu jest osiągane poprzez wywołanie metody \textit{game.advance\_action()}. Tryb SPECTATOR jest synchroniczny, co oznacza że gra oczekuje na wywołanie \textit{game.advance\_action()} przed przejściem do następnego stanu (zatrzymanie przetwarzania w programie skutkuje zatrzymaniem przetwarzania w grze). Nie oznacza to jednak, że w tym trybie gra oczekuje z wykonaniem każdej klatki, aż gracz wykona jakiś ruch - brak ruchu ze strony gracza również interpretowany jest jako ruch.
+Tryb SPECTATOR umożliwia komputerowi obserwowanie gry człowieka - eksperta. W tym trybie gra reaguje na wejście z klawiatury i myszki, jak przy normalnej grze w Dooma, oraz umożliwia odczytywanie aktualnego stanu, ostatnio wykonanej akcji i wartości ostatnio otrzymanej nagrody. Przejście do następnego stanu jest osiągane poprzez wywołanie metody \textit{game.advance\_action()}. Tryb SPECTATOR jest synchroniczny, co oznacza że gra oczekuje na wywołanie \textit{game.advance\_action()} przed przejściem do następnego stanu (zatrzymanie przetwarzania w programie skutkuje zatrzymaniem przetwarzania w grze). Nie oznacza to jednak, że w tym trybie gra oczekuje z wykonaniem każdej klatki, aż gracz wykona jakiś ruch - brak ruchu ze strony gracza również interpretowany jest jako ruch.
 
 \begin{lstlisting}[language=iPython]
  	game.advance_action()

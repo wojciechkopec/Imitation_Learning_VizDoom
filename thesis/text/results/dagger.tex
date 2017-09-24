@@ -1,5 +1,7 @@
 \section{Agregacja zbioru danych - wyniki}
 
+Aby uruchomić metodę agregacji zbioru danych konieczne jest uruchomienie agenta z niezerowym parametrem \textit{epochs}.
+
 Na początku działania algorytmu agent jest inicjalizowany w identyczny sposób jak w metodzie \textit{klonowania zachowań}, na zestawie trajektorii \textit{świadomie prezentującego eksperta} o wielkości 6000 kroków. Następnie agent odbywa 3 iteracje metody agregowania zbioru danych. Każda iteracja to odegranie jednego epizodu o długości 2000 kroków, podczas których ekspert może w dowolnym momencie przejąć kontrolę nad agentem i poprawić jego zachowanie. Kroki wykonane przez eksperta są dodawane do \textit{pamięci powtórek} 5 razy w celu zwiększenia wagi decyzji eksperta. Po zakończeniu każdego epizodu wagi sieci neuronowej są resetowane, a cała sieć jest uczona od początku na podstawie rozszerzonego zestawu danych (tzn. na podstawie początkowych trajektorii uczących i kroków wykonanych podczas gry przez eksperta). Po nauczeniu sieci wykonywanych jest 20 epizodów testowych.
 
 Przejęcie kontroli nad agentem odbywa się poprzez wciśnięcie klawisza \textit{p}. Po przejęciu kontroli środowisko przechodzi w synchroniczny tryb gry, każdorazowo czekając na następny ruch gracza. Ekspert kontrolujący agenta może przy użyciu dedykowanych klawiszy wykonywać dowolną kombinację ruchów, a po zakończeniu prezentacji oddać kontrolę agentowi ponownie używając klawisza \textit{p}.
