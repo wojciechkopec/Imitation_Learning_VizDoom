@@ -1,14 +1,12 @@
-__author__ = 'wojtek'
-from sources.q_estimator_tf import QEstimator as tfQEstimator
-from sources.bootstrap_q_estimator_tf import QEstimator as MultiTfQEstimator
-from sources.dropout_q_estimator_tf import QEstimator as DOTfQEstimator
-from sources.actions_estimator_tf import ActionsEstimator
-from experiments_runner import ExperimentsRunner
-from experiments_runner import run as run
-from experiments_runner import play as play
+__author__ = 'Wojciech Kopec'
 import os
 import sys
-import pickle
+from os import listdir
+from os.path import isfile, join
+
+from experiments_runner import run as run
+from sources.actions_estimator_tf import ActionsEstimator
+from sources.q_estimator_tf import QEstimator as tfQEstimator
 
 
 class ExpertConfig:
@@ -58,42 +56,28 @@ agents['simpleActionsTFAgent'] = lambda actions, config, dump_file_name: Actions
                                                                                           dump_file_name=dump_file_name,
                                                                                           store_trajectory=config.store_trajectory)
 
-agents['doTFAgent'] = lambda actions, config, dump_file_name: DOTfQEstimator(len(actions), config.resolution, calls=10, dropout=0.9,
-                                                                               dump_file_name=dump_file_name,
-                                                                               store_trajectory=config.store_trajectory)
-
-
-agents['bdqnAgentK5p1'] = lambda actions, config, dump_file_name: MultiTfQEstimator(len(actions), config.resolution,
-                                                                                     subnets=5,
-                                                                                     incl_prob=1,
-                                                                                     dump_file_name=dump_file_name,
-                                                                                     store_trajectory=config.store_trajectory)
-
-agents['bdqnAgentK5p075'] = lambda actions, config, dump_file_name: MultiTfQEstimator(len(actions), config.resolution,
-                                                                                     subnets=5,
-                                                                                     incl_prob=0.75,
-                                                                                     dump_file_name=dump_file_name,
-                                                                                     store_trajectory=config.store_trajectory)
-
-type = "presenting_expert"
-scenario = "health"
 map_config = "health_gathering"
-epochs = 3
-frames_limit = 9000
-
+trajectories = "presenting_expert_trajectories/*"
+epochs = 0
+frames_limit = 6000
+if len(sys.argv) == 1:
+    print "Usage: python [scenario, for example health_gathering or defend_the_center] [learning frames limit, for example 3000 or 12000] [directory with trajectories or list of files with trajectories created with spectator.py]"
+    exit(0)
 if len(sys.argv) > 1:
-    frames_limit = int(sys.argv[1])
+    map_config = sys.argv[1]
 if len(sys.argv) > 2:
-    type = sys.argv[2]
-if len(sys.argv) > 4:
-    scenario = sys.argv[3]
-    map_config = sys.argv[4]
-if len(sys.argv) > 5:
-    epochs = int(sys.argv[5])
+    frames_limit = int(sys.argv[2])
+if len(sys.argv) > 3:
+    trajectories = sys.argv[3:]
 
-memory = map(lambda x: type + "_trajectories/" + type + "_" + scenario + "_" + str(x) + ".pkl", range(1, 6))
+if len(trajectories) == 1 and os.path.isdir(trajectories[0]):
+    trajectories = [trajectories[0] + os.sep + f for f in listdir(trajectories[0]) if isfile(join(trajectories[0], f))]
+memory = trajectories
+print "Running agent with " + str(epochs) + " epochs of DAgger on " + map_config + " map, taught on " + str(
+    frames_limit) + " frames from " + str(memory)
+
 run('simpleActionsTFAgent',
-    ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=False, resolution=(90, 60),
+    ExperimentConfig(store_trajectory=False, explore_whole_episode=True, play_agent=True, resolution=(106, 80),
                      config_file_path="./config/" + map_config + ".cfg", epochs=epochs, test_episodes_per_epoch=20,
-                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01, frames_limit=frames_limit)), 1,
+                     initial_eps=0, expert_config=ExpertConfig(memory, -0.01, frames_limit=frames_limit)), 10,
     agents)

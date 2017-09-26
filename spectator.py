@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+#Following file contains modified version of VizDoom's spectator.py program.
+
+#Original disclaimer as follows:
+
 
 #####################################################################
 # This script presents SPECTATOR mode. In SPECTATOR mode you play and
@@ -10,35 +14,33 @@
 
 from __future__ import print_function
 
-from time import sleep
-from vizdoom import *
 import pickle
-import sys, tty, termios
-from random import randint
+import sys
+import termios
+import tty
+from time import sleep
+
+from vizdoom import *
 
 game = DoomGame()
 
-# Choose scenario config file you wish to watch.
-# Don't load two configs cause the second will overrite the first one.
-# Multiple config files are ok but combining these ones doesn't make much sense.
+scenario = "health_gathering"
+output_file = "recorder_episode.pkl"
+episodes = 3
+if len(sys.argv) > 1:
+    scenario = sys.argv[1]
+if len(sys.argv) > 2:
+    output_file = sys.argv[2]
+if len(sys.argv) > 3:
+    episodes = int(sys.argv[3])
 
-# game.load_config("../../scenarios/basic.cfg")
-# game.load_config("../../scenarios/simpler_basic.cfg")
-# game.load_config("../../scenarios/rocket_basic.cfg")
-# game.load_config("config/deadly_corridor.cfg")
-game.load_config("config/basic.cfg")
-# game.load_config("config/deathmatch.cfg")
-# game.load_config("config/defend_the_center.cfg")
-# game.load_config("config/cig.cfg")
-#game.load_config("../../scenarios/defend_the_line.cfg")
-# game.load_config("config/health_gathering.cfg")
-# game.load_config("config/my_way_home.cfg")
-# game.load_config("config/predict_position.cfg")
-# game.load_config("config/take_cover.cfg")
+if len(sys.argv) == 1:
+    print("Usage: python [scenario, for example health_gathering or defend_the_center] [trajectories output file] [number of episodes to play, for example 3]")
+    exit(0)
 
+print("Running " + str(episodes) + " episodes of " + scenario + " with output to " + output_file)
 
-# Enables freelook in engine
-# game.add_game_args("+freelook 1")
+game.load_config("config/" + scenario + ".cfg")
 
 game.set_screen_resolution(ScreenResolution.RES_640X480)
 
@@ -49,7 +51,7 @@ game.set_screen_format(ScreenFormat.GRAY8)
 memory = []
 game.init()
 
-episodes = 2
+
 
 
 def get_action():
@@ -64,7 +66,7 @@ def get_action():
         return [1, 0, 0]
     if move == 'l':
         return [0, 1, 0]
-    if move == 'a':
+    if move == 'i':
         return [0, 0, 1]
     return [0, 0, 0]
 
@@ -75,9 +77,6 @@ for i in range(episodes):
     game.new_episode()
     while not game.is_episode_finished():
         state = game.get_state()
-
-        # game.set_action(get_action())
-        # for i in range(4):
         game.advance_action()
         next_state = game.get_state()
         last_action = game.get_last_action()
@@ -97,5 +96,5 @@ for i in range(episodes):
     sleep(2.0)
 
 game.close()
-with open('recorder_episode.pkl', 'wb') as f:
+with open(output_file, 'wb') as f:
     pickle.dump(memory, f, 2)
