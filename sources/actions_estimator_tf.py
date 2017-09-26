@@ -1,17 +1,19 @@
-import numpy as np
-import tensorflow as tf
-from numpy.random import randint
-import random
-import sys, tty, termios
-from tqdm import trange
-from key_monitor import KeyMonitor
-
-from sources.replay_memory import ReplayMemory, PerActionReplayMemory
-from sources.replay_memory import TransitionStore
-from experiments_runner import preprocessIMG
 import pickle
+import random
+import sys
+import termios
 import threading
 import time
+import tty
+
+import tensorflow as tf
+from numpy.random import randint
+from tqdm import trange
+
+from experiments_runner import preprocessIMG
+from sources.key_monitor import KeyMonitor
+from sources.replay_memory import PerActionReplayMemory
+from sources.replay_memory import TransitionStore
 
 
 def _create_convolution_layers(available_actions_count, resolution):
