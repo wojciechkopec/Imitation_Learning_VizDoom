@@ -14,7 +14,7 @@ Następnie agent rozpoczyna działanie, bazując na swoim aktualnym stanie wiedz
 
 Po wystąpieniu określonych warunków, definiujących koniec potrzeby odpytywania eksperta, wszystkie stany i akcje odwiedzone w trakcie danej demonstracji dodawane są do pamięci agenta (trajektoria może być dodana do pamięci z większą wagą niż początkowe prezentacje - w przeciwnym wypadku dodanie nowych danych mogłoby nie być odczuwalne). Agent aktualizuje klasyfikator akcji na podstawie rozszerzonego zestawu danych, po czym przejmuje sterowanie od eksperta i wraca do normalnego działania bazując na uaktualnionym stanie wiedzy.
 
-Po ponownym wystąpieniu określonych warunków, kontrola może ponownie zostać przekazana do eksperta.
+Po ponownym wystąpieniu określonych warunków, kontrola może ponownie zostać przekazana ekspertowi.
 
 \subsection{Przekazywanie sterowania}
 Jednym z najważniejszych problemów jest zdefiniowanie, kiedy przekazywać sterowanie pomiędzy agentem a ekspertem. Wybór sposobu będzie decydował o tym, jak często ekspert będzie odpytywany i na ile istotna będzie uzyskana wiedza. Sprawdzone zostały trzy następujące sposoby.
@@ -39,7 +39,7 @@ Przyjęta miara niepewności łączy niepewność wynikającą z niewiedzy sieci
 
 \subsubsection{Decyzja eksperta}\label{expert_call}
 \begin{enumerate}
-\item ekspert obserwuje działanie agenta. ekspert przejmuje sterowanie kiedy uzna, że agent trafił do niepożądanego stanu.
+\item Ekspert obserwuje działanie agenta i przejmuje sterowanie kiedy uzna, że agent trafił do niepożądanego stanu.
 \item Kiedy ekspert uzna, że agent nie jest już w niepożądanym stanie może oddać sterowanie agentowi.
 \end{enumerate}
 
@@ -119,7 +119,7 @@ Wywoływana funkcja znajduje się poniżej. Klawisz 'p' przekazuje sterowanie po
 \end{lstlisting}
 
 \subsection{Zachowanie}
-Eksperymenty były prowadzone na przede wszystkim scenariuszu \nameref{scenario_hgs}. Początkowe trajektorie eksperta były wygenerowane zgodnie z opisem w rozdziale \ref{presenting_expert}.
+Eksperymenty były prowadzone przede wszystkim na scenariuszu ''Trudne zbieranie apteczek''. Początkowe trajektorie eksperta były wygenerowane zgodnie z opisem w rozdziale \ref{presenting_expert}.
 
 Dla każdego z badanych scenariuszy uwzględnianie fragmentów trajektorii zaprezentowanych przez eksperta w trakcie gry obniża początkowo wyniki. Na skutek nauczenia się niespójnych zachowań eksperta agent zachowuje się mniej płynnie i częściej wpada w nieskończone pętle ruchów (przykładowo obracanie się na przemian w lewo i w prawo w rogu labiryntu), co prowadzi do osiągania niższych wyników.
 
@@ -132,5 +132,5 @@ Kolejne epizody nauki regularnie doprowadzają do przeuczenia - wyniki obniżaj
 Wyniki metody cechują się bardzo dużą wariancją. W pojedynczych przypadkach wytrenowany agent osiąga bardzo wysokie, innym razem bardzo niskie wyniki. Najczęściej jednak po 3 epizodach gry wyniki agenta są nieznacznie wyższe niż na początku działania metody.
 
 \subsection{Wnioski}
-Dla wypróbowanych problemów DAgger nie wydaje się być skuteczny. W VizDoomie decyzje podejmowane przez ludzkiego eksperta są bardziej skomplikowane niż w Mario Cart, przedstawianym w publikacji, co, na skutek niespójności przedstawianych przez eksperta zachowań, zamiast do podwyższenia wyników agenta prowadzi do obniżania jego skuteczności. Zastosowane głębokie sieci neuronowe mogą też znacznie skuteczniej uogólniać wiedzę zdobytą podczas pierwszej prezentacji eksperta niż prostsze klasyfikatory SVM, a co za tym idzie nawet bez użycia DAggera agent potrafi znaleźć sensowne wyjście z większości sytuacji. Uzyskiwanie oceny eksperta jest uciążliwe i kosztowne.
+Dla badanych problemów DAgger nie wydaje się być skuteczny. W VizDoomie decyzje podejmowane przez ludzkiego eksperta są bardziej skomplikowane niż w Mario Cart, przedstawianym w publikacji, co, na skutek niespójności przedstawianych przez eksperta zachowań, zamiast do podwyższenia wyników agenta prowadzi do obniżania jego skuteczności. Zastosowane głębokie sieci neuronowe mogą też znacznie skuteczniej uogólniać wiedzę zdobytą podczas pierwszej prezentacji eksperta niż prostsze klasyfikatory SVM, a co za tym idzie nawet bez użycia DAggera agent potrafi znaleźć sensowne wyjście z większości sytuacji. Uzyskiwanie oceny eksperta jest uciążliwe i kosztowne.
 

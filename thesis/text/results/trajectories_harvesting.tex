@@ -53,9 +53,9 @@ Dla każdego scenariusza (\textit{Obrona środka} i \textit{Trudne zbieranie apt
 Program agenta otrzymuje listę plików z paczkami trajektorii do wykorzystania i informację o maksymalnej liczbie klatek, jaką ma wczytać. Program przetwarza pliki w losowej kolejności. Z każdego pliku trajektorie odczytywane są po kolei, aż limit odczytanych klatek nie zostanie osiągnięty lub aż wszystkie pliki nie zostaną przetworzone.
 Dane w ramach jednego pliku nie są przetwarzane w losowej kolejności, ponieważ:
 \begin{itemize}
-\item{agent mógłby zdobywać dodatkowe informacje na podstawie przebytej sekwencji stanów (np. odtwarzać wartości q)}
+\item{agent mógłby zdobywać dodatkowe informacje na podstawie przebytej sekwencji stanów (np. odtwarzać wartości $Q$)}
 \item{liczba kroków z poszczególnymi akcjami może być silnie niezbalansowana, a losowe próbkowanie trajektorii mogło by skutkować zestawem danych zupełnie pozbawionym informacji o niektórych akcjach}
 \end{itemize}
 Odczytane klatki zapisywane są bezpośrednio do pamięci powtórek agenta, po uprzednim przeskalowaniu obrazów-stanów do zadanej rozdzielczości.
 
-Na każdym etapie uczenia program pomija klatki, w których nie została wykonana żadna akcja. To zachowanie opiera się na założeniu, że optymalne zachowanie agenta można osiągnąć bez wykonywania ruchu ,,czekania'', czyli braku ruchu, a klatki z akcją,,czekania'' pojawiające się w trajektoriach eksperta są artefaktami spowodowanymi nieoptymalną grą eksperta lub nieoptymalnym interfejsem zbierania danych eksperta.
+Na każdym etapie uczenia program pomija klatki, w których nie została wykonana żadna akcja. To zachowanie opiera się na założeniu, że optymalne zachowanie agenta można osiągnąć bez wykonywania ruchu ,,nic nie rób'', a klatki z akcją ,,nic nie rób'' pojawiające się w trajektoriach eksperta są artefaktami spowodowanymi nieoptymalną grą eksperta lub nieoptymalnym interfejsem zbierania danych eksperta.

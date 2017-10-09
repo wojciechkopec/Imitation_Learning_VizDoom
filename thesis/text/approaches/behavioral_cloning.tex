@@ -1,24 +1,40 @@
 \section{Kopiowanie zachowań} \label{behavioral_cloning}
 
-Kopiowanie zachowań (ang. \textit{Behavioral Cloning}) stanowi najbardziej podstawowe podejście do uczenia przez demonstrację. Na podstawie zebranych trajektorii eksperta uczony jest klasyfikator, który przyjmując na wejściu stan $s$ ma za zadanie przewidzieć, jaką akcję $a$ wykonałby w danej sytuacji ekspert.
+Kopiowanie zachowań (ang. \textit{Behavioral Cloning}) stanowi najbardziej podstawowe podejście do uczenia przez demonstrację. Na podstawie zebranych trajektorii eksperta uczony jest klasyfikator, który przyjmując na wejściu stan $s$ ma za zadanie przewidzieć, jaką akcję $a$ wykonałby w danej sytuacji ekspert. Mimo że dla wielu problemów kopiowanie zachowań jest nieskuteczne (powody opisane są w rozdziale \ref{bcloning}), to wyniki osiągane na badanych scenariuszach VizDoom są bardzo zadowalające. Kopiowanie zachowań jest podstawą bardziej zaawansowanych technik opisanych w dalszych punktach.
 
-Mimo że dla wielu problemów Kopiowanie zachowań jest nieskuteczne (powody opisane są w rozdziale \ref{bcloning}), to wyniki osiągane na badanych scenariuszach VizDoom są bardzo zadowalające.
-
-Kopiowanie zachowań jest podstawą bardziej zaawansowanych technik opisanych w dalszych punktach.
-
-Ważną różnicę w stosunku do Q-learningu stanowi fakt, że czas trwania metody ogranicza się w znaczącej części do czasu zbierania przykładowych trajektorii przez eksperta. Czas trenowania klasyfikatora na zebranych danych powinien być pomijalny w stosunku do czasu zbierania. Oznacza to, że uczenie agenta za pomocą Kopiowania zachowań, wliczając w to zbieranie przykładowych trajektorii, trwa znacznie krócej niż za pomocą np. Q-learningu, w którym, dla wielu praktycznych problemów, agent musi grać przez przez wiele milionów klatek, by osiągnąć zadowalające wyniki. 
+Ważną różnicę w stosunku do Q-learningu stanowi fakt, że czas trwania metody ogranicza się w znaczącej części do czasu zbierania przykładowych trajektorii przez eksperta. Czas trenowania klasyfikatora na zebranych danych powinien być pomijalny w stosunku do czasu zbierania. Oznacza to, że uczenie agenta za pomocą kopiowania zachowań, wliczając w to zbieranie przykładowych trajektorii, trwa znacznie krócej niż za pomocą np. Q-learningu, w którym, dla wielu praktycznych problemów, agent musi grać przez przez wiele milionów klatek, by osiągnąć zadowalające wyniki. 
 
 \subsection{Implementacja}
 
-Kopiowanie zachowań sprowadza się do klasycznego problemu uczenia nadzorowanego z wieloma klasami (możliwymi akcjami), z których tylko jedna etykieta na raz jest poprawna. Dane wejściowe stanowią obrazy przedstawiające stan, wynikiem jest etykieta akcji, którą należy wykonać. Jako klasyfikatora użyto głębokiej sieci neuronowej.
+Kopiowanie zachowań sprowadza się do klasycznego problemu uczenia nadzorowanego z wieloma klasami (możliwymi akcjami), z których dla danego stanu tylko jedna etykieta na raz jest poprawna. Dane wejściowe stanowią obrazy przedstawiające stan, wynikiem jest etykieta akcji, którą należy wykonać. Jako klasyfikatora użyto głębokiej sieci neuronowej.
 
-Różnica pomiędzy architekturami sprowadza się do uczenia i interpretacji wyników. Przy Q-learningu sieć musi przewidywać wartość funkcji Q dla wszystkich akcji, a przy Kopiowaniu zachowań wystarczy określenie najbardziej pasującej akcji. Wykonane i przewidywane akcje są zakodowane za pomocą \textit{one-hot encoding}, a wynik uzyskiwany jest przez zastosowanie funkcji \textit{softmax} na wartościach q z architektury Q-learningu. Schemat sieci opisany jest w rozdziale \ref{agent_net}.
+Różnica pomiędzy architekturami sprowadza się do uczenia i interpretacji wyników. Przy Q-learningu sieć musi przewidywać wartość funkcji $Q$ dla wszystkich akcji, a przy kopiowaniu zachowań wystarczy określenie najbardziej pasującej akcji. Wykonane i przewidywane akcje są zakodowane za pomocą \textit{one-hot encoding}, a wynik uzyskiwany jest przez zastosowanie funkcji \textit{softmax} na wartościach $Q$ z architektury Q-learningu. 
 
 Co istotne, dla większości scenariuszy problem uczenia stan $\to$ akcja charakteryzuje się niezbalansowanym zbiorem danych. Akcje ,,strzelaj'' występują znacznie rzadziej niż akcje ruchu. Oznacza to, że klasyfikator naiwnie nauczony na niezmienionym zbiorze danych, mimo dobrej teoretycznej trafności, będzie zupełnie nieskuteczny (np. nie wybierze nigdy akcji ,,strzelaj'').
 
 Problem ten został rozwiązany przez zrównoważenie zbioru danych przy użyciu metody \textit{oversampling} która polega na wielokrotnym uwzględnieniu w zbiorze uczącym przykładów mniej licznych klas w taki sposób, żeby liczność przykładów dla każdej z klas w uzyskanym zbiorze danych była podobna. W zastosowanej implementacji dla każdej akcji przetrzymywany jest oddzielny zbiór danych, a użyte do uczenia próbki składają się w równych proporcjach z przykładów zastosowania każdej akcji. 
 
-Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akcja była zdefiniowana oddzielnie, łącznie z akcjami stanowiącymi złożenie innych, podstawowych akcji. Przykładowo akcje ,,lewo'', ,,prosto'' i ,,lewo i prosto'' są dla modelu zupełnie niezwiązane, mimo że często można byłoby stosować je zamiennie. W przypadku Kopiowania zachowań możliwe byłoby stworzenie klasyfikatora  stan $\to$ akcja, który jest jednocześnie klasyfikatorem binarnym dla każdej podstawowej akcji z osobna. Taki klasyfikator mógłby zamiast wybierać pomiędzy ,,lewo'', ,,prosto'' i ,,lewo i prosto'' zdecydować ,,lewo'' - tak i ,,prosto'' - tak, uzyskując ,,lewo i prosto''. Jednakże takie rozwiązanie nie zostało w tej pracy zbadane.
+Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akcja była zdefiniowana oddzielnie, łącznie z akcjami stanowiącymi złożenie innych, podstawowych akcji. Przykładowo akcje ,,lewo'', ,,prosto'' i ,,lewo i prosto'' są dla modelu zupełnie niezwiązane, mimo że często można byłoby stosować je zamiennie. W przypadku kopiowania zachowań możliwe byłoby stworzenie klasyfikatora  wieloetykietowego stan $\to$ akcja. Taki klasyfikator mógłby zamiast wybierać pomiędzy ,,lewo'', ,,prosto'' i ,,lewo i prosto'' zdecydować ,,lewo'' - tak i ,,prosto'' - tak, uzyskując ,,lewo i prosto''. Jednakże takie rozwiązanie nie zostało w tej pracy zbadane.
+
+
+\subsection{Sieć neuronowa}\label{agent_net}
+
+Zastosowana architektura sieci neuronowej opiera się na tej zaproponowanej w pracy \break \cite{mnih2015human} i wykorzystanej dalej w przykładach środowiska VizDoom i w pracy \break \cite{DBLP:journals/corr/KempkaWRTJ16}. Sieć składa się kolejno z:
+
+\begin{enumerate}
+\item{warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy konwolucyjnej z 8 filtrami o wielkości 3x3, krokiem 2x2 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{warstwy w pełni połączonej o wielkości 256 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy w pełni połączonej o wielkości 128 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{warstwy wyjściowej w pełni połączonej z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, w której każdy neuron wyjściowy odpowiada jednej akcji}
+\item{warstwy softmax}
+\end{enumerate}
+
+W stosunku do wersji z pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout, ale wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów.
+
+Liczba i wielkości warstw zostały dobrane eksperymentalnie. Pozostałe parametry sieci, w szczególności parametry filtrów warstw konwolucyjnych zostały wybrane na podstawie wzorców z literatury.
 
 \subsection{Techniczna implementacja} \label{behavioral_cloning_tech}
 
@@ -62,18 +78,18 @@ with open('recorder_episode.pkl', 'wb') as f:
 \end{lstlisting}
 
 \subsection{Zachowanie}
-Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
+Eksperymenty były prowadzone na scenariuszach ,,\nameref{scenario_hgs}'' i ,,\nameref{scenario_dtc}''.
 W obu przypadkach kopiowanie zachowań nauczone już na podstawie 3 trajektorii eksperta (6 tysięcy klatek) osiągało wizualnie sensowne zachowanie agentów i zaskakująco dobre wyniki.
 
-Dla \nameref{scenario_dtc} agentowi zdarzało się strzelać w nieodpowiednim momencie lub nie strzelać, kiedy było to potrzebne. Częste było też nieoptymalne zachowanie w postaci strzelania do odległych przeciwników, podczas gdy inni przeciwnicy mogli podkraść się za plecy agenta zabijając go i kończąc grę.
+Dla scenariusza ,,Obrony środka'' agentowi zdarzało się strzelać w nieodpowiednim momencie lub nie strzelać, kiedy było to potrzebne. Częste było też zachowanie w postaci strzelania do odległych przeciwników, podczas gdy inni przeciwnicy mogli podkraść się za plecy agenta zabijając go i kończąc grę.
 
-W tym scenariuszu zwiększanie liczby trajektorii eksperta użytych do uczenia zwiększało wyniki agenta, który w dużej części gier osiągał wyniki bliskie maksymalnym i tylko sporadycznie dawał się na początku gry zajść od tyłu, co skutkowało pojedynczymi niskimi wynikami.
+W tym scenariuszu zwiększanie liczby trajektorii eksperta użytych do uczenia zwiększało wyniki agenta, który w dużej części gier osiągał wyniki bliskie maksymalnym i tylko sporadycznie dawał się na początku gry zajść od tyłu na początku gry, co skutkowało pojedynczymi niskimi wynikami.
 
-Dla \nameref{scenario_hgs} agentowi często zdarzało się blokować w rogach labiryntu, wpadając w nieskończoną pętlę akcji. Problem i rozwiązanie zostało opisane w \ref{presenting_expert}. Po wyeliminowaniu problemu agent zachowywał się wizualnie sensownie i osiągał przyzwoite wyniki. Problemem jest tylko nauczenie agenta omijania min.
+Dla scenariusza ,,Trudnego zbierana apteczek'' agentowi często zdarzało się blokować w rogach labiryntu, wpadając w nieskończoną pętlę akcji. Problem i rozwiązanie zostało opisane w \ref{presenting_expert}. Po wyeliminowaniu problemu agent zachowywał się wizualnie sensownie i osiągał przyzwoite wyniki. Problemem jest tylko nauczenie agenta omijania min.
 
-Na początku pracy ze scenariuszem ludzki ekspert uznał miny za mniejsze apteczki i nie zauważył spadku życia po wejściu w nie. Wyniki uzyskiwane przez eksperta wchodzącego czasami w miny były tylko nieznacznie lepsze od wyników agenta nauczonego na podstawie tych trajektorii.
+Na początku pracy ekspert uznał miny za mniejsze apteczki i nie zauważył spadku życia po wejściu w nie. Wyniki uzyskiwane przez eksperta wchodzącego czasami w miny były tylko nieznacznie lepsze od wyników agenta nauczonego na podstawie tych trajektorii.
 
 W obu scenariuszach, po osiągnięciu pewnego poziomu, zwiększanie liczby trajektorii eksperta użytych do uczenia nie polepszało wyników agenta. 
 
 \subsection{Wnioski}
-W badanych scenariuszach Kopiowanie zachowań osiąga znacznie lepsze wyniki, niż sugerowałaby literatura i uzyskuje je w ciągu ułamka czasu potrzebnego klasycznym metodom uczenia ze wzmocnieniem. Uzyskani agenci w większości przypadków zachowują się sensownie, chociaż czasem popełniają systematyczne błędy. Kopiowanie zachowań wydaje się świetnym punktem startowym dla VizDooma i wydaje się wskazane, żeby inne metody rozszerzały to podejście, zamiast je zastępować.
+W badanych scenariuszach metoda kopiowania zachowań osiąga znacznie lepsze wyniki, niż sugerowałaby literatura i uzyskuje je w ciągu ułamka czasu potrzebnego klasycznym metodom uczenia ze wzmocnieniem. Uzyskani agenci w większości przypadków zachowują się sensownie, chociaż czasem popełniają systematyczne błędy. Kopiowanie zachowań wydaje się świetnym punktem startowym dla VizDooma i wydaje się wskazane, żeby inne metody rozszerzały to podejście, zamiast je zastępować.
