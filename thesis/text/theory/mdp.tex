@@ -7,9 +7,9 @@
 Formalnie, proces decyzyjny Markowa definiujemy jako piątkę $(S,A,T(\cdot,\cdot),R(\cdot,\cdot),\gamma)$, gdzie:
 \begin{itemize}
 \item $S$ jest skończonym zbiorem możliwych stanów środowiska,
-\item $A_s$ jest skończonym zbiorem możliwych akcji wykonywalnych w stanie $s$,
+\item $A_s$ jest skończonym zbiorem akcji możliwych w stanie $s$,
 \item $T_a(s,s')$ - funkcja przejść, która reprezentuje prawdopodobieństwo trafienia do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$,
-\item $R_a(s,s')$ - funkcja nagrody, która określa nagrodę (lub wartością oczekiwaną nagrody, obie mogą być negatywne) otrzymywaną po wykonaniu akcji $a$ w stanie $s$ i trafieniu na skutek tego do stanu $s'$,
+\item $R_a(s,s')$ - funkcja nagrody, która określa nagrodę (lub wartością oczekiwaną nagrody, obie mogą być negatywne) otrzymywaną po wykonaniu akcji $a$ w stanie $s$ i trafieniu do stanu $s'$,
 \item $\gamma \in [0,1]$ jest współczynnikiem dyskontowym, obniżającym wartość nagród uzyskanych w przyszłości.
 \end{itemize}
 
@@ -22,7 +22,7 @@ gdzie kolejne $t$ są kolejnymi momentami czasowymi. Ponadto:
 \item Funkcja użyteczności $U(s)$ lub wartości \textit{(ang. Value)} $V(s)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć znajdując się stanie $s$ i postępując dalej zgodnie z aktualną polityką. Poniższe równanie oparte jest na równaniu Bellmana \cite{bellman1954}.
 
 $$U(s) = V(s) = \max_{a \in A(s)} \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma U(s'))$$
-\item Funkcja Q $Q(s,a)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć wykonując w stanie $s$ akcję $a$ i postępując dalej zgodnie z aktualną polityką.
+\item Funkcja $Q(s,a)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć wykonując w stanie $s$ akcję $a$ i postępując dalej zgodnie z aktualną polityką.
 
 $$Q(s,a) = \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma \max_{a' \in A(s)}Q(s',a'))$$
 

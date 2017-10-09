@@ -2,7 +2,7 @@
 
 Zdefiniowana w podrozdziale \ref{methods} przykładowa reguła aktualizacji wartości funkcji Q wygląda następująco:
 
-$$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (max_{a'}Q(s',a') - Q (s,a)))$$
+$$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (\max_{a'}Q(s',a') - Q (s,a)))$$
 
 Wynika z niej, że po wykonaniu ruchu wartość funkcji Q dla poprzedniego stanu aktualizujemy na podstawie otrzymanej nagrody i wartości funkcji Q dla stanu aktualnego. Oznacza to, że dla każdego stanu, który analizujemy, konieczna jest znajomość jego wartości funkcji Q dla wszystkich możliwych akcji, a dalej oznacza to, że dla dokładnego przedstawienia funkcji $Q(s,a)$  konieczne jest zapamiętanie $\left\vert{S}\right\vert \cdot \left\vert{A}\right\vert$ wartości. Co więcej, aby uzyskać sensowne wartości tej funkcji konieczne jest odwiedzenie każdego ze stanów wiele razy, zanim aktualizowana stopniowo wartość funkcji Q będzie bliska prawdziwej. Wiele z tych stanów jest też bardzo podobnych do siebie nawzajem, więc wiedza wyniesiona dla jednego stanu powinna się w pewien sposób generalizować na podobne stany.
 
@@ -15,9 +15,9 @@ Aproksymator (za \cite{wjaskowski2016}):
 \begin{itemize}
 \item musi być łatwo obliczalny,
 \item kompresuje dużą przestrzeń stanów w znacznie mniejszą przestrzeń parametrów,
-\item uogólnia wiedzę na temat podobnych stanów.
-\item w większości przypadków przyspiesza uczenie w stosunku do wersji stablicowanej ze względu na uogólnianie wiedzy
+\item uogólnia wiedzę na temat podobnych stanów,
+\item w większości przypadków przyspiesza uczenie w stosunku do wersji stablicowanej ze względu na uogólnianie wiedzy.
 \end{itemize}
 
 Jako jedne z pierwszych i prostszych aproksymatorów stosowano funkcje liniowe, opierające się na ręcznie zdefiniowanych cechach: $\hat{Q}_{\theta}(s,a) = \theta_0 + \theta_1x_1 + \theta_2x_2 + ... + \theta_nx_n$, gdzie wektor $x = (x_1, x_2, …, x_n)$ jest wektorem cech. Przykładem zastosowania może być gra w warcaby, opisana w \cite{Samuel:1959:SML:1661923.1661924}. Zaletami liniowego aproksymatora są prostota i łatwość interpretacji, a także szybkość obliczania i nauki. 
-Dalszym krokiem było wykorzystanie sieci neuronowych jako aproksymatorów w grze w Backgammona \cite{Tesauro1992451}. W pierwszej wersji algorytmu wykorzystano ręcznie zaprojektowane cechy, w kolejnych wykorzystano prawie surową informację o rozkładzie pionków na planszy. Sieć neuronowa jest bardziej skomplikowanym i trudniejszym do nauczenia aproksymatorem, ale jest w stanie zamodelować znacznie bardziej złożone funkcje.
+Dalszym krokiem było wykorzystanie sieci neuronowych jako aproksymatorów w grze Backgammon \cite{Tesauro1992451}. W pierwszej wersji algorytmu wykorzystano ręcznie zaprojektowane cechy, w kolejnych wykorzystano prawie surową informację o rozkładzie pionków na planszy. Sieć neuronowa jest bardziej skomplikowanym i trudniejszym do nauczenia aproksymatorem, ale jest w stanie zamodelować znacznie bardziej złożone funkcje.

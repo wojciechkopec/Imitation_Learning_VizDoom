@@ -29,24 +29,27 @@ Metoda różnic czasowych \textit{(ang. Temporal difference learning, TDL)} \cit
 Agent trafiający do stanu $s'$ po wykonaniu akcji $a$ w stanie $s$ może uaktualnić stan swojej wiedzy: $U(s) \leftarrow U(s) + \alpha (R(s,s') + \gamma U(s') - U (s))$ lub $Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (\max_{a'}Q(s',a') - Q (s,a))),$ gdzie $\alpha$ jest współczynnikiem prędkości uczenia. Jeżeli $\alpha$ w odpowiedni sposób zmniejsza się w czasie, to TDL gwarantuje zbieżność do optimum globalnego.
 
 \subsection{Funkcja U, Q i SARSA}\label{qlearning}
+
+Implementację metody różnic czasowych można oprzeć na różnych funkcjach, modelujących wiedzę agenta. Przykładowo:
+
 \begin{itemize}
-\item Funkcja U (patrz: rozdział \ref{mdp}) opisuje użyteczność stanu,
-\item Funkcja Q (patrz: rozdział \ref{mdp}) opisuje użyteczność wykonania danej akcji w danym stanie,
-\item SARSA stanowi wariację metody Q. W Q-learningu wartość funkcji Q jest aktualizowana na podstawie wartości Q dla najlepszej akcji do wykonywania w stanie $s'$ ($\gamma \max_{a'}Q(s',a') - Q (s,a))$), natomiast w SARSIE na podstawie wykonanej przez agenta akcji ($\gamma (Q(s',a') - Q (s,a)))$), czyli przebytej przez agenta trajektorii $ s \rightarrow a \rightarrow s' \rightarrow a'$. Aktualizacja TD w SARSA-ie wygląda następująco:
+\item Funkcja $U$ (patrz: rozdział \ref{mdp}) opisuje użyteczność stanu,
+\item Funkcja $Q$ (patrz: rozdział \ref{mdp}) opisuje użyteczność wykonania danej akcji w danym stanie,
+\item SARSA stanowi wariację metody Q. W Q-learningu wartość funkcji $Q$ jest aktualizowana na podstawie wartości $Q$ dla najlepszej akcji do wykonywania w stanie $s'$ ($\gamma \max_{a'}Q(s',a') - Q (s,a))$), natomiast w SARSIE na podstawie wykonanej przez agenta akcji ($\gamma (Q(s',a') - Q (s,a)))$), czyli przebytej przez agenta trajektorii $ s \rightarrow a \rightarrow s' \rightarrow a'$. Aktualizacja TD w SARSA-ie wygląda następująco:
 
 $$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (Q(s',a') - Q (s,a)))$$
 
 SARSA może dla niektórych problemów zachowywać się nieznacznie lepiej niż Q-learning, ale w większości przypadków będzie się uczyła wolniej bez wpływu na jakość agenta.
 \end{itemize}
 
-Mimo podobnych wzorów i definicji nauka funkcji Q ma jedną, diametralną przewagę na nauką funkcji U - funkcja Q nie wymaga znajomości modelu świata do wyboru najlepszej akcji do wykonania. Zbiór dostępnych akcji $A$ jest znany agentowi. Przy wyborze najlepszej akcji $a$ w stanie $s$:
+Mimo podobnych wzorów i definicji nauka funkcji $Q$ ma jedną, diametralną przewagę nad nauką funkcji $U$ - funkcja $Q$ nie wymaga znajomości modelu świata do wyboru najlepszej akcji do wykonania. Zbiór dostępnych akcji $A$ jest znany agentowi. Przy wyborze najlepszej akcji $a$ w stanie $s$:
 \begin{itemize}
-\item Agent z funkcją Q wybiera akcję $a = argmax_{a \in A} Q(s,a)$.
+\item Agent z funkcją $Q$ wybiera akcję $a = \argmax_{a \in A} Q(s,a)$.
 
-\item Agent z funkcją U wybiera akcję, która maksymalizuje $U(s')$ - wartość stanu, do którego trafi agent: $a = argmax_{a \in A} \sum_{s'} T_a(s,s')U(s')$. Obliczenie tego wyrażenia wymaga znajomości modelu przejść $T_a(\cdot, \cdot)$, czyli modelu świata. Można przyjąć, że dla trudniejszych i realnych problemów model świata nie jest dostępny.
+\item Agent z funkcją $U$ wybiera akcję, która maksymalizuje $U(s')$ - wartość stanu, do którego trafi agent: $a = \argmax_{a \in A} \sum_{s'} T_a(s,s')U(s')$. Obliczenie tego wyrażenia wymaga znajomości modelu przejść $T_a(\cdot, \cdot)$, czyli modelu świata. Można przyjąć, że dla trudniejszych i realnych problemów model świata nie jest dostępny.
 \end{itemize}
 
-Z tego powodu większość wiodących rozwiązań w dziedzinie uczenia ze wzmocnieniem oparta jest na Q-learningu.  Dalsza część pracy przyjmuje Q-learning jako obowiązującą metodę rozwiązywania problemu uczenia ze wzmocnieniem.
+Z tego powodu większość wiodących rozwiązań w dziedzinie uczenia ze wzmocnieniem oparta jest na Q-learningu. Dalsza część pracy przyjmuje Q-learning jako obowiązującą metodę rozwiązywania problemu uczenia ze wzmocnieniem.
 
 Niezależnie od metody, dla realnych i interesujących naukowo problemów uczenie ze wzmocnieniem jest wymagające obliczeniowo i czasowo. Mimo wspomagających agenta technik, nauka sprowadza się najczęściej do interakcji ze środowiskiem metodą prób i błędów - potrzeba wiele prób i błędów, zanim agent zacznie pojmować zasady rządzące środowiskiem w którym się znajduje, a potem dużo dalszych zanim znajdzie dla danego środowiska satysfakcjonującą skuteczną politykę działania.
 

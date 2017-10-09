@@ -20,3 +20,11 @@ W wielu zadaniach stawianych przed uczeniem ze wzmocnieniem osiągnięcie celu j
 Kształtowanie \textit{(ang. Shaping)} (\cite{Mataric94rewardfunctions}) zakłada sztuczne wprowadzenie do środowiska dodatkowych nagród, które agent będzie dostawał po wykonaniu etapów pośrednich zadania. Przykładowo, przy grze w szachy, w której agent dostaje nagrodę tylko za wygraną lub przegraną (1 lub -1) można byłoby wprowadzić nagrodę 0.1 za zbijanie figur przeciwnika.
 
 Kształtowanie wymaga możliwości ingerencji w środowisko albo percepcję agenta (rozpoznawanie, kiedy agent powinien dostać sztuczną nagrodę i ingerowanie w odczyty nagrody dokonywane przez agenta). Co ważniejsze, wymaga wiedzy eksperckiej na temat zadania wykonywanego przez agenta (możliwość określenia sensownych etapów zadania, na których agent miałby dostać sztuczną nagrodę) i wiedzy na temat środowiska, w którym agent się porusza (wysokość sztucznej nagrody musi być dopasowana do prawdziwych nagród, które może dostawać agent). Dodatkowo, kroki określone przez eksperta mogą wymuszać nieoptymalną politykę działania i powstrzymać agenta przed odkryciem optymalnych strategii.
+
+\subsection{Dropout}\label{dropout}
+
+Technika \textit{dropoutu}, opisana w pracy \cite{Srivastava:2014:DSW:2627435.2670313} jest narzędziem regularyzacji głębokich sieci neuronych i służy zapobieganiu zjawisku przeuczenia sieci.
+
+\textit{Dropout} polega na losowym traktowaniu wybranych neuronów jak usuniętych z sieci, na czas pojedynczych iteracji uczenia. W każdej kolejnej iteracji nauki inne neurony są losowo wygaszane. Dzięki temu wiedza na temat konkretnych cech jest rozpropagowana między wieloma neuronami i nie ma nadmiernej specjalizacji neuronów. Na etapie testowania sieci żadne z neuronów nie są usuwane, a aktywacje są normalizowane, żeby sumaryczna siła aktywacji odpowiadała sumarycznej sile aktywacji neuronów podczas treningu.
+
+W używanych narzędziach \textit{dropout} zaimplementowany jest najczęściej jako oddzielny typ warstwy sieci, przepuszczający do nastepnej warstwy tylko wybrane aktywacje neuronów z poprzedniej warstwy, a resztę aktywacji propagując jako 0.
