@@ -22,9 +22,9 @@ Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akc
 Zastosowana architektura sieci neuronowej opiera się na tej zaproponowanej w pracy \break \cite{mnih2015human} i wykorzystanej dalej w przykładach środowiska VizDoom i w pracy \break \cite{DBLP:journals/corr/KempkaWRTJ16}. Sieć składa się kolejno z:
 
 \begin{enumerate}
-\item{warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, opisaną w pracy \cite{AISTATS2011_GlorotBB11}}
 \item{warstwy konwolucyjnej z 8 filtrami o wielkości 3x3, krokiem 2x2 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
-\item{warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{warstwy dropoutu z prawdopodobieństwem 0.5 (opisanej w rozdziale \ref{dropout})} 
 \item{warstwy w pełni połączonej o wielkości 256 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
 \item{warstwy w pełni połączonej o wielkości 128 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
 \item{warstwy dropoutu z prawdopodobieństwem 0.5}
