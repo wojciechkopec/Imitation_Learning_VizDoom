@@ -1,10 +1,10 @@
 \section{Aproksymatory funkcji Q}
 
-Zdefiniowana w podrozdziale \ref{methods} przykładowa reguła aktualizacji wartości funkcji Q wygląda następująco:
+Zdefiniowana w podrozdziale \ref{methods} przykładowa reguła aktualizacji wartości funkcji $Q$ wygląda następująco:
 
 $$Q(s,a) \leftarrow Q(s,a) + \alpha (R(s,s') + \gamma (\max_{a'}Q(s',a') - Q (s,a)))$$
 
-Wynika z niej, że po wykonaniu ruchu wartość funkcji Q dla poprzedniego stanu aktualizujemy na podstawie otrzymanej nagrody i wartości funkcji Q dla stanu aktualnego. Oznacza to, że dla każdego stanu, który analizujemy, konieczna jest znajomość jego wartości funkcji Q dla wszystkich możliwych akcji, a dalej oznacza to, że dla dokładnego przedstawienia funkcji $Q(s,a)$  konieczne jest zapamiętanie $\left\vert{S}\right\vert \cdot \left\vert{A}\right\vert$ wartości. Co więcej, aby uzyskać sensowne wartości tej funkcji konieczne jest odwiedzenie każdego ze stanów wiele razy, zanim aktualizowana stopniowo wartość funkcji Q będzie bliska prawdziwej. Wiele z tych stanów jest też bardzo podobnych do siebie nawzajem, więc wiedza wyniesiona dla jednego stanu powinna się w pewien sposób generalizować na podobne stany.
+Wynika z niej, że po wykonaniu ruchu wartość funkcji $Q$ dla poprzedniego stanu aktualizujemy na podstawie otrzymanej nagrody i wartości funkcji $Q$ dla stanu aktualnego. Oznacza to, że dla każdego stanu, który analizujemy, konieczna jest znajomość jego wartości funkcji $Q$ dla wszystkich możliwych akcji, a dalej oznacza to, że dla dokładnego przedstawienia funkcji $Q(s,a)$  konieczne jest zapamiętanie $\left\vert{S}\right\vert \cdot \left\vert{A}\right\vert$ wartości. Co więcej, aby uzyskać sensowne wartości tej funkcji konieczne jest odwiedzenie każdego ze stanów wiele razy, zanim aktualizowana stopniowo wartość funkcji $Q$ będzie bliska prawdziwej. Wiele z tych stanów jest też bardzo podobnych do siebie nawzajem, więc wiedza wyniesiona dla jednego stanu powinna się w pewien sposób generalizować na podobne stany.
 
 Backgammon, jedna z gier planszowych służących jako benchmark algorytmów uczenia ze wzmocnieniem, ma $10^{20}$ możliwych stanów, a szachy $10^{40}$. Jeden obraz 90x60 pikseli w skali szarości, używany jako zapis stanu w problemie rozwiązywanym w ramach poniższej pracy może przyjąć $256^{5400}$ różnych kombinacji. Wiele realnych problemów opisanych jest wartościami ciągłymi, nie dyskretnymi, a praktyczna liczba ich możliwych stanów rośnie wykładniczo wraz ze wzrostem dokładności pomiaru.
 

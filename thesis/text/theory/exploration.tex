@@ -4,7 +4,7 @@ W uczeniu ze wzmocnieniem agent posiada umiejętność uczenia się na podstawie
 Przetarg pomiędzy eksploracją nowych stanów a zgłębianiem znanych jest problemem nietrywialnym i przedmiotem wielu badań.
 
 \subsection{Algorytm e-zachłanny}\label{egreedy}
-Podstawowym i często używanym podejściem do eksploracji jest algorytm $\epsilon-zachłanny$, w którym agent z zadanym prawdopodobieństwem $\epsilon$ zamiast akcji optymalnej względem aktualnej polityki wykonuje akcję losową. Takie zachowanie jest mało wydajne, szczególnie kiedy optymalne zachowanie agenta wymaga zaplanowania złożonych lub dalekosiężnych planów.
+Podstawowym i często używanym podejściem do eksploracji jest algorytm $\epsilon$-zachłanny, w którym agent z zadanym prawdopodobieństwem $\epsilon$ zamiast akcji optymalnej względem aktualnej polityki wykonuje akcję losową. Takie zachowanie jest mało wydajne, szczególnie kiedy optymalne zachowanie agenta wymaga zaplanowania złożonych lub dalekosiężnych planów.
 
 \subsection{Algorytm R-max}
 Prostym, ale skutecznym i posiadającym teoretyczne gwarancje zbieżności algorytmem jest zaproponowany w \cite{brafman02} R-max, realizujący ideę optymizmu wobec niepewności. Podstawą R-maxa jest optymistyczna inicjalizacja – przed rozpoczęciem uczenia funkcja aproksymacyjna powinna zwracać maksymalną nagrodę dla wszystkich stanów i akcji. W ramach działania agent będzie uaktualniał (czyli obniżał) spodziewaną nagrodę w odwiedzonych stanach.
