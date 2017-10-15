@@ -9,13 +9,15 @@ Oczywiście, takie zachowanie eksperta skutkuje uzyskiwaniem przez niego nieopty
 
 \subsection{Algorytm}
 
-Algorytm działania jest nastepujący:
+Algorytm działania jest następujący:
 \begin{enumerate}
-\item{Naucz agenta na podstawie trajektorii, dla których uzyskano najlepsze wyniki}
-\item{Przeanalizuj działanie agenta, szukając nieoptymalnych zachowań, które mogą wynikać z niedoskonałości prezentacji eksperta}
-\item{Wygeneruj nowe trajektorie, eliminując zauważone niedoskonałości}
+\item{Naucz agenta na podstawie trajektorii, dla których uzyskano najlepsze wyniki.}
+\item{Przeanalizuj działanie agenta, szukając nieoptymalnych zachowań, które mogą wynikać z niedoskonałości prezentacji eksperta.}
+\item{Wygeneruj nowe trajektorie, eliminując niedoskonałości zauważone w dotychczasowych iteracjach. }
+\item{Naucz agenta na podstawie nowych trajektorii. Jeżeli uzyskane wyniki nie są satysfakcjonujące wróć do punktu 2.}
 \end{enumerate}
 
+\pagebreak
 Przykładowymi zachowaniami mogą być:
 \begin{itemize}
 \item{Problem: agent blokuje się w rogach labiryntu. Przeciwdziałanie: będąc w rogu labiryntu ekspert zawsze odwraca się w lewą stronę.}

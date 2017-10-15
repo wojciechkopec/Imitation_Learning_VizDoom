@@ -23,8 +23,8 @@ Kształtowanie wymaga możliwości ingerencji w środowisko albo percepcję agen
 
 \subsection{Dropout}\label{dropout}
 
-Technika \textit{dropoutu}, opisana w pracy \cite{Srivastava:2014:DSW:2627435.2670313} jest narzędziem regularyzacji głębokich sieci neuronych i służy zapobieganiu zjawisku przeuczenia sieci.
+Technika \textit{dropoutu}, opisana w pracy \cite{Srivastava:2014:DSW:2627435.2670313} jest narzędziem regularyzacji głębokich sieci neuronowych i służy zapobieganiu zjawisku przeuczenia sieci.
 
 \textit{Dropout} polega na losowym traktowaniu wybranych neuronów jak usuniętych z sieci, na czas pojedynczych iteracji uczenia. W każdej kolejnej iteracji nauki inne neurony są losowo wygaszane. Dzięki temu wiedza na temat konkretnych cech jest rozpropagowana między wieloma neuronami i nie ma nadmiernej specjalizacji neuronów. Na etapie testowania sieci żadne z neuronów nie są usuwane, a aktywacje są normalizowane, żeby sumaryczna siła aktywacji odpowiadała sumarycznej sile aktywacji neuronów podczas treningu.
 
-W używanych narzędziach \textit{dropout} zaimplementowany jest najczęściej jako oddzielny typ warstwy sieci, przepuszczający do nastepnej warstwy tylko wybrane aktywacje neuronów z poprzedniej warstwy, a resztę aktywacji propagując jako 0. Warstwa dropoutu parametryzowana jest prawdopodobieństwem $p$, które oznacza z jakim prawdopodobieństwem neuronów zostanie zachowany.
+W używanych narzędziach \textit{dropout} zaimplementowany jest najczęściej jako oddzielny typ warstwy sieci, przepuszczający do następnej warstwy tylko wybrane aktywacje neuronów z poprzedniej warstwy, a resztę aktywacji propagując jako 0. Warstwa dropoutu parametryzowana jest prawdopodobieństwem $p$, które oznacza z jakim prawdopodobieństwem neuronów zostanie zachowany.
