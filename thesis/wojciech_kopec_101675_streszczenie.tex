@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[OT4]{fontenc}
+\usepackage{graphicx}
+\let\newfloat\undefined
+\usepackage{floatrow}
+\usepackage{nameref}
+\usepackage{textcomp}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\usepackage{csvsimple}
+
+
+
+
+
+
+\begin{document}
+\title{Streszczenie}
+\maketitle
+W jednej z najgłośniejszych w ostatnich latach prac dotyczących uczenia ze wzmocnieniem, algorytm \textit{Q-learningu} działający na podstawie surowych danych obrazowych w środowisku 2D nauczył się grać w klasyczne gry Atari, dla wielu z nich osiągając wyniki znacznie przewyższające ludzkie. Mimo odniesionych sukcesów \textit{Q-learning} ma wadę: uczenie w ten sposób trwa bardzo długo, a przez znaczną część początkowego działania agent zachowuje się zbyt chaotycznie, by pozwolić mu na działanie w prawdziwym środowisku.
+
+Odpowiedzią na ten problem są metody \textit{uczenia przez demonstrację}, które opierają się na uczeniu agenta na podstawie zaprezentowanych mu zachowań eksperta. Klasyfikator odtwarzający zachowania eksperta może być uzyskany w krótkim czasie, a wynikowy agent może osiągnąć zadowalające zachowanie przed pierwszym kontaktem ze środowiskiem.
+
+Stworzone w ramach tej pracy za pomoca metod \textit{uczenia przez demonstrację} i głębokich sieci neuronowych agenty przejawiają wysoką świadomość środowiska 3D w którym się znajdują, poprawnie rozpoznając i zachowując się w stosunku do ruchomych i nieruchomych obiektów oraz w stosunku do przeciwników. Agenty uzyskują wyniki zbliżone do wyników uzyskanych za pomocą \textit{Q-learningu}, przy ponad stukrotnie krótszym czasie nauki, co potwierdza użyteczność metod \textit{uczenia przez demonstrację} dla problemów uczenia ze wzmocnieniem w środowisku opartym na informacji obrazowej 3D.
+
+
+
+One of the most influencial papers about reinforcement learning in recent years presents a \textit{Q-learning} algorithm capable of learning to play classical Atari games, and exceed humans in many of them, based only on raw 2D visual data input. Despite this succes, \textit{Q-learning} has a drawback: learning is slow and for a good part of the training agent's behavior is too chaotical to let it perform in real environment.
+
+The solution are \textit{imitation learning} methods. \textit{Imitation learning} focuses on learning expert's actions shown to the agent, and is capable of creating a behavior cloning classifier in very little time compared to \textit{Q-learning}. Created agents behave feasibly even before first encounter with environment.
+
+Agents developed with \textit{Imitation learning} and deep neural networks as a part of this thesis are fully aware of surrouding 3D environment. They succesfully recognize and interact with stationary and mobile objects and with enemies. Scores achieved by agents 
+
+\end{document}

@@ -1,11 +1,11 @@
 \section{Q-learning}\label{q_learning}
-Q-learning, opisany dokładniej w \ref{qlearning},  jest najpopularniejszą metodą uczenia ze wzmocnieniem. Agent uczy się wartości funkcji Q odwiedzanych par stan $\to$ akcja. Wartość funkcji Q dla danego stanu odpowiada zdyskontowanej sumie nagród, jaką można uzyskać po trafieniu do danego stanu, przy założeniu wykonywania dalej optymalnych akcji. Agent rozpoczyna działając losowo, a potem uczy się łącząc działania losowe z działaniami optymalnymi według aktualnego stanu wiedzy i obserwując ich rezultaty.
+Q-learning, opisany dokładniej w \ref{qlearning},  jest najpopularniejszą metodą uczenia ze wzmocnieniem. Agent uczy się wartości funkcji $Q$ odwiedzanych par stan $\to$ akcja. Wartość funkcji $Q$ dla danego stanu odpowiada zdyskontowanej sumie nagród, jaką można uzyskać po trafieniu do danego stanu, przy założeniu wykonywania dalej optymalnych akcji. Agent rozpoczyna działając losowo, a potem uczy się łącząc działania losowe z działaniami optymalnymi według aktualnego stanu wiedzy i obserwując ich rezultaty.
 
 Problemem Q-learningu jest konieczność długotrwałego uczenia agenta, a odpowiedzią na ten problem jest uczenie z ekspertem. Wyniki Q-learningu będą stanowiły punkt odniesienia dla wyników innych metod.
 
 \subsection{Implementacja}
 
-Zastosowana implementacja opiera się na głębokiej sieci neuronowej jako aproksymatorze funkcji Q. Jest wyposażona w pamięć powtórek \textit{(ang. replay memory)} (patrz \ref{replaymemory}), a do eksploracji używana jest metoda $\epsilon$-zachłanna (patrz \ref{egreedy}). Schemat sieci neuronowej jest następujący.
+Zastosowana implementacja opiera się na głębokiej sieci neuronowej jako aproksymatorze funkcji $Q$. Jest wyposażona w pamięć powtórek \textit{(ang. replay memory)} (patrz \ref{replaymemory}), a do eksploracji używana jest metoda $\epsilon$-zachłanna (patrz \ref{egreedy}). Schemat sieci neuronowej jest następujący.
 
 [SCHEMAT SIECI]
 

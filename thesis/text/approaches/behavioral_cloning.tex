@@ -19,20 +19,20 @@ Warto zauważyć, że architektura Q-learningu wymaga, żeby każda możliwa akc
 
 \subsection{Sieć neuronowa}\label{agent_net}
 
-Zastosowana architektura sieci neuronowej opiera się na tej zaproponowanej w pracy \break \cite{mnih2015human} i wykorzystanej dalej w przykładach środowiska VizDoom i w pracy \break \cite{DBLP:journals/corr/KempkaWRTJ16}. Sieć składa się kolejno z:
+Zastosowana architektura sieci neuronowej opiera się na tej zaproponowanej w pracy \break \cite{mnih2015human} i wykorzystanej dalej w pracy  \cite{DBLP:journals/corr/KempkaWRTJ16} oraz przykładach środowiska VizDoom. Sieć składa się kolejno z:
 
 \begin{enumerate}
-\item{warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
-\item{warstwy konwolucyjnej z 8 filtrami o wielkości 3x3, krokiem 2x2 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
-\item{warstwy dropoutu z prawdopodobieństwem 0.5}
-\item{warstwy w pełni połączonej o wielkości 256 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
-\item{warstwy w pełni połączonej o wielkości 128 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
-\item{warstwy dropoutu z prawdopodobieństwem 0.5}
-\item{warstwy wyjściowej w pełni połączonej z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, w której każdy neuron wyjściowy odpowiada jednej akcji}
-\item{warstwy softmax}
+\item{Warstwy konwolucyjnej z 8 filtrami o wielkości 6x6, krokiem 3x3 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, opisaną w pracy \cite{AISTATS2011_GlorotBB11}}
+\item{Warstwy konwolucyjnej z 8 filtrami o wielkości 3x3, krokiem 2x2 i wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{Warstwy dropoutu z prawdopodobieństwem 0.5 (opisanej w rozdziale \ref{dropout})} 
+\item{Warstwy w pełni połączonej o wielkości 256 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{Warstwy w pełni połączonej o wielkości 128 neuronów z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}}
+\item{Warstwy dropoutu z prawdopodobieństwem 0.5}
+\item{Warstwy wyjściowej w pełni połączonej z wypłaszczoną liniową funkcją aktywacji \textit{(ang. rectified linear unit, ReLU)}, w której każdy neuron wyjściowy odpowiada jednej akcji}
+\item{Warstwy softmax}
 \end{enumerate}
 
-W stosunku do wersji z pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout, ale wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów.
+W stosunku do wersji z pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout. Co istotne, wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów. Na końcu sieci została też dodana warstwa \textit{softmax}, która jest standardowym elementem przy zadaniach klasyfikacji. Jej zadanie polega na przekształcaniu i normalizowaniu wartości aktywacji wyjść sieci odpowiedzialnych za poszczególne akcje. Po przekształceniu suma aktywacji ze wszystkich neuronów wyjściowych wynosi $1$, dzięki czemu można interpretować wartość aktywacji każdego neuronu jako prawdopodobieństwo wystąpienia danej klasy.
 
 Liczba i wielkości warstw zostały dobrane eksperymentalnie. Pozostałe parametry sieci, w szczególności parametry filtrów warstw konwolucyjnych zostały wybrane na podstawie wzorców z literatury.
 
@@ -78,7 +78,7 @@ with open('recorder_episode.pkl', 'wb') as f:
 \end{lstlisting}
 
 \subsection{Zachowanie}
-Eksperymenty były prowadzone na scenariuszach ,,\nameref{scenario_hgs}'' i ,,\nameref{scenario_dtc}''.
+Eksperymenty były prowadzone na scenariuszach Trudne zbieranie apteczek i Obrona środka.
 W obu przypadkach kopiowanie zachowań nauczone już na podstawie 3 trajektorii eksperta (6 tysięcy klatek) osiągało wizualnie sensowne zachowanie agentów i zaskakująco dobre wyniki.
 
 Dla scenariusza ,,Obrony środka'' agentowi zdarzało się strzelać w nieodpowiednim momencie lub nie strzelać, kiedy było to potrzebne. Częste było też zachowanie w postaci strzelania do odległych przeciwników, podczas gdy inni przeciwnicy mogli podkraść się za plecy agenta zabijając go i kończąc grę.

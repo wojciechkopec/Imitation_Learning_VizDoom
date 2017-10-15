@@ -8,13 +8,11 @@ Agent może strzelać do przeciwnika oraz poruszać się w prawo lub w lewo. Age
 
 Racjonalna strategia polega na przesunięciu się w kierunku przeciwnika i oddaniu do niego pojedynczego strzału.
 
-
+\begin{center}
 \begin{figure}[H]
-	\begin{floatrow}
-		\ffigbox{\includegraphics[scale = 0.35]{figures/screens/scenarios/basic.png}}{\caption{Scenariusz podstawowy}\label{fig:scenario_basic}}
-	\end{floatrow}
+\includegraphics[scale = 0.4]{figures/screens/scenarios/basic.png}{\caption{Scenariusz Podstawowy}\label{fig:scenario_basic}}
 \end{figure}
-
+\end{center}
 \subsection{Obrona środka (ang. Defend the center)}\label{scenario_dtc}
 Środowisko składa się z kolistej areny. Agent znajduje się na środku areny, a na jej krańcach losowo pojawiają się przeciwnicy, którzy poruszają się w stronę agenta, a po dotarciu do niego zadają mu obrażenia. Są dwa rodzaje przeciwników różniących się wyglądem i szybkością poruszania.
 
@@ -22,12 +20,11 @@ Agent może strzelać i kręcić się wokół własnej osi w lewo i prawo. Agen
 
 Racjonalna strategia polega na kręceniu się w jedną stronę w kółko, ignorowaniu odległych przeciwników i strzelaniu do bliskich, priorytetyzując szybszych przeciwników. Ignorowanie dalekich przeciwników jest konieczne, żeby w czasie strzelania do nich inni przeciwnicy nie zaszli agenta od tyłu - optymalna strategia wymaga zajmowania się najpierw najbliższym zagrożeniem.
 
+\begin{center}
 \begin{figure}[H]
-	\begin{floatrow}
-		\ffigbox{\includegraphics[scale = 0.35]{figures/screens/scenarios/dtc.png}}{\caption{Scenariusz obrona środka}\label{fig:scenario_dtc}}
-	\end{floatrow}
+\includegraphics[scale = 0.4]{figures/screens/scenarios/dtc.png}{\caption{Scenariusz Obrona środka}\label{fig:scenario_dtc}}
 \end{figure}
-
+\end{center}
 
 \subsection{Trudne zbieranie apteczek (ang. Health gathering supreme) }\label{scenario_hgs}
 Środowisko składa się z labiryntu, którego podłoga jest pokryta kwasem. Agent startuje w losowym miejscu labiryntu. W tym scenariuszu nie ma ruchomych przeciwników. Na podłodze labiryntu pojawiają się losowo apteczki, które dodają agentowi punkty życia i miny, które zabierają agentowi punkty życia. Kwas na podłodze nieustannie odbiera agentowi punkty życia. 
@@ -36,10 +33,9 @@ Agent może poruszać się do przodu, na ukos w prawo lub w lewo oraz kręcić s
 
 Racjonalna strategia polega na chodzeniu po labiryncie, niewchodzeniu na miny i zbieraniu apteczek, preferując kierowanie się do dużych skupisk apteczek. Wskazane jest unikanie zbierania pojedynczych, odizolowanych apteczek, gdyż liczba punktów życia uzyskana z takiej apteczki może być mniejsza niż liczba punktów życia straconych na dotarcie do apteczki. Wskazane jest niepozostawanie w jednym obszarze labiryntu, ponieważ nowe apteczki mogą nie pojawiać się wystarczająco szybko, żeby utrzymać agenta przy życiu.
 
-Co istotne, w tym scenariuszu bardzo często optymalna decyzja nie jest jednoznaczna - sensownie działający ekspert i agent mogą często wybierać pomiędzy wieloma poprawnymi drogami i zachowaniami.
-
+Co istotne, w tym scenariuszu bardzo często optymalna decyzja nie jest jednoznaczna - racjonalnie działający ekspert i agent mogą często wybierać pomiędzy wieloma poprawnymi drogami i zachowaniami.
+\begin{center}
 \begin{figure}[H]
-	\begin{floatrow}
-		\ffigbox{\includegraphics[scale = 0.35]{figures/screens/scenarios/hgs.png}}{\caption{scenariusz trudne zbieranie apteczek}\label{fig:scenario_hgs}}
-	\end{floatrow}
+\includegraphics[scale = 0.4]{figures/screens/scenarios/hgs.png}{\caption{scenariusz Trudne zbieranie apteczek}\label{fig:scenario_hgs}}
 \end{figure}
+\end{center}
