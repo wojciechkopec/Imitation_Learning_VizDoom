@@ -14,7 +14,7 @@ Algorytm działania jest następujący:
 \item{Naucz agenta na podstawie trajektorii, dla których uzyskano najlepsze wyniki.}
 \item{Przeanalizuj działanie agenta, szukając nieoptymalnych zachowań, które mogą wynikać z niedoskonałości prezentacji eksperta.}
 \item{Wygeneruj nowe trajektorie, eliminując niedoskonałości zauważone w dotychczasowych iteracjach. }
-\item{Naucz agenta na podstawie nowych trajektorii. Jeżeli uzyskane wyniki nie są satysfakcjonujące wróć do punktu 2.}
+\item{Naucz agenta na podstawie nowych trajektorii. Jeżeli uzyskane wyniki nie są satysfakcjonujące, wróć do punktu 2.}
 \end{enumerate}
 
 \pagebreak
@@ -29,7 +29,7 @@ Przykładowymi zachowaniami mogą być:
 Techniczna implementacja jest identyczna z opisaną w rozdziale \ref{behavioral_cloning}.
 
 \subsection{Zachowanie}
-Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
+Eksperymenty były prowadzone na scenariuszach Trudne zbieranie apteczek i Obrona środka.
 
 W scenariuszu Obrona środka ekspert podczas świadomej prezentacji powstrzymywał się od strzelania do odległych przeciwników i świadomie preferował strzelanie do szybszych przeciwników. Świadoma prezentacja zmniejszyła liczbę niepotrzebnych strzałów nauczonego agenta.
 

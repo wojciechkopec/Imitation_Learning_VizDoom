@@ -19,7 +19,7 @@ gdzie kolejne $t$ są kolejnymi momentami czasowymi. Ponadto:
 
 \begin{itemize}
 \item Polityką (strategią) $\pi$, realizowaną przez agenta, nazywamy funkcję $ \pi: S \rightarrow A$, która określa, jak agent powinien się zachować w danym stanie w celu osiągnięcia maksymalnej możliwej nagrody.
-\item Funkcja użyteczności $U(s)$ lub wartości \textit{(ang. Value)} $V(s)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć znajdując się stanie $s$ i postępując dalej zgodnie z aktualną polityką. Poniższe równanie oparte jest na równaniu Bellmana \cite{bellman1954}.
+\item Funkcja użyteczności \textit{(ang. Utility)} $U(s)$ lub wartości \textit{(ang. Value)} $V(s)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć znajdując się stanie $s$ i postępując dalej zgodnie z aktualną polityką. Poniższe równanie oparte jest na równaniu Bellmana \cite{bellman1954}.
 
 $$U(s) = V(s) = \max_{a \in A(s)} \sum_{s'} T_a(s,s')(R_a(s,s') + \gamma U(s'))$$
 \item Funkcja $Q(s,a)$ określa maksymalną oczekiwaną nagrodę, jaką agent może osiągnąć wykonując w stanie $s$ akcję $a$ i postępując dalej zgodnie z aktualną polityką.
