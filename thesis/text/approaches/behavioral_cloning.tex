@@ -32,7 +32,7 @@ Zastosowana architektura sieci neuronowej opiera się na tej zaproponowanej w pr
 \item{Warstwy softmax}
 \end{enumerate}
 
-W stosunku do wersji z pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout, ale wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów.
+W stosunku do wersji z pracy \cite{DBLP:journals/corr/KempkaWRTJ16} zastosowana sieć jest rozszerzona o jedną dodatkową warstwę w pełni połączoną i warstwy dropout. Co istotne, wszystkie użyte warstwy są złożone z kilka razy mniejszej liczby neuronów. Na końcu sieci została też dodana warstwa \textit{softmax}, która jest standardowym elementem przy zadaniach klasyfikacji. Jej zadanie polega na przekształcaniu i normalizowaniu wartości aktywacji wyjść sieci odpowiedzialnych za poszczególne akcje. Po przekształceniu suma aktywacji ze wszystkich neuronów wyjściowych wynosi $1$, dzięki czemu można interpretować wartość aktywacji każdego neuronu jako prawdopodobieństwo wystąpienia danej klasy.
 
 Liczba i wielkości warstw zostały dobrane eksperymentalnie. Pozostałe parametry sieci, w szczególności parametry filtrów warstw konwolucyjnych zostały wybrane na podstawie wzorców z literatury.
 

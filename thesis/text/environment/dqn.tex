@@ -4,4 +4,7 @@ Jednym z największych przełomów uczenia ze wzmocnieniem ostatnich lat była p
 
 Jako aproksymator funkcji $Q$ wykorzystano głęboką sieć neuronową. Z tego powodu opisywane podejście określa się często skrótem DQN \textit{(ang. Deep Q Network)}, czyli głęboka sieć Q. Analogicznie jak w obecnie stosowanych architekturach rozpoznawania obrazu, pierwsze warstwy sieci to warstwy konwolucyjne, które wykrywają kolejno nisko i wysokopoziomowe cechy obrazu. Dalsze warstwy, w pełni połączone, łączą informacje z warstw konwolucyjnych we wnioski na temat stanu świata, na podstawie których następne warstwy mogą określić wartość funkcji $Q$.
 
+\subsection{Warstwy konwolucyjne}
+Warstwy konwolucyjne \textit{(ang. convolutional layers)} są podstawowym elementem sieci neuronowych służących do analizy obrazów. W przeciwieństwie do warstw w pełni połączonych \textit{(ang. fully connected)}, w których każdy neuron łączy się z wyjściem każdego neuronu z warstwy poprzedniej, warstwy konwolucyjne analizują obraz z podziałem na małe, niezależne fragmenty. Warstwa konwolucyjna składa się z wielu filtrów. Każdy filtr rozpoznaje jakiś wzorzec w małym fragmencie obrazu (na przykład o wielkości 6x6 pikseli). Filtr ,,przykładany'' jest kolejno do kolejnych fragmentów obrazu (z przesunięciem równym wartości \textit{kroku}). Każdy z filtrów wykrywa jakąś cechę. W pierwszych warstwach mogą to być na przykład krawędzie, w dalszych bardziej złożone cechy. Wyjście warstwy konwolucyjnej można intuicyjnie postrzegać jako informację, gdzie na obrazie wykryto dane cechy.
+
 

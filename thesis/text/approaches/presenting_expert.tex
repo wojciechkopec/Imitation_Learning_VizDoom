@@ -7,6 +7,21 @@ Rozwiązaniem jest powtórne zebranie trajektorii eksperta, kładąc przy prezen
 
 Oczywiście, takie zachowanie eksperta skutkuje uzyskiwaniem przez niego nieoptymalnych wyników, a co za tym idzie wyniki możliwe do osiągnięcia przez idealnie odwzorowującego agenta też są niższe. W praktyce różnica pomiędzy wynikami eksperta i agenta powinna się zmniejszyć dzięki świadomej prezentacji, skutkując wyższymi wynikami osiąganymi przez agenta.
 
+\subsection{Algorytm}
+
+Algorytm działania jest nastepujący:
+\begin{enumerate}
+\item{Naucz agenta na podstawie trajektorii, dla których uzyskano najlepsze wyniki}
+\item{Przeanalizuj działanie agenta, szukając nieoptymalnych zachowań, które mogą wynikać z niedoskonałości prezentacji eksperta}
+\item{Wygeneruj nowe trajektorie, eliminując zauważone niedoskonałości}
+\end{enumerate}
+
+Przykładowymi zachowaniami mogą być:
+\begin{itemize}
+\item{Problem: agent blokuje się w rogach labiryntu. Przeciwdziałanie: będąc w rogu labiryntu ekspert zawsze odwraca się w lewą stronę.}
+\item{Problem: agent nie radzi sobie, gdy przeciwnicy podejdą zbyt blisko. Przeciwdziałanie: ekspert pozwala przeciwnikom podejść do siebie przed wyeliminowaniem ich.}
+\end{itemize}
+
 \subsection{Techniczna implementacja}
 
 Techniczna implementacja jest identyczna z opisaną w rozdziale \ref{behavioral_cloning}.
@@ -14,9 +29,9 @@ Techniczna implementacja jest identyczna z opisaną w rozdziale \ref{behavioral_
 \subsection{Zachowanie}
 Eksperymenty były prowadzone na scenariuszach \nameref{scenario_hgs} i \nameref{scenario_dtc}.
 
-W scenariuszu \nameref{scenario_dtc} ekspert podczas świadomej prezentacji powstrzymywał się od strzelania do odległych przeciwników i świadomie preferował strzelanie do szybszych przeciwników. Świadoma prezentacja zmniejszyła liczbę niepotrzebnych strzałów nauczonego agenta.
+W scenariuszu Obrona środka ekspert podczas świadomej prezentacji powstrzymywał się od strzelania do odległych przeciwników i świadomie preferował strzelanie do szybszych przeciwników. Świadoma prezentacja zmniejszyła liczbę niepotrzebnych strzałów nauczonego agenta.
 
-W scenariuszu \nameref{scenario_hgs} ekspert podczas świadomej prezentacji zawsze wychodził z rogów obracając się w tę samą stronę i czasami odwracał się od tras z minami. Świadoma prezentacja prawie całkowicie wyeliminowała wpadanie w nieskończone pętle ruchów w rogach. W niektórych sytuacjach zdarzało się, że agent zawracał za to w ciasnych, ale możliwych do przejścia korytarzach - było to zachowanie wyraźnie nieoptymalne, ale bez zauważalnego wpływu na osiągane wyniki. Niestety, świadoma prezentacja nie wyeliminowała wchodzenia w miny. Wynik punktowy agenta zwiększył się istotnie po zastosowaniu świadomej prezentacji.
+W scenariuszu Trudne zbieranie apteczek ekspert podczas świadomej prezentacji zawsze wychodził z rogów obracając się w tę samą stronę i czasami odwracał się od tras z minami. Świadoma prezentacja prawie całkowicie wyeliminowała wpadanie w nieskończone pętle ruchów w rogach. W niektórych sytuacjach zdarzało się, że agent zawracał za to w ciasnych, ale możliwych do przejścia korytarzach - było to zachowanie wyraźnie nieoptymalne, ale bez zauważalnego wpływu na osiągane wyniki. Niestety, świadoma prezentacja nie wyeliminowała wchodzenia w miny. Wynik punktowy agenta zwiększył się istotnie po zastosowaniu świadomej prezentacji.
 
 To, jak ważna jest świadoma prezentacja widoczne było przy zwiększaniu wielkości trajektorii eksperta użytych do nauki klasyfikatora. Dla obu scenariuszy agent nauczony na podstawie małej liczby trajektorii świadomego eksperta przewyższał agenta nauczonego na większej liczbie trajektorii nieświadomego eksperta i agenta nauczonego na mieszance trajektorii. 
  
